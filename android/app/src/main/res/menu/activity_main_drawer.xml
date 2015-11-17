@@ -2,15 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_camara" android:icon="@android:drawable/ic_menu_camera"
-            android:title="Import" />
-        <item android:id="@+id/nav_gallery" android:icon="@android:drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item android:id="@+id/nav_slideshow" android:icon="@android:drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item android:id="@+id/nav_manage" android:icon="@android:drawable/ic_menu_manage"
-            android:title="Tools" />
+        <item android:id="@+id/nav_maps" android:icon="@android:drawable/ic_menu_mapmode"
+            android:title="Maps" android:actionLayout="@layout/content_map"/>
+        <item android:id="@+id/nav_list" android:icon="@android:drawable/ic_menu_agenda"
+            android:title="List" android:actionLayout="@layout/content_list"/>
     </group>
+
+    <item android:title="Profil">
+        <menu>
+            <item android:id="@+id/nav_me" android:icon="@android:drawable/ic_menu_my_calendar"
+                android:title="Mon Profil"/>
+            <item android:id="@+id/nav_my_event" android:icon="@android:drawable/ic_menu_myplaces"
+                android:title="Mes évènements" />
+            <item android:id="@+id/nav_logout" android:icon="@android:drawable/ic_menu_close_clear_cancel"
+                android:title="Logout" />
+        </menu>
+    </item>
 
     <item android:title="Communicate">
         <menu>
