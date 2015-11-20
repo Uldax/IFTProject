@@ -1,0 +1,46 @@
+{
+  "project_info":{
+    "project_id":"ift717-1135",
+    "project_number":"1072463738258",
+    "name":"IFT717"
+  },
+  "client":[{
+    "client_info": {
+      "mobilesdk_app_id":"1:1072463738258:android:c77f1b3acae5a5d1",
+      "client_id":"android:ca.udes.bonc.ift_project",
+      "client_type":1,
+      "android_client_info":{
+        "package_name":"ca.udes.bonc.ift_project"}
+    },
+    "oauth_client":[{
+      "client_id":"1072463738258-vd7vq0pbke5msdq80u7bufsrmk46ud8h.apps.googleusercontent.com",
+      "client_type":1,
+      "android_info":{
+        "package_name":"ca.udes.bonc.ift_project",
+        "certificate_hash":"8927FC3951C1D4413B655A98C6323F91EA20DF1C"
+      }
+    }],
+    "api_key":[],
+    "services":{
+      "analytics_service":{
+        "status":1
+      },
+      "cloud_messaging_service":{
+        "status":1,
+        "apns_config":[]
+      },
+      "appinvite_service":{
+        "status":1,
+        "other_platform_oauth_client":[]
+      },
+      "google_signin_service":{
+        "status":2
+      },
+      "ads_service":{
+        "status":1
+      }
+    }
+  }],
+  "client_info":[],
+  "ARTIFACT_VERSION":"1"
+}
