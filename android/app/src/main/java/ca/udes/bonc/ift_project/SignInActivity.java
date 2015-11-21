@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -20,16 +21,14 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URLEncoder;
+import java.util.Scanner;
 
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by pcontat on 20/11/2015.
@@ -143,31 +142,7 @@ public class SignInActivity extends AppCompatActivity implements
             //https://developers.google.com/identity/sign-in/android/backend-auth
             String idToken = acct.getIdToken();
             if( idToken != null) {
-                try {
-                    URL url = new URL("http://localhost:8080/tokensignin");
-                    HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-                    conn.setReadTimeout(10000);
-                    conn.setConnectTimeout(15000);
-                    conn.setRequestMethod("POST");
-                    conn.setDoInput(true);
-                    conn.setDoOutput(true);
-
-                    Uri.Builder builder = new Uri.Builder()
-                            .appendQueryParameter("token", idToken);
-                    String query = builder.build().getEncodedQuery();
-
-                    OutputStream os = conn.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(
-                            new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(query);
-                    writer.flush();
-                    writer.close();
-                    os.close();
-                    Log.d(TAG, "requets send ");
-                    conn.connect();
-                } catch (IOException e) {
-                    Log.e(TAG, "Error sending ID token to backend.", e);
-                }
+                new tokenVerifier(idToken).start();
             }
 
 
@@ -178,6 +153,52 @@ public class SignInActivity extends AppCompatActivity implements
             updateUI(false);
         }
     }
+
+    public class tokenVerifier extends Thread {
+        private String idToken = "";
+
+        public tokenVerifier(String idToken){
+            this.idToken = idToken;
+        }
+        @Override
+        public void run() {
+            Log.d("tread", "DAFUCK " + idToken.toString());
+            try {
+                //for emulator we must use 10.0.3.2 instead of 127.0.0.1 for genymotion
+                URL url = new URL("http://10.0.3.2:8080/tokensignin");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                String param = "token=" + URLEncoder.encode(idToken, "UTF-8");
+                conn.setFixedLengthStreamingMode(param.getBytes().length);
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                //send the POST out
+                PrintWriter out = new PrintWriter(conn.getOutputStream());
+                out.print(param);
+                out.close();
+
+                //build the string to store the response text from the server
+                String response = "";
+                //start listening to the stream
+                Scanner inStream = new Scanner(conn.getInputStream());
+                //process the stream and store it in StringBuilder
+                while (inStream.hasNextLine()) {
+                    response += (inStream.nextLine());
+                }
+                Log.d(TAG,response);
+            } catch(MalformedURLException ex){
+               Log.e("thread", ex.toString());
+            } catch (IOException e) {
+                Log.e(TAG, "Error sending ID token to backend.", e);
+            }
+        }
+    }
+
+
+
 
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
