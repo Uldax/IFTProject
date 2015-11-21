@@ -2,13 +2,11 @@ package ca.udes.bonc.ift_project;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -20,6 +18,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -37,10 +38,10 @@ import java.util.Scanner;
  */
 
 
-public class SignInActivity extends AppCompatActivity implements
+public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
-    private static final String TAG = "SignInActivity";
+    private static final String TAG = "LoginActivity";
     private static final int RC_SIGN_IN = 9001;
 
     private GoogleApiClient mGoogleApiClient;
@@ -142,7 +143,18 @@ public class SignInActivity extends AppCompatActivity implements
             //https://developers.google.com/identity/sign-in/android/backend-auth
             String idToken = acct.getIdToken();
             if( idToken != null) {
-                new tokenVerifier(idToken).start();
+                try {
+                    Thread t = new TokenVerifier(idToken);
+                    t.start();
+                    //Wait fir thread to finish to valide auth
+                    t.join();  // wait for thread to finish
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                } catch( InterruptedException e) {
+                    //TODO handle error
+                    Log.e(TAG,e.getMessage());
+                }
+
             }
 
 
@@ -154,10 +166,10 @@ public class SignInActivity extends AppCompatActivity implements
         }
     }
 
-    public class tokenVerifier extends Thread {
+    public class TokenVerifier extends Thread {
         private String idToken = "";
 
-        public tokenVerifier(String idToken){
+        public TokenVerifier(String idToken){
             this.idToken = idToken;
         }
         @Override
@@ -188,10 +200,20 @@ public class SignInActivity extends AppCompatActivity implements
                 while (inStream.hasNextLine()) {
                     response += (inStream.nextLine());
                 }
-                Log.d(TAG,response);
+                //Convert to JSON
+                JSONObject JSONResponse = new JSONObject(response);
+                Log.d(TAG, JSONResponse.toString());
+                String userRole = JSONResponse.getJSONObject("user").getString("role");
+                String userName = JSONResponse.getJSONObject("user").getString("username");
+                String token = JSONResponse.getString("token");
+                Log.d(TAG,"Token acquired : "+ token);
+
             } catch(MalformedURLException ex){
                Log.e("thread", ex.toString());
-            } catch (IOException e) {
+            } catch(JSONException ex){
+                Log.e("thread", ex.toString());
+            }
+            catch (IOException e) {
                 Log.e(TAG, "Error sending ID token to backend.", e);
             }
         }
