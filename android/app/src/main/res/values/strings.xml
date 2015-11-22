@@ -58,4 +58,7 @@
     <string name="desc_id_token_activity">Retrieving an ID Token for the user.</string>
     <string name="desc_auth_code_activity">Demonstrate retrieving an auth code for authorizing your server.</string>
     <string name="name_auth_code_activity">ServerAuthCodeActivity</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

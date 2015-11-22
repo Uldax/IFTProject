@@ -3,9 +3,9 @@
 
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_maps" android:icon="@android:drawable/ic_menu_mapmode"
-            android:title="Maps" android:actionLayout="@layout/content_map"/>
+            android:title="Maps"/>
         <item android:id="@+id/nav_list" android:icon="@android:drawable/ic_menu_agenda"
-            android:title="List" android:actionLayout="@layout/content_list"/>
+            android:title="List"/>
     </group>
 
     <item android:title="Profil">
