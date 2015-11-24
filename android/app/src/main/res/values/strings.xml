@@ -9,14 +9,11 @@
     <string name="categories_prompt">Choose a categories</string>
 
     <string-array name="categories_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
+        <item>All</item>
+        <item>Sport</item>
+        <item>VideoGames</item>
+        <item>Event</item>
+        <item>Other</item>
     </string-array>
 
     <string name="server_client_id">1072463738258-ds4nu5hec07eu5ksk7pe2ucd3cn5d1fi.apps.googleusercontent.com</string>

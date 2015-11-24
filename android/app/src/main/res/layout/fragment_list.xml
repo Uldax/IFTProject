@@ -1,50 +1,52 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="ca.udes.bonc.ift_project.fragment.ListFragment"
-    android:clickable="true">
+    android:layout_height="match_parent" tools:context="ca.udes.bonc.ift_project.fragment.ListFragment">
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/linearLayout"
-        android:layout_centerHorizontal="true"
-        android:background="#ff0000"
-        android:clickable="true">
+        android:layout_height="match_parent">
 
-        <android.widget.Spinner
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/spinner"
-            android:layout_weight="1"
-            android:prompt="@string/categories_prompt"
-            android:entries="@array/categories_array"
-            android:clickable="true" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/linearLayout"
+            android:background="@color/colorPrimaryDark">
 
-        <Button
-            android:layout_width="wrap_content"
+            <android.widget.Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner"
+                android:layout_weight="1"
+                android:prompt="@string/categories_prompt"
+                android:entries="@array/categories_array"
+                android:layout_gravity="center_vertical" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Search"
+                android:id="@+id/button"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:backgroundTint="@color/colorAccent"
+                android:layout_gravity="center_vertical"
+                android:backgroundTintMode="add" />
+        </LinearLayout>
+
+        <ListView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Search"
-            android:id="@+id/button"
-            android:layout_weight="1"
-            android:onClick="onClick"
-            android:clickable="true" />
-    </LinearLayout>
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/listView"
-        android:layout_gravity="bottom"
-        android:layout_below="@+id/linearLayout"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentRight="true"
-        android:clickable="true" />
+            android:id="@+id/listView"
+            android:layout_gravity="top"
+            android:layout_below="@+id/linearLayout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+    </RelativeLayout>
 
 </FrameLayout>
