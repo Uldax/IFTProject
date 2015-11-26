@@ -1,5 +1,5 @@
 var jwt = require('jwt-simple');
-var User = require('../models/user');
+var User = require('../models/users');
 var request = require("request");
 var Promise = require('promise');
 

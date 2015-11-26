@@ -1,4 +1,4 @@
-var User = require('../models/user');
+var User = require('../models/users');
 var user = {
     getAll: function(req, res) {
         User.find(function(err, users) {
