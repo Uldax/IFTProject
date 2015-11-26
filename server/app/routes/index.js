@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var auth = require('./auth.js');
+var events = require('./events.js');
+var markers = require('./markers.js');
 var users = require('./users.js');
 // Test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.get('/', function(req, res) {

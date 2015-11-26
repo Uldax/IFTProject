@@ -3,7 +3,9 @@ var Schema       = mongoose.Schema;
 
 var MarkersSchema   = new Schema({
     position : { lat : Number, lng : Number },
-    event : [Schema.Events.ObjectId],
+    eventId : [Schema.Types.ObjectId],
+    createBy : [Schema.Types.ObjectId],
+    picture: { type: String, default: null},
 });
 
 module.exports = mongoose.model('markers', MarkersSchema);
