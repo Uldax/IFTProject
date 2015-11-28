@@ -1,14 +1,23 @@
-var mongoose     = require('mongoose');
-var Schema       = mongoose.Schema;
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-var EventsSchema   = new Schema({
-    category : String,
-    admin : [Schema.Types.ObjectId],
-    createBy : Schema.Types.ObjectId,
-    participants : [Schema.Types.ObjectId],
-    eventDate : Date,
-    updated: { type: Date, default: Date.now },
+// ref for populate fonction
+var EventsSchema = new Schema({
+    category: String,
+    admin: [{
+        type: Schema.Types.ObjectId,
+        ref: 'users'
+    }],
+    participants: [{
+        type: Schema.Types.ObjectId,
+        ref: 'users'
+    }],
+    eventDate: Date,
+    updated: {
+        type: Date,
+        default: Date.now
+    },
+    status: String
 });
 
 module.exports = mongoose.model('events', EventsSchema);
-

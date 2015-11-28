@@ -3,12 +3,14 @@ var Event = require('../models/events');
 var events = {
     //Todo : test
     getByCategs: function(req, res) {
-        if (req.body.categ ) {
-            Event.find({category: req.body.categ }, function(err, events) {
+        if (req.params.categ) {
+            Event.find({
+                category: req.params.categ
+            }, function(err, events) {
                 if (err) {
                     res.send(err);
                 } else {
-                        res.json(events);
+                    res.json(events);
                 }
             });
         } else {
@@ -20,7 +22,7 @@ var events = {
 
     //Todo test
     addParticipant: function(req, res) {
-        if (req.body.idEvent && req.body.idParticipant) {
+        if (req.params.id && req.body.idParticipant) {
             Event.findById(req.params.idEvent, function(err, currentEvent) {
                 if (err) {
                     res.send(err);
@@ -43,9 +45,29 @@ var events = {
         }
     },
 
+    getOne: function(req, res) {
+        var populateQuery = [{
+            path: 'participants',
+            select: 'name'
+        }, {
+            path: 'admin',
+            select: 'name'
+        }];
+        Event.findById(req.params.id)
+            .populate(populateQuery)
+            .exec(callback);
+
+        function callback(err, currentEvent) {
+            if (err) {
+                res.send(err);
+            }
+            res.json(user);
+        }
+    },
+
     //TodoTest
     //Create event then create a marker
-    createEvent: function(req, res) {
+    create: function(req, res) {
         console.log(req.body);
         if (req.body.category && req.body.admin && req.body.title) {
             var newEvent = new Event();

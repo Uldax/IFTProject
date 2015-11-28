@@ -55,7 +55,6 @@ var user = {
     },
 
     update: function(req, res) {
-        var updateuser = req.body;
         var id = req.params.id;
         User.findById(req.params.id, function(err, user) {
             if (err) {

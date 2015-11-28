@@ -4,16 +4,16 @@ var defaultRadius = 100;
 var marker = {
     //Todo : test
     getByRadius: function(req, res) {
-        if (req.body.initialLong && req.body.initialLat) {
-            var radius = req.body.radius || defaultRadius;
+        if (req.query.initialLong && req.query.initialLat) {
+            var radius = req.query.radius || defaultRadius;
             Marker.find({
                     'position.lat': {
-                        $gt: req.body.initialLat - radius,
-                        $lt: req.body.initialLat + radius
+                        $gt: req.query.initialLat - radius,
+                        $lt: req.query.initialLat + radius
                     },
                     'position.lng': {
-                        $gt: req.body.initialLong - radius,
-                        $lt: req.body.initialLat - radius
+                        $gt: req.query.initialLong - radius,
+                        $lt: req.query.initialLat - radius
                     },
                 })
                 .exec(function(err, markers) {
