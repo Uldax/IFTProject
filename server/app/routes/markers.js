@@ -4,6 +4,8 @@ var defaultRadius = 100;
 var marker = {
     //Todo : test
     getByRadius: function(req, res) {
+        console.log("yeay you call me ");
+        console.log(req.query);
         if (req.query.initialLong && req.query.initialLat) {
             var radius = req.query.radius || defaultRadius;
             Marker.find({
