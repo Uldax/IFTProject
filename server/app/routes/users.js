@@ -9,13 +9,32 @@ var user = {
         });
     },
 
-    getOne: function(req, res) {
-        User.findById(req.params.id, function(err, user) {
-            if (err) {
-                res.send(err);
-            }
-            res.json(user);
-        });
+    //Get one or multiple user
+    get: function(req, res) {
+        //req.query.id => get &id =
+        //check if multiple user asked
+        if( !( req.query.id.indexOf(',') === -1))
+        {
+          console.log(req.query.id);
+          var ids = req.query.id.split(',');
+          console.log(ids);
+          User.find({
+              '_id': { $in: ids}
+          }, function(err, users){
+                if (err) {
+                    res.send(err);
+                }
+                res.json(users);
+          });
+        }
+        else {
+            User.findById(req.query.id, function(err, user) {
+                if (err) {
+                    res.send(err);
+                }
+                res.json(user);
+            });
+        }
     },
 
     create: function(req, res) {

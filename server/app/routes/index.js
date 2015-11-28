@@ -23,8 +23,8 @@ router.post('/tokensignin', auth.validateGoogleToken);
 
 //Routes that can be accessed only by authenticated & authorized users
 router.get('/api/admin/users', users.getAll);
-router.get('/api/admin/user/:id', users.getOne);
-router.post('/api/admin/user/', users.create);
+router.get('/api/users/', users.get);
+router.post('/api/user/', users.create);
 router.put('/api/admin/user/:id', users.update);
 router.delete('/api/admin/user/:id', users.delete);
 

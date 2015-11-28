@@ -1,13 +1,30 @@
 var Marker = require('../models/markers');
+var defaultRadius = 100;
 
 var marker = {
-    //Todo
+    //Todo : test
     getByRadius: function(req, res) {
-        res.json(Marker);
-    },
-
-    //Todo
-    getByCategs: function(req, res) {
+        if (req.body.initialLong && req.body.initialLat) {
+            var radius = req.body.radius || defaultRadius;
+            Marker.find({
+                    'position.lat': {
+                        $gt: req.body.initialLat - radius,
+                        $lt: req.body.initialLat + radius
+                    },
+                    'position.lng': {
+                        $gt: req.body.initialLong - radius,
+                        $lt: req.body.initialLat - radius
+                    },
+                })
+                .exec(function(err, markers) {
+                    if (err)  res.send(err);
+                    res.json(markers);
+                });
+        } else {
+            res.json({
+                message: 'Wrong number of parameters!'
+            });
+        }
     },
 
     create: function(req, res) {
@@ -21,7 +38,7 @@ var marker = {
             if (req.body.picture !== null) {
                 marker.picture = req.body.picture;
             }
-            user.save(function(err) {
+            marker.save(function(err) {
                 if (err) {
                     res.send(err);
                 } else {

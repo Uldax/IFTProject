@@ -1,27 +1,62 @@
 var Event = require('../models/events');
 //No border effect purpose
 var events = {
-    //Todo
-    getByRadius: function(req, res) {
-        res.json(Marker);
-    },
-
-    //Todo
+    //Todo : test
     getByCategs: function(req, res) {
+        if (req.body.categ ) {
+            Event.find({category: req.body.categ }, function(err, events) {
+                if (err) {
+                    res.send(err);
+                } else {
+                        res.json(events);
+                }
+            });
+        } else {
+            res.json({
+                message: 'Wrong categorie'
+            });
+        }
     },
 
-    create: function(req, res) {
+    //Todo test
+    addParticipant: function(req, res) {
+        if (req.body.idEvent && req.body.idParticipant) {
+            Event.findById(req.params.idEvent, function(err, currentEvent) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    currentEvent.idParticipant.push(req.body.idParticipant);
+                    currentEvent.save(function(err) {
+                        if (err) {
+                            res.send(err);
+                        }
+                        res.json({
+                            message: 'User added to event!'
+                        });
+                    });
+                }
+            });
+        } else {
+            res.json({
+                message: 'Wrong number of parameters!'
+            });
+        }
+    },
+
+    //TodoTest
+    //Create event then create a marker
+    createEvent: function(req, res) {
         console.log(req.body);
-        if (req.body.position && req.body.eventId && req.body.createBy) {
-            var marker = new Event();
-            marker.categ = req.body.categ;
-            marker.position = req.body.position;
-            marker.createBy = req.body.createBy;
+        if (req.body.category && req.body.admin && req.body.title) {
+            var newEvent = new Event();
+            newEvent.categ = req.body.categ;
+            newEvent.position = req.body.position;
+            newEvent.createBy = req.body.createBy;
             //Todo add upload
             if (req.body.picture !== null) {
-                marker.picture = req.body.picture;
+                newEvent.picture = req.body.picture;
             }
-            user.save(function(err) {
+            newEvent.save(function(err) {
                 if (err) {
                     res.send(err);
                 } else {

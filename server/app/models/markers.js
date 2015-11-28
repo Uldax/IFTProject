@@ -4,7 +4,7 @@ var Schema       = mongoose.Schema;
 var MarkersSchema   = new Schema({
     position : { lat : Number, lng : Number },
     eventId : [Schema.Types.ObjectId],
-    createBy : [Schema.Types.ObjectId],
+    title : String,
     picture: { type: String, default: null},
 });
 
