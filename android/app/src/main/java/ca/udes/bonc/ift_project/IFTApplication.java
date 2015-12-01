@@ -12,6 +12,7 @@ public class IFTApplication extends Application implements SharedPreferences.OnS
     private SharedPreferences prefs;
     private String TAG = "IFTApplication";
     private String TOKEN_KEY = "apiToken";
+    private String USER_ID_KEY = "apiUserId";
 
     public void onCreate() {
         super.onCreate();
@@ -31,6 +32,13 @@ public class IFTApplication extends Application implements SharedPreferences.OnS
     }
     public void setApiToken(String token){
         prefs.edit().putString(TOKEN_KEY, token).apply();
+    }
+
+    public String getUserId(){
+        return this.prefs.getString(USER_ID_KEY, "");
+    }
+    public void setUsrId(String userID){
+        prefs.edit().putString(USER_ID_KEY, userID).apply();
     }
 
     // méthode déplacée de StatusActivity vers YambaApplication

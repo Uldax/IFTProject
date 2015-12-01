@@ -1,6 +1,10 @@
 package ca.udes.bonc.ift_project;
 
 import android.os.AsyncTask;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,6 +43,13 @@ public class HttpHelper {
         }
         return null;
     }
+
+    public static JSONObject readAllJSON(InputStream input, String encoding) throws JSONException{
+        //Convert to JSON
+        String html =  readAll(input, encoding);
+       return new JSONObject(html);
+    }
+
 
     /**
      * Find out and return what type of text encoding is specified by the server

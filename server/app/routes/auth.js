@@ -44,11 +44,12 @@ var auth = {
                 if (!err && response.statusCode === 200) {
                     //Parse repsonse into JSON
                     var info = JSON.parse(body);
-                    console.log(info);
                     if (info.sub) {
+                        //TODO add name
                         var user = {
-                            username: info.sub,
-                            role: "user"
+                            id: info.sub,
+                            role: "user",
+                            username : info.name
                         };
                         res.json(genToken(user));
                     } else {
@@ -70,7 +71,7 @@ var auth = {
         }
 
     },
-    //Call after token token check to get user role and information
+    //Call after token check to get user role and information
     validateUser: function(username) {
         return new Promise(function(resolve, reject) {
             User.find({

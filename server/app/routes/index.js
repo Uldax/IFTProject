@@ -17,11 +17,11 @@ router.post('/tokensignin', auth.validateGoogleToken);
 
 //Routes that can be accessed only by autheticated users
 router.get('/api/markers', markers.getByRadius);
-router.post('/api/markers/', markers.create);
+router.post('/api/markers', markers.create);
 
 router.get('/api/events/:id', events.getOne);
 router.get('/api/events/categ/:categ', events.getByCategs);
-router.post('/api/events/', events.create);
+router.post('/api/events', events.create);
 router.post('/api/events/:id/addUsers', events.addParticipant);
 //todo remove user
 
@@ -29,8 +29,8 @@ router.post('/api/events/:id/addUsers', events.addParticipant);
 //Routes that can be accessed only by authenticated & authorized users
 router.get('/api/admin/users', users.getAll);
 //&id =blablbla;blalb
-router.get('/api/users/', users.get);
-router.post('/api/user/', users.create);
+router.get('/api/users', users.get);
+router.post('/api/user', users.create);
 router.put('/api/admin/user/:id', users.update);
 router.delete('/api/admin/user/:id', users.delete);
 

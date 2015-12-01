@@ -17,7 +17,11 @@ var EventsSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    status: String
+    status: String,
+    createBy : {
+        type: Schema.Types.ObjectId,
+        ref: 'users'
+    }
 });
 
 module.exports = mongoose.model('events', EventsSchema);

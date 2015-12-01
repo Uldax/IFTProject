@@ -25,9 +25,10 @@ module.exports = function(req, res, next) {
             } else {
                 // Authorize the user to see if s/he can access our resources
                 //  The key would be the logged in user's username
+                //
+                //  TODO : May use the user encode in the token instead but secutity issus ?
                 validateUser(key)
                     .then(function(user) {
-                        console.log(user);
                         console.log(user.role);
                         if (req.url.indexOf('admin') >= 0 && user.role == 'admin') {
                             next(); // To move to next middleware

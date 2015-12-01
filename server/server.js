@@ -10,7 +10,7 @@ var FileStreamRotator = require('file-stream-rotator');
 
 //Connect to database
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/testBear'); // connect to local database
+mongoose.connect('mongodb://localhost/ift717'); // connect to local database
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST

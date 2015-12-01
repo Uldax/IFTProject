@@ -1,4 +1,5 @@
 var Marker = require('../models/markers');
+var ObjectId = require('mongodb').ObjectID;
 var defaultRadius = 100;
 
 var marker = {
@@ -19,7 +20,7 @@ var marker = {
                     },
                 })
                 .exec(function(err, markers) {
-                    if (err)  res.send(err);
+                    if (err) res.send(err);
                     res.json(markers);
                 });
         } else {
@@ -29,17 +30,11 @@ var marker = {
         }
     },
 
+    //Must not be used
     create: function(req, res) {
         console.log(req.body);
-        if (req.body.position && req.body.eventId && req.body.createBy) {
-            var marker = new Marker();
-            marker.categ = req.body.categ;
-            marker.position = req.body.position;
-            marker.createBy = req.body.createBy;
-            //Todo add upload
-            if (req.body.picture !== null) {
-                marker.picture = req.body.picture;
-            }
+        var marker = createMarkerObject(req.body,true);
+        if (marker !== null) {
             marker.save(function(err) {
                 if (err) {
                     res.send(err);
@@ -54,6 +49,22 @@ var marker = {
                 message: 'Wrong number of parameters!'
             });
         }
+    },
+
+    createMarkerObject: function(parameters) {
+        if (parameters.lat && parameters.lng  && parameters.title) {
+            var position = {
+                lat: parameters.lat,
+                lng: parameters.lng
+            };
+            var marker = new Marker();
+            marker.position = parameters.position;
+            marker.createBy = parameters.title;
+            //Todo add upload
+            if (parameters.picture !== null) {
+                marker.picture = parameters.picture;
+            }
+        } else return null;
     }
 };
 

@@ -1,6 +1,7 @@
 package ca.udes.bonc.ift_project;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -35,8 +36,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         mReceiver = new ResultReceiver(new Handler());
-        //test
-        QueryIntentService.startActionGetMarkers(this,mReceiver,"10.2","23");
 
 
         setContentView(R.layout.activity_main);
@@ -61,6 +60,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //test
+
+        //TODO define category and get date from datepicker
+        QueryIntentService.startActionCreateMarkers(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill");
+        QueryIntentService.startActionGetMarkers(this, mReceiver, "10.2", "23");
+
 
     }
     //call when service send to receiver
@@ -72,12 +77,15 @@ public class MainActivity extends AppCompatActivity
                 break;
             case QueryIntentService.STATUS_FINISHED:
                 String results = resultData.getString("results");
+                Log.i(TAG, "result resive = ");
                 Log.i(TAG, "result = " + results);
                 // do something interesting
                 // hide progress
                 break;
             case QueryIntentService.STATUS_ERROR:
-                // handle the error;
+                //todo handl error
+                String error = resultData.getString(Intent.EXTRA_TEXT);
+                Log.d(TAG, "error = " + error);
                 break;
         }
     }

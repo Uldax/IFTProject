@@ -192,15 +192,7 @@ public class LoginActivity extends AppCompatActivity implements
                 out.print(param);
                 out.close();
 
-                /*
-                //build the string to store the response text from the server
-                String response = "";
-                //start listening to the stream
-                Scanner inStream = new Scanner(conn.getInputStream());
-                //process the stream and store it in StringBuilder
-                while (inStream.hasNextLine()) {
-                    response += (inStream.nextLine());
-                }*/
+
 
                 String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
 
@@ -208,13 +200,15 @@ public class LoginActivity extends AppCompatActivity implements
                 JSONObject JSONResponse = new JSONObject(html);
                 Log.d(TAG, JSONResponse.toString());
                 String userRole = JSONResponse.getJSONObject("user").getString("role");
-                String userName = JSONResponse.getJSONObject("user").getString("username");
+
 
                 //Set token into applicationClass
                 String token = JSONResponse.getString("token");
+                String userId = JSONResponse.getJSONObject("user").getString("id");
                 Log.d(TAG,"Token acquired : "+ token);
                 IFTApplication myApp = (IFTApplication)getApplication();
                 myApp.setApiToken(token);
+                myApp.setUsrId(userId);
 
             } catch(MalformedURLException ex){
                Log.e("thread", ex.toString());
