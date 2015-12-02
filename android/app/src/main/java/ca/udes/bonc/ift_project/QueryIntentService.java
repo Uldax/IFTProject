@@ -181,7 +181,7 @@ public class QueryIntentService extends IntentService {
 
     private String handleActionCreateEvent(String dataPost) throws MalformedURLException,IOException,JSONException {
         Log.d(TAG,"Call createEvent with " + dataPost);
-        HttpURLConnection conn = createPostURLConnextion("/api/events",dataPost);
+        HttpURLConnection conn = createPostURLConnextion("/api/markers",dataPost);
         JSONObject json = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
         String message = json.getString("message");
         Log.d(TAG,message);

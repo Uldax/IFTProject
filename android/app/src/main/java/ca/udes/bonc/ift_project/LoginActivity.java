@@ -139,7 +139,7 @@ public class LoginActivity extends AppCompatActivity implements
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            //call server to verify token and creat a token for REST API
+            //call server to verify token and create a token for REST API
             //https://developers.google.com/identity/sign-in/android/backend-auth
             String idToken = acct.getIdToken();
             if( idToken != null) {
@@ -204,7 +204,7 @@ public class LoginActivity extends AppCompatActivity implements
 
                 //Set token into applicationClass
                 String token = JSONResponse.getString("token");
-                String userId = JSONResponse.getJSONObject("user").getString("id");
+                String userId = JSONResponse.getJSONObject("user").getString("_id");
                 Log.d(TAG,"Token acquired : "+ token);
                 IFTApplication myApp = (IFTApplication)getApplication();
                 myApp.setApiToken(token);

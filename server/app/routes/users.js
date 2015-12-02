@@ -39,8 +39,12 @@ var user = {
 
     create: function(req, res) {
         var user = new User();
-        user.username = req.body.username;
-        user.name = req.body.name;
+        user.email = req.body.email;
+        var name = {
+            first : req.body.first,
+            last : req.body.last,
+        };
+        user.name = name;
         user.password = req.body.password;
         user.role = req.body.role;
         user.save(function(err) {
@@ -86,5 +90,7 @@ var user = {
         });
     }
 };
+//Private methode :
+//Add user if not eixiste
 
 module.exports = user;

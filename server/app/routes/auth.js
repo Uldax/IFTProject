@@ -45,18 +45,24 @@ var auth = {
                     //Parse repsonse into JSON
                     var info = JSON.parse(body);
                     if (info.sub) {
-                        //TODO add name
+                        //Response to client
                         var user = {
-                            id: info.sub,
+                            _id: info.sub,
                             role: "user",
-                            username : info.name
+                            email: info.email,
+                            name: {
+                                first: info.name,
+                                last: info.family_name
+                            },
                         };
-                        res.json(genToken(user));
+                        var token = genToken(user);
+                        handleNewUser(user);
+                        res.json(token);
                     } else {
                         res.status(401);
                         res.json({
                             "status": 401,
-                            "message": "Wrong toker"
+                            "message": "Wrong token"
                         });
                     }
 
@@ -125,6 +131,29 @@ function genToken(user) {
         expires: expires,
         user: user
     };
+}
+
+function handleNewUser(userData) {
+    console.log("call to handleNewUser");
+    var user = new User();
+    user.email = userData.email;
+    var name = {
+        first: userData.name.first,
+        last: userData.name.last,
+    };
+    user._id = userData._id;
+    user.name = name;
+    //warning here
+    user.password = require('../config/secret')();
+    user.role = userData.role;
+    user.save(function(err) {
+        if (err) {
+            console.log(err.err);
+            return false;
+        } else {
+            return true;
+        }
+    });
 }
 
 module.exports = auth;

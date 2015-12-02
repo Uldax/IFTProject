@@ -1,3 +1,5 @@
+//Don't use for the moment
+
 var Event = require('../models/events');
 var markerFunction = require('./markers');
 var ObjectId = require('mongodb').ObjectID;

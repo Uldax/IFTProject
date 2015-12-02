@@ -1,5 +1,4 @@
 var Marker = require('../models/markers');
-var ObjectId = require('mongodb').ObjectID;
 var defaultRadius = 100;
 
 var marker = {
@@ -30,42 +29,66 @@ var marker = {
         }
     },
 
-    //Must not be used
     create: function(req, res) {
         console.log(req.body);
-        var marker = createMarkerObject(req.body,true);
-        if (marker !== null) {
-            marker.save(function(err) {
-                if (err) {
-                    res.send(err);
-                } else {
-                    res.json({
-                        message: 'Markers created!'
-                    });
-                }
-            });
+        var evt = createEvenementObject(req.body);
+        var marker = createMarkerObject(req.body,evt);
+        if (marker !== null && evt !== null) {
+            marker
+                .save(function(err, saved) {
+                    if (err) res.send(err);
+                    else {
+                        console.log("yeay bro");
+                        console.log(saved);
+                        res.json({
+                            message: 'All good!'
+                        });
+                    }
+                });
         } else {
             res.json({
                 message: 'Wrong number of parameters!'
             });
         }
-    },
-
-    createMarkerObject: function(parameters) {
-        if (parameters.lat && parameters.lng  && parameters.title) {
-            var position = {
-                lat: parameters.lat,
-                lng: parameters.lng
-            };
-            var marker = new Marker();
-            marker.position = parameters.position;
-            marker.createBy = parameters.title;
-            //Todo add upload
-            if (parameters.picture !== null) {
-                marker.picture = parameters.picture;
-            }
-        } else return null;
     }
 };
 
+
+//Private function
+function createEvenementObject(parameters, addCreator) {
+    if (parameters.category && parameters.createBy && parameters.admin && parameters.eventDate) {
+        //Create event object
+        var newEvent = {
+            category: parameters.category,
+            admin: parameters.admin,
+            eventDate: parameters.eventDate,
+            createBy: parameters.createBy,
+            status: "Created"
+        };
+        if (addCreator) {
+            newEvent.participants = [parameters.createBy];
+        }
+        return newEvent;
+    } else return null;
+}
+
+function createMarkerObject(parameters,evt) {
+    if (parameters.lat && parameters.lng && parameters.title) {
+        var position = {
+            lat: parameters.lat,
+            lng: parameters.lng
+        };
+        var marker = new Marker();
+        marker.position = position;
+        marker.evenement = evt;
+        marker.title = parameters.title;
+        //Todo add upload
+        if (parameters.picture !== null) {
+            marker.picture = parameters.picture;
+        }
+        console.log("markers created : ");
+        console.log(marker);
+        return marker;
+    } else return null;
+}
 module.exports = marker;
