@@ -4,22 +4,24 @@ var defaultRadius = 100;
 var marker = {
     //Todo : test
     getByRadius: function(req, res) {
-        console.log("yeay you call me ");
         console.log(req.query);
-        if (req.query.initialLong && req.query.initialLat) {
+        if (req.query.lng && req.query.lat) {
             var radius = req.query.radius || defaultRadius;
             Marker.find({
                     'position.lat': {
-                        $gt: req.query.initialLat - radius,
-                        $lt: req.query.initialLat + radius
+                        $gt: req.query.lat - radius,
+                        $lt: req.query.lat + radius
                     },
                     'position.lng': {
-                        $gt: req.query.initialLong - radius,
-                        $lt: req.query.initialLat - radius
+                        $gt: req.query.lng - radius,
+                        $lt: req.query.lng + radius
                     },
                 })
                 .exec(function(err, markers) {
-                    if (err) res.send(err);
+                    if (err) {
+                        console.log(err.err);
+                        res.send(err);
+                    }
                     res.json(markers);
                 });
         } else {
@@ -86,8 +88,6 @@ function createMarkerObject(parameters,evt) {
         if (parameters.picture !== null) {
             marker.picture = parameters.picture;
         }
-        console.log("markers created : ");
-        console.log(marker);
         return marker;
     } else return null;
 }

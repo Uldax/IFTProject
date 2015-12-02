@@ -158,7 +158,7 @@ public class QueryIntentService extends IntentService {
      */
     //Markers
     private String handleActionGetMarkers(String lat, String longitude) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createURLConnexion("/api/markers?lat="+lat+"&long="+longitude);
+        HttpURLConnection conn = createURLConnexion("/api/markers?lat="+lat+"&lng="+longitude);
         Log.i(TAG,"call to/api/markers?lat="+lat+"&long="+longitude);
         String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
         conn.disconnect();

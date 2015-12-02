@@ -26,16 +26,19 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        RestApiResultReceiver.Receiver {
 
-    public ResultReceiver mReceiver;
+    public RestApiResultReceiver mReceiver;
     private String TAG = "mainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mReceiver = new ResultReceiver(new Handler());
+        mReceiver = new RestApiResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
+
 
 
         setContentView(R.layout.activity_main);
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         //test
 
         //TODO define category and get date from datepicker
-        QueryIntentService.startActionCreateMarkers(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill");
+        //QueryIntentService.startActionCreateMarkers(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill");
         QueryIntentService.startActionGetMarkers(this, mReceiver, "10.2", "23");
 
 
@@ -77,7 +80,6 @@ public class MainActivity extends AppCompatActivity
                 break;
             case QueryIntentService.STATUS_FINISHED:
                 String results = resultData.getString("results");
-                Log.i(TAG, "result resive = ");
                 Log.i(TAG, "result = " + results);
                 // do something interesting
                 // hide progress
