@@ -92,6 +92,32 @@ var evenement = {
         }
     },
 
+    removeParticipant: function(req, res) {
+        if (req.params.id && req.body.idParticipant) {
+            Promise.resolve(Events.findById(req.params.id).exec())
+                .then(function(evt) {
+                    var index = evt.detail.participants.indexOf(req.body.idParticipant);
+                    if (index > -1) {
+                        evt.detail.participants.splice(index, 1);
+                    }
+                    return evt.save(); // returns a promise
+                })
+                .then(function(newEvt) {
+                    res.json({
+                        message: 'User removed from event'
+                    });
+                })
+                .catch(function(err) {
+                    console.log('error:', err);
+                    res.send(err);
+                });
+        } else {
+            res.json({
+                message: 'Wrong number of parameters!'
+            });
+        }
+    },
+
     create: function(req, res) {
         var evt = createEvenementObject(req.body);
         var marker = createMarkerObject(req.body, evt);
@@ -128,13 +154,31 @@ var evenement = {
                 });
             }).catch(function(err) {
                 console.log(err);
+                res.json({
+                    message: 'not authorized'
+                });
             });
         }
     },
 
 
     delEvent: function(req, res) {
-
+         if (req.params.id ) {
+            checkPermission(req).then(function(evt) {
+                evt.remove(function(err) {
+                    if (err) res.send(err);
+                    else {
+                        res.json({
+                            message: 'Event removed with success!'
+                        });
+                    }
+                });
+            }).catch(function(err) {
+                res.json({
+                    message: 'not authorized'
+                });
+            });
+        }
     }
 };
 //Private function
@@ -217,8 +261,9 @@ function checkPermission(req) {
             .then(function(evt) {
                 var decoded = jwt.decode(token, require('../config/secret.js')());
                 if ((evt.detail.admin.indexOf(decoded.user._id) > -1)) {
+                    console.log('authorized');
                     resolve(evt);
-                }
+                } else reject(false);
             }).catch(function(err) {
                 console.log('error:', err);
                 reject(err);

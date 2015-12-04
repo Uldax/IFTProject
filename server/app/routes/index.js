@@ -21,8 +21,10 @@ router.get('/api/events', events.getByRadius); //first call from main activity :
 router.get('/api/events/all', events.getAll); //debug purpose
 router.get('/api/events/find', events.find); //?type=X&category=Y&title=Z
 router.get('/api/events/:id', events.getOne);
-router.post('/api/events', events.create);
+router.post('/api/events/create', events.create);
+router.delete('/api/events/del/:id', events.delEvent);
 router.post('/api/events/:id/addParticipant', events.addParticipant);
+router.post('/api/events/:id/removeParticipant', events.removeParticipant);
 router.post('/api/events/:id/addAdmin',events.addAdmin);
 
 //todo remove user
