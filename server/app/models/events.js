@@ -12,7 +12,12 @@ var EventsSchema = new Schema({
             required: true
         }
     },
-    title: String,
+    title: {
+        unique: true,
+        required: true,
+        dropDups: true,
+        type : String
+    },
     picture: {
         type: String,
         default: null
