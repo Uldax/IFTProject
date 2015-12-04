@@ -86,7 +86,7 @@ var evenement = {
     //Todo test
     addParticipant: function(req, res) {
         if (req.params.id && req.body.idParticipant) {
-            Events.findById(req.params.idEvent, function(err, evt) {
+            Events.findById(req.params.id, function(err, evt) {
                 if (err) {
                     res.send(err);
                 } else {
@@ -109,7 +109,6 @@ var evenement = {
     },
 
     create: function(req, res) {
-        console.log(req.body);
         var evt = createEvenementObject(req.body);
         var marker = createMarkerObject(req.body, evt);
         if (marker !== null && evt !== null) {
@@ -134,14 +133,16 @@ var evenement = {
 
 //Private function
 function createEvenementObject(parameters, addCreator) {
-    if (parameters.category && parameters.createBy && parameters.admin && parameters.eventDate) {
+    if (parameters.category && parameters.createBy && parameters.admin && parameters.start && parameters.maxParticipants) {
         //Create event object
         var newEvent = {
             category: parameters.category,
             admin: parameters.admin,
-            eventDate: parameters.eventDate,
+            start: parameters.start,
             createBy: parameters.createBy,
-            status: "Created"
+            status: "Created",
+            type :  parameters.type || "for fun",
+            maxParticipants : parameters.maxParticipants
         };
         if (addCreator) {
             newEvent.participants = [parameters.createBy];
@@ -156,7 +157,7 @@ function createMarkerObject(parameters, evt) {
             lat: parameters.lat,
             lng: parameters.lng
         };
-        var marker = new Marker();
+        var marker = new Events();
         marker.position = position;
         marker.detail = evt;
         marker.title = parameters.title;

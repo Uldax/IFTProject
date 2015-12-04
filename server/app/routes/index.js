@@ -22,7 +22,7 @@ router.get('/api/events/all', events.getAll); //debug purpose
 router.get('/api/events/find', events.find); //?type=X&category=Y&title=Z
 router.get('/api/events/:id', events.getOne);
 router.post('/api/events', events.create);
-router.post('/api/events/:id/addUser', events.addParticipant);
+router.post('/api/events/:id/addParticipant', events.addParticipant);
 
 //todo remove user
 //Routes that can be accessed only by authenticated & authorized users

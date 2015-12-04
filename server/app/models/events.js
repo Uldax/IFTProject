@@ -19,7 +19,8 @@ var EventsSchema = new Schema({
     },
     detail: {
         category: String, //Hocket,soccer , etc..
-        type: String, //For fun, match , tournament
+        //thx : http://stackoverflow.com/questions/14754889/mongoose-3-4-0-returns-object-object-instead-of-actual-values-nodejs
+        type: { type: String }, //For fun, match , tournament
         maxParticipants: {
             type: Number,
             default: 0 //open for everyone
