@@ -119,12 +119,16 @@ var evenement = {
     },
 
     create: function(req, res) {
-        var evt = createEvenementObject(req.body);
+        var evt = createEvenementObject(req.body,true);
         var marker = createMarkerObject(req.body, evt);
+        console.log("create event");
         if (marker !== null && evt !== null) {
             marker
                 .save(function(err, saved) {
-                    if (err) res.send(err);
+                    if (err) {
+                        console.log(err);
+                        res.send(err);
+                    }
                     else {
                         console.log(saved);
                         res.json({
@@ -199,7 +203,7 @@ function createEvenementObject(parameters, addCreator) {
             admin: parameters.admin,
             start: parameters.start,
             createBy: parameters.createBy,
-            status: Const.eventStatue.created,
+            status: Const.eventStatus.created,
             type: parameters.type || Const.eventType.fun,
             maxParticipants: parameters.maxParticipants
         };

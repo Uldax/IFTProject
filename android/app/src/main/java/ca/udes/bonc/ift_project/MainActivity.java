@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         //test
 
         //TODO define category and get date from datepicker
-        //QueryIntentService.startActionCreateMarkers(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill");
+        QueryIntentService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill",12,"fun");
         QueryIntentService.startActionGetMarkers(this, mReceiver, "10.2", "23");
 
 

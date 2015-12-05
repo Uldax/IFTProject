@@ -21,19 +21,22 @@ import java.net.URLEncoder;
 
 public class QueryIntentService extends IntentService {
     private static final String ACTION_GET_MARKERS = "ca.udes.bonc.ift_project.action.getMarkers";
-    private static final String ACTION_CREATE_MARKER = "ca.udes.bonc.ift_project.action.createMarkers";
-
-    private static final String ACTION_GET_EVENT_CATEG = "ca.udes.bonc.ift_project.action.getEventByCateg";
+    private static final String ACTION_FIND_EVENT = "ca.udes.bonc.ift_project.action.findEvent";
     private static final String ACTION_GET_ONE = "ca.udes.bonc.ift_project.action.getOneEvent";
     private static final String ACTION_ADD_EVENT_PARTICIPANT = "ca.udes.bonc.ift_project.action.addParticipant";
+    private static final String ACTION_ADD_EVENT_ADMIN = "ca.udes.bonc.ift_project.action.addAdmin";
     private static final String ACTION_CREATE_EVENT = "ca.udes.bonc.ift_project.action.createEvent";
+
 
     private static final String EXTRA_LNG = "ca.udes.bonc.ift_project.extra.lng";
     private static final String EXTRA_RECEIVER = "ca.udes.bonc.ift_project.extra.receiver";
+    private static final String EXTRA_RADIUS = "ca.udes.bonc.ift_project.extra.radius";
     private static final String EXTRA_LAT = "ca.udes.bonc.ift_project.extra.lat";
     private static final String EXTRA_CATEGORY = "ca.udes.bonc.ift_project.extra.category";
     private static final String EXTRA_EVENT_DATE = "ca.udes.bonc.ift_project.extra.date";
     private static final String EXTRA_EVENT_TITLE = "ca.udes.bonc.ift_project.extra.title";
+    private static final String EXTRA_MAX_PARTICIPANTS = "ca.udes.bonc.ift_project.event.max";
+    private static final String EXTRA_EVENT_TYPE = "ca.udes.bonc.ift_project.extra.event.type";
 
 
     public static final int STATUS_RUNNING = 1;
@@ -60,16 +63,29 @@ public class QueryIntentService extends IntentService {
         context.startService(intent);
     }
 
-    public static void startActionCreateMarkers(Context context,ResultReceiver mReceiver, String longitude, String latitude, String title, String category) {
+    public static void startActionGetMarkersRadius(Context context,ResultReceiver mReceiver, String longitude, String latitude,int radius) {
+        //binding to the service with startService()
+        Intent intent = new Intent(context, QueryIntentService.class);
+        intent.setAction(ACTION_GET_MARKERS);
+        intent.putExtra(EXTRA_RECEIVER, mReceiver);
+        intent.putExtra(EXTRA_LNG, longitude);
+        intent.putExtra(EXTRA_LAT, latitude);
+        intent.putExtra(EXTRA_RADIUS, radius);
+        context.startService(intent);
+    }
+
+    public static void startActionCreateEvent(Context context, ResultReceiver mReceiver, String longitude, String latitude, String title, String category, int maxPart,String type) {
         //binding to the service with startService()
         Log.d(TAG,"Start createMarkers");
         Intent intent = new Intent(context, QueryIntentService.class);
-        intent.setAction(ACTION_CREATE_MARKER);
+        intent.setAction(ACTION_CREATE_EVENT);
         intent.putExtra(EXTRA_RECEIVER, mReceiver);
         intent.putExtra(EXTRA_LNG, longitude);
         intent.putExtra(EXTRA_LAT, latitude);
         intent.putExtra(EXTRA_CATEGORY, category);
         intent.putExtra(EXTRA_EVENT_TITLE, title);
+        intent.putExtra(EXTRA_MAX_PARTICIPANTS, maxPart);
+        intent.putExtra(EXTRA_EVENT_TYPE, type) ;
         context.startService(intent);
     }
 
@@ -136,7 +152,7 @@ public class QueryIntentService extends IntentService {
                     b.putString(Intent.EXTRA_TEXT, e.toString());
                     receiver.send(STATUS_ERROR, b);
                 }
-            } else if(action.equals(ACTION_CREATE_MARKER)) {
+            } else if(action.equals(ACTION_CREATE_EVENT)) {
                 try {
                     String dataPost = formatCreateParameters(intent);
                     String result = handleActionCreateEvent(dataPost);
@@ -158,8 +174,8 @@ public class QueryIntentService extends IntentService {
      */
     //Markers
     private String handleActionGetMarkers(String lat, String longitude) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createURLConnexion("/api/markers?lat="+lat+"&lng="+longitude);
-        Log.i(TAG,"call to/api/markers?lat="+lat+"&long="+longitude);
+        HttpURLConnection conn = createURLConnexion("/api/events?lat="+lat+"&lng="+longitude);
+        Log.i(TAG,"call to/api/events?lat="+lat+"&long="+longitude);
         String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
         conn.disconnect();
         return html;
@@ -172,19 +188,21 @@ public class QueryIntentService extends IntentService {
         String postData = "category=" + URLEncoder.encode(intent.getStringExtra(EXTRA_CATEGORY), "UTF-8") +
                 "&createBy="+ URLEncoder.encode(userId, "UTF-8") +
                 "&admin=" + URLEncoder.encode(userId, "UTF-8") +
-                "&eventDate=" + URLEncoder.encode("01/01/2016", "UTF-8") +
+                "&start=" + URLEncoder.encode("01/01/2016", "UTF-8") +
                 "&lat=" + URLEncoder.encode(intent.getStringExtra(EXTRA_LAT), "UTF-8") +
                 "&lng=" + URLEncoder.encode(intent.getStringExtra(EXTRA_LNG), "UTF-8") +
-                "&title=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TITLE), "UTF-8");
+                "&title=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TITLE), "UTF-8") +
+                "&maxParticipants=" + URLEncoder.encode(String.valueOf(intent.getIntExtra(EXTRA_MAX_PARTICIPANTS, 1)), "UTF-8") +
+                "&type=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TYPE), "UTF-8") ;
         return postData;
     }
 
     private String handleActionCreateEvent(String dataPost) throws MalformedURLException,IOException,JSONException {
         Log.d(TAG,"Call createEvent with " + dataPost);
-        HttpURLConnection conn = createPostURLConnextion("/api/markers",dataPost);
+        HttpURLConnection conn = createPostURLConnextion("/api/events/create",dataPost);
         JSONObject json = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
         String message = json.getString("message");
-        Log.d(TAG,message);
+        Log.d(TAG,"message receive from api = " + message);
         conn.disconnect();
         return message;
     }
