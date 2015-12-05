@@ -15,6 +15,10 @@ var UsersSchema = new Schema({
         type: String,
         default: null
     },
+    type: {
+        type: String,
+        default: 'default'
+    },
     name: {
         first: String,
         last: String
@@ -62,9 +66,10 @@ UsersSchema.pre('save', function(next) {
 var User = mongoose.model('users', UsersSchema);
 
 var userTest = new User();
-userTest.email = "user@test.fr";
-userTest.password = "test";
+userTest.email = "user@api.fr";
+userTest.password = "user";
 userTest.role = "admin";
+userTest.type = 'default';
 userTest.name = {
     first: "super",
     last: "test"

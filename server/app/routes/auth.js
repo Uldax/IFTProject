@@ -16,16 +16,16 @@ var auth = {
                 'password': password
             })
             //Virtuals are NOT available for document queries or field selection.
-            .select({ name: 1, role: 1, _id :1 })
+            .select({ name: 1, role: 1, _id :1,type:1 })
             .exec( function(err, user) {
                 if (err) {
                     console.log(err);
                     reject(err);
                 }
-                if (user.length === 1) {
+                if (user.length === 1 && user[0].type == 'default') {
                     resolve(user[0]);
                 } else {
-                    reject("database error");
+                    reject("this user doesn't exist");
                 }
 
             });
@@ -149,7 +149,8 @@ function handleNewUser(userData) {
     };
     user._id = userData._id;
     user.name = name;
-    //warning here
+    user.type = 'google';
+    //warning here but prevent by type
     user.password = require('../config/secret')();
     user.role = userData.role;
     user.save(function(err) {
