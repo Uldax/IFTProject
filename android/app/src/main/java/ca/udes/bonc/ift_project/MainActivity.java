@@ -25,6 +25,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import ca.udes.bonc.ift_project.fragment.ListFragment;
 import ca.udes.bonc.ift_project.fragment.MapFragment;
+import ca.udes.bonc.ift_project.fragment.MyEventFragment;
+import ca.udes.bonc.ift_project.fragment.NewEventFragment;
 import ca.udes.bonc.ift_project.fragment.OnFragmentInteractionListener;
 
 import java.util.List;
@@ -151,7 +153,11 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_list:
                 selectedFragment = new ListFragment();
                 break;
+            case R.id.nav_newevent:
+                selectedFragment = new NewEventFragment();
+                break;
             case R.id.nav_my_event:
+                selectedFragment = new MyEventFragment();
                 break;
             default:
                 break;
@@ -168,8 +174,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
     public void onFragmentInteraction(Uri uri) {
-        Log.i(this.toString(),uri.toString());
+        Log.i(this.toString(), uri.toString());
     }
 }

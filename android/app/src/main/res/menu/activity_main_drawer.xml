@@ -6,6 +6,8 @@
             android:title="Maps"/>
         <item android:id="@+id/nav_list" android:icon="@android:drawable/ic_menu_agenda"
             android:title="List"/>
+        <item android:id="@+id/nav_newevent" android:icon="@android:drawable/ic_menu_add"
+            android:title="New Event"/>
     </group>
 
     <item android:title="Profil">
