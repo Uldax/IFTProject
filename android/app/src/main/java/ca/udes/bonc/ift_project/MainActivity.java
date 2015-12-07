@@ -3,7 +3,10 @@ package ca.udes.bonc.ift_project;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -24,13 +27,24 @@ import ca.udes.bonc.ift_project.fragment.ListFragment;
 import ca.udes.bonc.ift_project.fragment.MapFragment;
 import ca.udes.bonc.ift_project.fragment.OnFragmentInteractionListener;
 
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        RestApiResultReceiver.Receiver {
+
+    public RestApiResultReceiver mReceiver;
+    private String TAG = "mainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mReceiver = new RestApiResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
+
+
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -60,6 +74,33 @@ public class MainActivity extends AppCompatActivity
             }
         });*/
 
+        //test
+
+        //TODO define category and get date from datepicker
+        QueryIntentService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill",12,"fun");
+        QueryIntentService.startActionGetMarkers(this, mReceiver, "10.2", "23");
+
+
+    }
+    //call when service send to receiver
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+        switch (resultCode) {
+            case QueryIntentService.STATUS_RUNNING:
+                Log.i(TAG, "Runing status");
+                //show progress
+                break;
+            case QueryIntentService.STATUS_FINISHED:
+                String results = resultData.getString("results");
+                Log.i(TAG, "result = " + results);
+                // do something interesting
+                // hide progress
+                break;
+            case QueryIntentService.STATUS_ERROR:
+                //todo handl error
+                String error = resultData.getString(Intent.EXTRA_TEXT);
+                Log.d(TAG, "error = " + error);
+                break;
+        }
     }
 
     @Override

@@ -139,7 +139,7 @@ public class LoginActivity extends AppCompatActivity implements
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            //call server to verify token and creat a token for REST API
+            //call server to verify token and create a token for REST API
             //https://developers.google.com/identity/sign-in/android/backend-auth
             String idToken = acct.getIdToken();
             if( idToken != null) {
@@ -174,7 +174,6 @@ public class LoginActivity extends AppCompatActivity implements
         }
         @Override
         public void run() {
-            Log.d("tread", "DAFUCK " + idToken.toString());
             try {
                 //for emulator we must use 10.0.3.2 instead of 127.0.0.1 for genymotion
                 URL url = new URL("http://10.0.3.2:8080/tokensignin");
@@ -187,26 +186,29 @@ public class LoginActivity extends AppCompatActivity implements
                 String param = "token=" + URLEncoder.encode(idToken, "UTF-8");
                 conn.setFixedLengthStreamingMode(param.getBytes().length);
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
                 //send the POST out
                 PrintWriter out = new PrintWriter(conn.getOutputStream());
                 out.print(param);
                 out.close();
 
-                //build the string to store the response text from the server
-                String response = "";
-                //start listening to the stream
-                Scanner inStream = new Scanner(conn.getInputStream());
-                //process the stream and store it in StringBuilder
-                while (inStream.hasNextLine()) {
-                    response += (inStream.nextLine());
-                }
+
+
+                String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+
                 //Convert to JSON
-                JSONObject JSONResponse = new JSONObject(response);
+                JSONObject JSONResponse = new JSONObject(html);
                 Log.d(TAG, JSONResponse.toString());
                 String userRole = JSONResponse.getJSONObject("user").getString("role");
-                String userName = JSONResponse.getJSONObject("user").getString("username");
+
+
+                //Set token into applicationClass
                 String token = JSONResponse.getString("token");
+                String userId = JSONResponse.getJSONObject("user").getString("_id");
                 Log.d(TAG,"Token acquired : "+ token);
+                IFTApplication myApp = (IFTApplication)getApplication();
+                myApp.setApiToken(token);
+                myApp.setUsrId(userId);
 
             } catch(MalformedURLException ex){
                Log.e("thread", ex.toString());

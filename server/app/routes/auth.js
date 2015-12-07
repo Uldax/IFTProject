@@ -4,24 +4,28 @@ var request = require("request");
 var Promise = require('promise');
 
 var auth = {
-    // Fire a query to your DB and check if the credentials are valid
     // must be promises
-    validate: function(username, password) {
+    // TODO resolve juste email and role
+    validate: function(email, password) {
         return new Promise(function(resolve, reject) {
-            if (username === '' || password === '') {
+            if (email === '' || password === '') {
                 reject("empty credentials");
             }
             User.find({
-                'username': username,
+                'email': email,
                 'password': password
-            }, function(err, user) {
+            })
+            //Virtuals are NOT available for document queries or field selection.
+            .select({ name: 1, role: 1, _id :1,type:1 })
+            .exec( function(err, user) {
                 if (err) {
+                    console.log(err);
                     reject(err);
                 }
-                if (user.length === 1) {
+                if (user.length === 1 && user[0].type == 'default') {
                     resolve(user[0]);
                 } else {
-                    reject("database error");
+                    reject("this user doesn't exist");
                 }
 
             });
@@ -30,7 +34,7 @@ var auth = {
 
     validateGoogleToken: function(req, res) {
         var token = req.body.token;
-        if (token === undefined || token === null) {
+        if (typeof req.body.token === 'undefined' ) {
             res.status(401);
             res.json({
                 "status": 401,
@@ -44,18 +48,25 @@ var auth = {
                 if (!err && response.statusCode === 200) {
                     //Parse repsonse into JSON
                     var info = JSON.parse(body);
-                    console.log(info);
                     if (info.sub) {
+                        //Response to client
                         var user = {
-                            username: info.sub,
-                            role: "user"
+                            _id: info.sub,
+                            role: "user",
+                            email: info.email,
+                            name: {
+                                first: info.name,
+                                last: info.family_name
+                            },
                         };
-                        res.json(genToken(user));
+                        var token = genToken(user);
+                        handleNewUser(user);
+                        res.json(token);
                     } else {
                         res.status(401);
                         res.json({
                             "status": 401,
-                            "message": "Wrong toker"
+                            "message": "Wrong token"
                         });
                     }
 
@@ -70,11 +81,11 @@ var auth = {
         }
 
     },
-    //Call after token token check to get user role and information
-    validateUser: function(username) {
+    //Call after token check to get user role and information
+    validateUser: function(email) {
         return new Promise(function(resolve, reject) {
             User.find({
-                'username': username
+                'email': email
             }, function(err, user) {
                 if (err) {
                     reject(err);
@@ -90,9 +101,9 @@ var auth = {
 
     //http://localhost:8080/login
     login: function(req, res) {
-        var username = req.body.username || '';
+        var email = req.body.email || '';
         var password = req.body.password || '';
-        auth.validate(username, password)
+        auth.validate(email, password)
             .then(function(user) {
                 // If authentication is success, we will generate a token
                 // and dispatch it to the client
@@ -117,13 +128,39 @@ function expiresIn(numDays) {
 function genToken(user) {
     var expires = expiresIn(7); // 7 days
     var token = jwt.encode({
-        exp: expires
+        exp: expires,
+        user: user
     }, require('../config/secret')());
     return {
         token: token,
         expires: expires,
         user: user
     };
+}
+
+//Todo must find then insert to no increment counter
+function handleNewUser(userData) {
+    console.log("call to handleNewUser");
+    var user = new User();
+    user.email = userData.email;
+    var name = {
+        first: userData.name.first,
+        last: userData.name.last,
+    };
+    user._id = userData._id;
+    user.name = name;
+    user.type = 'google';
+    //warning here but prevent by type
+    user.password = require('../config/secret')();
+    user.role = userData.role;
+    user.save(function(err) {
+        if (err) {
+            console.log(err.err);
+            return false;
+        } else {
+            return true;
+        }
+    });
 }
 
 module.exports = auth;

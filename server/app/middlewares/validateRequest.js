@@ -3,13 +3,10 @@ var validateUser = require('../routes/auth').validateUser;
 
 module.exports = function(req, res, next) {
     var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
-    var key = (req.body && req.body.x_key) || (req.query && req.query.x_key) || req.headers['x-key'];
     console.log("token =  " + token);
-    console.log("key =  " + key);
-    if (token || key) {
+    if (token) {
         try {
             var decoded = jwt.decode(token, require('../config/secret.js')());
-            console.log(decoded);
             if (decoded.exp <= Date.now()) {
                 res.status(400);
                 res.json({
@@ -23,32 +20,17 @@ module.exports = function(req, res, next) {
             if (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/') >= 0) {
                 next(); // To move to next middleware
             } else {
-                // Authorize the user to see if s/he can access our resources
-                //  The key would be the logged in user's username
-                validateUser(key)
-                    .then(function(user) {
-                        console.log(user);
-                        console.log(user.role);
-                        if (req.url.indexOf('admin') >= 0 && user.role == 'admin') {
-                            next(); // To move to next middleware
-                        } else {
-                            res.status(403);
-                            res.json({
-                                "status": 403,
-                                "message": "Not Authorized"
-                            });
-                            return;
-                        }
-                    })
-                    .catch(function(errMessage) {
-                        // No user with this name exists, respond back with a 401
-                        res.status(401);
-                        res.json({
-                            "status": 401,
-                            "message": "Invalid User"
-                        });
-                        return;
+                if (req.url.indexOf('admin') >= 0 && decoded.user.role == 'admin') {
+                    console.log('access granted');
+                    next(); // To move to next middleware
+                } else {
+                    res.status(403);
+                    res.json({
+                        "status": 403,
+                        "message": "Not Authorized"
                     });
+                    return;
+                }
             }
         } catch (err) {
             res.status(500);

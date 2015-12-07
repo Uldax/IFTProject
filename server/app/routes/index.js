@@ -1,9 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var auth = require('./auth.js');
-var events = require('./events.js');
-var markers = require('./markers.js');
-var users = require('./users.js');
+var express = require('express'),
+router = express.Router(),
+auth = require('./auth.js'),
+events = require('./events.js'),
+//markers = require('./markers.js'),
+users = require('./users.js');
+
 // Test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api!' });
@@ -14,17 +15,23 @@ router.get('/', function(req, res) {
 router.post('/login', auth.login);
 router.post('/tokensignin', auth.validateGoogleToken);
 
-//Routes that can be accessed only by autheticated users
-// router.get('/api/bears', bears.getAll);
-// router.get('/api/bears/:id', bears.getOne);
-// router.post('/api/bears/', bears.create);
-// router.put('/api/bears/:id', bears.update);
-// router.delete('/api/bears/:id', bears.delete);
 
+//Routes that can be accessed only by autheticated users
+router.get('/api/events', events.getByRadius); //first call from main activity : ?lat=10.2&lng=23&radius=Z
+router.get('/api/events/all', events.getAll); //debug purpose
+router.get('/api/events/find', events.find); //?type=X&category=Y&title=Z
+router.get('/api/events/:id', events.getOne);
+router.post('/api/events/create', events.create);
+router.delete('/api/events/del/:id', events.delEvent);
+router.post('/api/events/:id/addParticipant', events.addParticipant);
+router.post('/api/events/:id/removeParticipant', events.removeParticipant);
+router.post('/api/events/:id/addAdmin',events.addAdmin);
+
+//todo remove user
 //Routes that can be accessed only by authenticated & authorized users
 router.get('/api/admin/users', users.getAll);
-router.get('/api/admin/user/:id', users.getOne);
-router.post('/api/admin/user/', users.create);
+router.get('/api/users', users.get);
+router.post('/api/user', users.create);
 router.put('/api/admin/user/:id', users.update);
 router.delete('/api/admin/user/:id', users.delete);
 
