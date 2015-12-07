@@ -8,10 +8,14 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
 import ca.udes.bonc.ift_project.R;
 
@@ -24,7 +28,10 @@ import ca.udes.bonc.ift_project.R;
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements
+        GoogleMap.OnMyLocationButtonClickListener,
+        OnMapReadyCallback,
+        ActivityCompat.OnRequestPermissionsResultCallback  {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -35,6 +42,12 @@ public class MapFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private View contener;
+    private FloatingActionButton fabLoc;
+    private FloatingActionButton fabList;
+    private ListView listMap;
+    private View myView;
 
     /**
      * Use this factory method to create a new instance of
@@ -71,32 +84,27 @@ public class MapFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        this.myView = inflater.inflate(R.layout.fragment_map, container, false);
+        this.contener = container;
+        this.fabList = (FloatingActionButton) myView.findViewById(R.id.fabList);
+        this.fabLoc = (FloatingActionButton) myView.findViewById(R.id.fabLoc);
+        this.listMap = (ListView) myView.findViewById(R.id.listMap);
 
-        FloatingActionButton fabLoc = (FloatingActionButton) view.findViewById(R.id.fabLoc);
         fabLoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Localisation TODO", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                localisateMe();
             }
         });
 
-        final FloatingActionButton fabList = (FloatingActionButton) view.findViewById(R.id.fabList);
         fabList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ListView listMap = (ListView) container.findViewById(R.id.listMap);
-                if(listMap.getVisibility() == View.GONE){
-                    listMap.setVisibility(View.VISIBLE);
-                    fabList.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
-                }else {
-                    listMap.setVisibility(View.GONE);
-                    fabList.setImageResource(android.R.drawable.ic_menu_more);
-                }
+                toggleListMap();
             }
         });
 
-        return view;
+        return myView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -124,5 +132,27 @@ public class MapFragment extends Fragment {
     }
 
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
 
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        return false;
+    }
+
+    protected void toggleListMap(){
+        if(listMap.getVisibility() == View.GONE){
+            listMap.setVisibility(View.VISIBLE);
+            fabList.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+        }else {
+            listMap.setVisibility(View.GONE);
+            fabList.setImageResource(android.R.drawable.ic_menu_more);
+        }
+    }
+
+    protected void localisateMe(){
+        Snackbar.make(this.myView, "Localisation TODO", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+    }
 }
