@@ -44,7 +44,7 @@
 
 
         <service
-            android:name=".QueryIntentService"
+            android:name=".communication.QueryEventService"
             android:exported="false" >
         </service>
 

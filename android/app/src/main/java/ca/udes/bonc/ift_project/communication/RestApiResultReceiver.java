@@ -1,4 +1,4 @@
-package ca.udes.bonc.ift_project;
+package ca.udes.bonc.ift_project.communication;
 
 import android.os.Bundle;
 import android.os.Handler;

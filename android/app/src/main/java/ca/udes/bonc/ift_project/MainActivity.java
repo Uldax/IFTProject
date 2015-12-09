@@ -6,13 +6,9 @@ import android.net.Uri;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.ResultReceiver;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,8 +19,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-
+import ca.udes.bonc.ift_project.communication.QueryEventService;
+import ca.udes.bonc.ift_project.communication.QueryIntentService;
+import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.fragment.ListFragment;
 import ca.udes.bonc.ift_project.fragment.MapFragment;
 import ca.udes.bonc.ift_project.fragment.MyEventFragment;
@@ -32,8 +29,6 @@ import ca.udes.bonc.ift_project.fragment.NewEventFragment;
 import ca.udes.bonc.ift_project.fragment.OnFragmentInteractionListener;
 import ca.udes.bonc.ift_project.utils.AlertDialogManager;
 import ca.udes.bonc.ift_project.utils.ConnectionDetector;
-
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity
@@ -100,7 +95,7 @@ public class MainActivity extends AppCompatActivity
 
         //TODO define category and get date from datepicker
         //QueryIntentService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill",12,"fun");
-        //QueryIntentService.startActionGetMarkers(this, mReceiver, "10.2", "23");
+        QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
 
 
     }
@@ -113,7 +108,8 @@ public class MainActivity extends AppCompatActivity
                 break;
             case QueryIntentService.STATUS_FINISHED:
                 String results = resultData.getString("results");
-                Log.i(TAG, "result = " + results);
+                Log.i(TAG, "result =");
+                Log.i(TAG, results);
                 // do something interesting
                 // hide progress
                 break;

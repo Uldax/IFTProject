@@ -28,7 +28,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Scanner;
+
+import ca.udes.bonc.ift_project.communication.HttpHelper;
 
 
 /**
@@ -148,6 +149,7 @@ public class LoginActivity extends AppCompatActivity implements
                     t.start();
                     //Wait fir thread to finish to valide auth
                     t.join();  // wait for thread to finish
+                    //TODO : handle error if server do no grant access
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                 } catch( InterruptedException e) {
@@ -194,10 +196,7 @@ public class LoginActivity extends AppCompatActivity implements
 
 
 
-                String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-
-                //Convert to JSON
-                JSONObject JSONResponse = new JSONObject(html);
+                JSONObject JSONResponse = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
                 Log.d(TAG, JSONResponse.toString());
                 String userRole = JSONResponse.getJSONObject("user").getString("role");
 
