@@ -34,6 +34,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
+        OnFragmentInteractionListener,
         RestApiResultReceiver.Receiver {
 
     public RestApiResultReceiver mReceiver;
