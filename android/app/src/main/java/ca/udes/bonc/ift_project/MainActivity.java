@@ -1,23 +1,21 @@
 package ca.udes.bonc.ift_project;
 
 
-
-import android.net.Uri;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
 
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
@@ -31,11 +29,12 @@ import ca.udes.bonc.ift_project.utils.AlertDialogManager;
 import ca.udes.bonc.ift_project.utils.ConnectionDetector;
 
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
+public class MainActivity extends FragmentActivity
+implements NavigationView.OnNavigationItemSelectedListener,
         OnFragmentInteractionListener,
         RestApiResultReceiver.Receiver {
 
+    public static FragmentManager fragmentManager;
     public RestApiResultReceiver mReceiver;
     private String TAG = "mainActivity";
 
@@ -50,6 +49,7 @@ public class MainActivity extends AppCompatActivity
 
         mReceiver = new RestApiResultReceiver(new Handler());
         mReceiver.setReceiver(this);
+        fragmentManager = getSupportFragmentManager();
 
         cd = new ConnectionDetector(getApplicationContext());
         // Check if Internet present
@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         Fragment fragment = new MapFragment();
-        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
@@ -158,7 +157,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currentFragment = fragmentManager.findFragmentById(R.id.content_frame);
         Fragment selectedFragment = null;
 

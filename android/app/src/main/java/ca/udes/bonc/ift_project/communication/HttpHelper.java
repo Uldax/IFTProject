@@ -1,7 +1,5 @@
 package ca.udes.bonc.ift_project.communication;
 
-import android.os.AsyncTask;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -9,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Helper class that retrieves HTML or text from an HTTP address and lets you specify two event handlers, a method
