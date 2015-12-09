@@ -12,29 +12,34 @@ var auth = {
                 reject("empty credentials");
             }
             User.find({
-                'email': email,
-                'password': password
-            })
-            //Virtuals are NOT available for document queries or field selection.
-            .select({ name: 1, role: 1, _id :1,type:1 })
-            .exec( function(err, user) {
-                if (err) {
-                    console.log(err);
-                    reject(err);
-                }
-                if (user.length === 1 && user[0].type == 'default') {
-                    resolve(user[0]);
-                } else {
-                    reject("this user doesn't exist");
-                }
+                    'email': email,
+                    'password': password
+                })
+                //Virtuals are NOT available for document queries or field selection.
+                .select({
+                    name: 1,
+                    role: 1,
+                    _id: 1,
+                    type: 1
+                })
+                .exec(function(err, user) {
+                    if (err) {
+                        console.log(err);
+                        reject(err);
+                    }
+                    if (user.length === 1 && user[0].type == 'default') {
+                        resolve(user[0]);
+                    } else {
+                        reject("this user doesn't exist");
+                    }
 
-            });
+                });
         });
     },
 
     validateGoogleToken: function(req, res) {
         var token = req.body.token;
-        if (typeof req.body.token === 'undefined' ) {
+        if (typeof req.body.token === 'undefined') {
             res.status(401);
             res.json({
                 "status": 401,
@@ -141,26 +146,38 @@ function genToken(user) {
 //Todo must find then insert to no increment counter
 function handleNewUser(userData) {
     console.log("call to handleNewUser");
-    var user = new User();
-    user.email = userData.email;
-    var name = {
-        first: userData.name.first,
-        last: userData.name.last,
-    };
-    user._id = userData._id;
-    user.name = name;
-    user.type = 'google';
-    //warning here but prevent by type
-    user.password = require('../config/secret')();
-    user.role = userData.role;
-    user.save(function(err) {
-        if (err) {
-            console.log(err.err);
-            return false;
-        } else {
-            return true;
-        }
-    });
-}
+    Promise.resolve(User.count({
+            'email': userData.email
+        }).exec())
+        .then(function(count) {
+            console.log(count);
+            if (count === 0) {
+                var user = new User();
+                user.email = userData.email;
+                var name = {
+                    first: userData.name.first,
+                    last: userData.name.last,
+                };
+                user._id = userData._id;
+                user.name = name;
+                user.type = 'google';
+                //warning here but prevent by type
+                user.password = require('../config/secret')();
+                user.role = userData.role;
+                user.save(function(err) {
+                    if (err) {
+                        console.log(err.err);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                });
+            }
+        })
+        .catch(function(err) {
+            console.log('error:', err);
+            res.send(err);
+        });
+    }
 
-module.exports = auth;
+    module.exports = auth;

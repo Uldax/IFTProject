@@ -125,6 +125,24 @@ public class QueryEventService extends QueryIntentService {
         return message;
     }
 
+    public static void startActionDeleteEvent(Context context, ResultReceiver mReceiver, String eventID) {
+        //binding to the service with startService()
+        Log.d(TAG, "Start createMarkers");
+        Intent intent = new Intent(context, QueryEventService.class);
+        intent.setAction(ACTION_CREATE_EVENT);
+        intent.putExtra(EXTRA_RECEIVER, mReceiver);
+        intent.putExtra(EXTRA_EVENT_ID, eventID);
+        context.startService(intent);
+    }
+    //Todo : add to handleIntent
+    private String handleActionDeleteEvent(String id) throws MalformedURLException,IOException {
+        HttpURLConnection conn = createGetURLConnection("/api/events/del/" + id);
+        conn.setRequestMethod("DELETE");
+        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+        conn.disconnect();
+        return html;
+    }
+
 
     /**
      * Handle action Markers in the provided background thread with the provided
