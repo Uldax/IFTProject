@@ -1,7 +1,7 @@
 package ca.udes.bonc.ift_project;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+
+
 import android.net.Uri;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -28,6 +30,8 @@ import ca.udes.bonc.ift_project.fragment.MapFragment;
 import ca.udes.bonc.ift_project.fragment.MyEventFragment;
 import ca.udes.bonc.ift_project.fragment.NewEventFragment;
 import ca.udes.bonc.ift_project.fragment.OnFragmentInteractionListener;
+import ca.udes.bonc.ift_project.utils.AlertDialogManager;
+import ca.udes.bonc.ift_project.utils.ConnectionDetector;
 
 import java.util.List;
 
@@ -40,6 +44,11 @@ public class MainActivity extends AppCompatActivity
     public RestApiResultReceiver mReceiver;
     private String TAG = "mainActivity";
 
+    // Connection detector class
+    private ConnectionDetector cd;
+    // Alert Dialog Manager
+    private AlertDialogManager alert = new AlertDialogManager();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +56,16 @@ public class MainActivity extends AppCompatActivity
         mReceiver = new RestApiResultReceiver(new Handler());
         mReceiver.setReceiver(this);
 
+        cd = new ConnectionDetector(getApplicationContext());
+        // Check if Internet present
+        if (! (cd.isConnectingToInternet())) {
+            // Internet Connection is not present
+            alert.showAlertDialog(MainActivity.this, "Internet Connection Error",
+                    "Please connect to working Internet connection", false);
+            // stop executing code by return
+            //TODO : handle no connexion (cache / db etc..)
+            return;
+        }
 
 
         setContentView(R.layout.activity_main);
@@ -64,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         Fragment fragment = new MapFragment();
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
@@ -80,8 +99,8 @@ public class MainActivity extends AppCompatActivity
         //test
 
         //TODO define category and get date from datepicker
-        QueryIntentService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill",12,"fun");
-        QueryIntentService.startActionGetMarkers(this, mReceiver, "10.2", "23");
+        //QueryIntentService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill",12,"fun");
+        //QueryIntentService.startActionGetMarkers(this, mReceiver, "10.2", "23");
 
 
     }
@@ -143,7 +162,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currentFragment = fragmentManager.findFragmentById(R.id.content_frame);
         Fragment selectedFragment = null;
 

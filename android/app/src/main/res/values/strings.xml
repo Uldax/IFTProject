@@ -33,6 +33,7 @@
     <string name="loading">Loading…</string>
     <string name="auth_code_fmt">Auth Code: %s</string>
     <string name="id_token_fmt">ID Token: %s</string>
+    <string name="google_maps_key">AIzaSyA9QJInLdgXLWKeBKvty5FTYsvuXkMUKaY</string>
 
     <!-- Google Play Services error for Toast -->
     <string name="play_services_error_fmt">Google Play Services Error: %i</string>
