@@ -17,6 +17,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
@@ -32,6 +39,7 @@ import ca.udes.bonc.ift_project.utils.ConnectionDetector;
 public class MainActivity extends FragmentActivity
 implements NavigationView.OnNavigationItemSelectedListener,
         OnFragmentInteractionListener,
+        GoogleApiClient.OnConnectionFailedListener,
         RestApiResultReceiver.Receiver {
 
     public static FragmentManager fragmentManager;
@@ -43,6 +51,9 @@ implements NavigationView.OnNavigationItemSelectedListener,
     // Alert Dialog Manager
     private AlertDialogManager alert = new AlertDialogManager();
 
+    GoogleApiClient mGoogleApiClient;
+    boolean mSignInClicked;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +61,18 @@ implements NavigationView.OnNavigationItemSelectedListener,
         mReceiver = new RestApiResultReceiver(new Handler());
         mReceiver.setReceiver(this);
         fragmentManager = getSupportFragmentManager();
+
+        // [START configure_signin]
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestIdToken(getString(R.string.server_client_id))
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        // [END build_client]
+
 
         cd = new ConnectionDetector(getApplicationContext());
         // Check if Internet present
@@ -91,7 +114,6 @@ implements NavigationView.OnNavigationItemSelectedListener,
         });*/
 
         //test
-
         //TODO define category and get date from datepicker
         //QueryIntentService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill",12,"fun");
         QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
@@ -152,6 +174,27 @@ implements NavigationView.OnNavigationItemSelectedListener,
         return super.onOptionsItemSelected(item);
     }
 
+    //TODO : return to login activity ?
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
+        // be available.
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
+
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        Log.i(TAG,"signout");
+                        Log.i(TAG,status.toString());
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                    }
+                });
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -172,6 +215,9 @@ implements NavigationView.OnNavigationItemSelectedListener,
                 break;
             case R.id.nav_my_event:
                 selectedFragment = new MyEventFragment();
+                break;
+            case R.id.nav_logout:
+                signOut();
                 break;
             default:
                 break;

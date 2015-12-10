@@ -2,6 +2,7 @@ package ca.udes.bonc.ift_project;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -120,7 +121,15 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    // [START onActivityResult]
+
+    //Starting the intent prompts the user to select a Google account to sign in with.
+    //If you requested scopes beyond profile, email, and openid, the user is also prompted to grant access to the requested resources.
+    private void signIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    //retrieve the sign-in result with getSignInResultFromIntent.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -131,7 +140,6 @@ public class LoginActivity extends AppCompatActivity implements
             handleSignInResult(result);
         }
     }
-    // [END onActivityResult]
 
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
@@ -139,9 +147,9 @@ public class LoginActivity extends AppCompatActivity implements
         Log.d(TAG, "handleSignInResult:" + result.getStatus().toString());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
+            //GoogleSignInAccount object that contains information about the signed-in user, such as the user's name.
             GoogleSignInAccount acct = result.getSignInAccount();
-            //call server to verify token and create a token for REST API
-            //https://developers.google.com/identity/sign-in/android/backend-auth
+            //call server to verify token and create a token for REST API cf https://developers.google.com/identity/sign-in/android/backend-auth
             String idToken = acct.getIdToken();
             if( idToken != null) {
                 try {
@@ -156,12 +164,12 @@ public class LoginActivity extends AppCompatActivity implements
                     //TODO handle error
                     Log.e(TAG,e.getMessage());
                 }
-
+                //this is test
+                mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
+                updateUI(true);
+                //Uri personPhoto = acct.getPhotoUrl();
+                //Log.d(TAG,personPhoto.toString());
             }
-
-
-            mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-            updateUI(true);
         } else {
             // Signed out, show unauthenticated UI.
             updateUI(false);
@@ -220,27 +228,7 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-
-
-
-    private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    private void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // [START_EXCLUDE]
-                        updateUI(false);
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
-
-    // [START revokeAccess]
+    //Warning : If the user deletes their account, you must delete the information that your app obtained from the Google APIs.
     private void revokeAccess() {
         Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
@@ -296,7 +284,7 @@ public class LoginActivity extends AppCompatActivity implements
                 signIn();
                 break;
             case R.id.sign_out_button:
-                signOut();
+               // signOut();
                 break;
             case R.id.disconnect_button:
                 revokeAccess();
