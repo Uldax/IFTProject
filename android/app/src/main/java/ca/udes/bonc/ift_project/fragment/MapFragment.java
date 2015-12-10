@@ -3,17 +3,15 @@ package ca.udes.bonc.ift_project.fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.Bundle;
-
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,7 +40,6 @@ import ca.udes.bonc.ift_project.utils.GPSTracker;
  */
 public class MapFragment extends Fragment implements
         GoogleMap.OnMyLocationButtonClickListener,
-        OnMapReadyCallback,
         ActivityCompat.OnRequestPermissionsResultCallback  {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,8 +57,10 @@ public class MapFragment extends Fragment implements
     private FloatingActionButton fabList;
     private ListView listMap;
     private View myView;
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private static GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private AlertDialogManager alert = new AlertDialogManager();
+
+    private SupportMapFragment mSupportMapFragment;
 
     // GPS Location with callback overwrite
     private GPSTracker gps  = null;
@@ -118,19 +117,6 @@ public class MapFragment extends Fragment implements
                 }
             }
         };
-
-        /*gps.start();
-        // check if GPS location can get
-        if (gps.canGetLocation()) {
-            Log.d("Your Location", "latitude:" + gps.getLatitude() + ", longitude: " + gps.getLongitude());
-        } else {
-            // Can't get user's current location
-            alert.showAlertDialog(getActivity(), "GPS Status",
-                    "Couldn't get location information. Please enable GPS",
-                    false);
-            // stop executing code by return
-            return;
-        }*/
     }
 
     @Override
@@ -141,6 +127,23 @@ public class MapFragment extends Fragment implements
         this.fabList = (FloatingActionButton) myView.findViewById(R.id.fabList);
         this.fabLoc = (FloatingActionButton) myView.findViewById(R.id.fabLoc);
         this.listMap = (ListView) myView.findViewById(R.id.listMap);
+
+        mSupportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mSupportMapFragment == null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            mSupportMapFragment = SupportMapFragment.newInstance();
+            fragmentTransaction.replace(R.id.map, mSupportMapFragment).commit();
+        }
+
+        if (mSupportMapFragment != null) {
+            mSupportMapFragment.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    theMapReady(googleMap);
+                }
+            });
+        }
 
         fabLoc.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,26 +197,15 @@ public class MapFragment extends Fragment implements
         mListener = null;
     }
 
-    //OnMapReadyCallback
-    //Callback interface for when the map is ready to be used.
-    //call by getMapAsync()
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
+
+    public void theMapReady(GoogleMap googleMap) {
         Log.e("maps", " Call to on map ready");
         mMap = googleMap;
         mMap.setOnMyLocationButtonClickListener(this);
-        //Enables the My Location layer if the fine location permission has been granted.
-        //Context compat : Helper for accessing features in Context introduced after API level 4 in a backwards compatible fashion.
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             Log.e("maps", " Permission to access the location is missing.");
-            // Permission to access the location is missing.
-
         } else if (mMap != null) {
-            // Access to the location has been granted to the app.
-            //Enables or disables the my-location layer.
-            //While enabled, the my-location layer continuously draws an indication of a user's current location and bearing,
-            // and displays UI controls that allow a user to interact with their location (for example, to enable or disable camera tracking of their location and bearing).
             mMap.setMyLocationEnabled(true);
         }
     }

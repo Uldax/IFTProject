@@ -2,8 +2,6 @@ package ca.udes.bonc.ift_project.utils;
 
 import android.util.Log;
 
-import ca.udes.bonc.ift_project.dataObject.Place;
-import ca.udes.bonc.ift_project.dataObject.PlacesList;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
@@ -12,11 +10,12 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
 import java.io.IOException;
+
+import ca.udes.bonc.ift_project.dataObject.PlacesList;
 
 /**
  * Created by pcontat on 29/10/2015.
