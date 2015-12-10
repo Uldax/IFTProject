@@ -57,7 +57,6 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_RADIUS, radius);
         context.startService(intent);
     }
-    //Todo : add to handleIntent
     private String handleActionGetMarkersByRadius(String lat, String longitude,int radius) throws MalformedURLException,IOException {
         HttpURLConnection conn = createGetURLConnection("/api/events?lat=" + lat + "&lng=" + longitude + "&radius=" + radius);
         String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
@@ -75,7 +74,6 @@ public class QueryEventService extends QueryIntentService {
         context.startService(intent);
     }
 
-    //Todo : add to handleIntent
     private String handleActionFindEvent(String searchString) throws MalformedURLException,IOException {
         HttpURLConnection conn = createGetURLConnection("/api/find" + searchString);
         String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
@@ -92,7 +90,6 @@ public class QueryEventService extends QueryIntentService {
         context.startService(intent);
     }
 
-    //Todo : add to handleIntent
     private String handleActionGetOneEvent(String id) throws MalformedURLException,IOException {
         HttpURLConnection conn = createGetURLConnection("/api/events/" + id);
         String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
@@ -129,12 +126,11 @@ public class QueryEventService extends QueryIntentService {
         //binding to the service with startService()
         Log.d(TAG, "Start createMarkers");
         Intent intent = new Intent(context, QueryEventService.class);
-        intent.setAction(ACTION_CREATE_EVENT);
+        intent.setAction(ACTION_DELETE_EVENT);
         intent.putExtra(EXTRA_RECEIVER, mReceiver);
         intent.putExtra(EXTRA_EVENT_ID, eventID);
         context.startService(intent);
     }
-    //Todo : add to handleIntent
     private String handleActionDeleteEvent(String id) throws MalformedURLException,IOException {
         HttpURLConnection conn = createGetURLConnection("/api/events/del/" + id);
         conn.setRequestMethod("DELETE");
@@ -143,6 +139,61 @@ public class QueryEventService extends QueryIntentService {
         return html;
     }
 
+    public static void startActionAddParticipant(Context context, ResultReceiver mReceiver, String eventID,String userID) {
+        //binding to the service with startService()
+        Log.d(TAG, "Start add participant");
+        Intent intent = new Intent(context, QueryEventService.class);
+        intent.setAction(ACTION_ADD_EVENT_PARTICIPANT);
+        intent.putExtra(EXTRA_RECEIVER, mReceiver);
+        intent.putExtra(EXTRA_EVENT_ID, eventID);
+        intent.putExtra(EXTRA_USER_ID, userID);
+        context.startService(intent);
+    }
+    //post
+    private String handleActionAddParticipant(String idEvent,String idParticipant) throws MalformedURLException,IOException {
+        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/addParticipant", HttpHelper.encodeParamUTF8("idParticipant", idParticipant));
+        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+        conn.disconnect();
+        return html;
+    }
+
+    public static void startActionAddAdmin(Context context, ResultReceiver mReceiver, String eventID,String userID) {
+        //binding to the service with startService()
+        Log.d(TAG, "Start add admin");
+        Intent intent = new Intent(context, QueryEventService.class);
+        intent.setAction(ACTION_ADD_EVENT_ADMIN);
+        intent.putExtra(EXTRA_RECEIVER, mReceiver);
+        intent.putExtra(EXTRA_EVENT_ID, eventID);
+        intent.putExtra(EXTRA_USER_ID, userID);
+        context.startService(intent);
+    }
+    //Todo : add to handleIntent
+    //post
+    private String handleActionAddAdmin(String idEvent,String idAdmin) throws MalformedURLException,IOException {
+        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/addAdmin", HttpHelper.encodeParamUTF8("idAdmin", idAdmin));
+        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+        conn.disconnect();
+        return html;
+    }
+
+    public static void startActionRemoveParticipant(Context context, ResultReceiver mReceiver, String eventID,String userID) {
+        //binding to the service with startService()
+        Log.d(TAG, "Start remove participant");
+        Intent intent = new Intent(context, QueryEventService.class);
+        intent.setAction(ACTION_REMOVE_EVENT_PARTICIPANT);
+        intent.putExtra(EXTRA_RECEIVER, mReceiver);
+        intent.putExtra(EXTRA_EVENT_ID, eventID);
+        intent.putExtra(EXTRA_USER_ID, userID);
+        context.startService(intent);
+    }
+    //Todo : add to handleIntent
+    //post
+    private String handleActionRemoveParticipant(String idEvent,String idParticipant) throws MalformedURLException,IOException {
+        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/removeParticipant", HttpHelper.encodeParamUTF8("idParticipant", idParticipant));
+        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+        conn.disconnect();
+        return html;
+    }
 
     /**
      * Handle action Markers in the provided background thread with the provided
@@ -177,33 +228,48 @@ public class QueryEventService extends QueryIntentService {
             final ResultReceiver receiver = intent.getParcelableExtra(EXTRA_RECEIVER);
             String action = intent.getAction();
             Bundle b = new Bundle();
-            if(action.equals(ACTION_GET_MARKERS)) {
-                receiver.send(STATUS_RUNNING, Bundle.EMPTY);
+            String result;
+            try {
                 //receiver.send will call onReceiveResult in the activity
-                try {
+                //switch on string only in java 1.7
+                receiver.send(STATUS_RUNNING, Bundle.EMPTY);
+                if(action.equals(ACTION_GET_MARKERS)) {
                     final String longitude = intent.getStringExtra(EXTRA_LNG);
                     final String lat = intent.getStringExtra(EXTRA_LAT);
-                    String result = handleActionGetMarkers(lat,longitude);
-                    // b.putParcelableArrayList("results", result);
-                    b.putString("results", result);
-                    receiver.send(STATUS_FINISHED, b);
-                    Log.i(TAG, "receiver send");
-                } catch(Exception e) {
-                    b.putString(Intent.EXTRA_TEXT, e.toString());
-                    receiver.send(STATUS_ERROR, b);
+                    result = handleActionGetMarkers(lat,longitude);
+                } else if(action.equals(ACTION_CREATE_EVENT)) {
+                    final String dataPost = formatCreateEventParameters(intent);
+                    result = handleActionCreateEvent(dataPost);
+                } else if(action.equals(ACTION_FIND_EVENT)){
+                    final String searchString = intent.getStringExtra(EXTRA_SEARCH);
+                    result = handleActionFindEvent(searchString);
+                } else if(action.equals(ACTION_GET_ONE)){
+                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                    result = handleActionGetOneEvent(eventID);
+                } else if(action.equals( ACTION_DELETE_EVENT)){
+                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                    result = handleActionDeleteEvent(eventID);
+                } else if(action.equals( ACTION_ADD_EVENT_PARTICIPANT)){
+                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                    final String userID = intent.getStringExtra(EXTRA_USER_ID);
+                    result = handleActionAddParticipant(eventID,userID);
+                }else if(action.equals( ACTION_ADD_EVENT_ADMIN)){
+                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                    final String userID = intent.getStringExtra(EXTRA_USER_ID);
+                    result = handleActionAddAdmin(eventID, userID);
+                } else if(action.equals( ACTION_REMOVE_EVENT_PARTICIPANT)){
+                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                    final String userID = intent.getStringExtra(EXTRA_USER_ID);
+                    result = handleActionRemoveParticipant(eventID,userID);
+                } else {
+                    result = "action doesn't exists";
                 }
-            } else if(action.equals(ACTION_CREATE_EVENT)) {
-                try {
-                    String dataPost = formatCreateEventParameters(intent);
-                    String result = handleActionCreateEvent(dataPost);
-                    // b.putParcelableArrayList("results", result);
-                    b.putString("results", result);
-                    receiver.send(STATUS_FINISHED, b);
-                    Log.i(TAG, "receiver send");
-                } catch(Exception e) {
-                    b.putString(Intent.EXTRA_TEXT, e.toString());
-                    receiver.send(STATUS_ERROR, b);
-                }
+                b.putString("results", result);
+                receiver.send(STATUS_FINISHED, b);
+                Log.i(TAG, "receiver send");
+            } catch(Exception e) {
+                b.putString(Intent.EXTRA_TEXT, e.toString());
+                receiver.send(STATUS_ERROR, b);
             }
         }
     }

@@ -1,6 +1,7 @@
 package ca.udes.bonc.ift_project.communication;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,9 +9,11 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 /**
  * Helper class that retrieves HTML or text from an HTTP address and lets you specify two event handlers, a method
@@ -20,6 +23,7 @@ import java.net.URL;
 public class HttpHelper {
 
     public static final String LOCALHOST = "http://10.0.3.2:8080";
+    private static final String TAG = "httpHelper";
 
     /**
      * Read all HTML or text from the input stream using the specified text encoding
@@ -67,6 +71,15 @@ public class HttpHelper {
             encoding = conn.getContentEncoding();
         }
         return encoding;
+    }
+
+    public static String encodeParamUTF8(String key ,String value){
+        try {
+            return key + "=" + URLEncoder.encode(value, "UTF-8");
+        }catch( UnsupportedEncodingException e){
+            Log.e(TAG,e.getMessage());
+        }
+        return "";
     }
 }
 
