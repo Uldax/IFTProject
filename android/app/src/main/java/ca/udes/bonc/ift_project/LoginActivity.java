@@ -167,6 +167,7 @@ public class LoginActivity extends AppCompatActivity implements
                     //else user don't have g+ picture
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
+                    finish();
                 } catch( InterruptedException e) {
                     //TODO handle error
                     Log.e(TAG,e.getMessage());

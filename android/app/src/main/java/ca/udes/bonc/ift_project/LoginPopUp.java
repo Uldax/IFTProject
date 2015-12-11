@@ -51,20 +51,23 @@ public class LoginPopUp extends Activity {
         signIn = (Button) findViewById(R.id.email_sign_in_button);
         signIn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                showProgressDialog();
-                String password = passwordEditText.getText().toString();
-                String email = emailEditText.getText().toString();
-                Log.d(TAG,"email = " + email +"password = " + password);
-                Thread login = new LoginThread(email, password);
-                login.start();
+                try {
+                    showProgressDialog();
+                    String password = passwordEditText.getText().toString();
+                    String email = emailEditText.getText().toString();
+                    Log.d(TAG, "email = " + email + "password = " + password);
+                    Thread login = new LoginThread(email, password);
+                    login.start();
+                    login.join();
+                    hideProgressDialog();
+                    //if loged (boolean parameter)
+                    startActivity(new Intent(LoginPopUp.this, MainActivity.class));
+                    finish();
+                } catch(InterruptedException e){
+                    Log.e(TAG,e.getMessage());
+                }
             }
         });
-
-
-    }
-
-    private void setSignIn(){
-
     }
 
     private void showProgressDialog() {
@@ -92,7 +95,6 @@ public class LoginPopUp extends Activity {
         @Override
         public void run() {
             try {
-
                 String dataPost = HttpHelper.encodeParamUTF8("email",email)+"&"+ HttpHelper.encodeParamUTF8("password",password);
                 HttpURLConnection conn = HttpHelper.createPostURLConnection(HttpHelper.LOCALHOST + "/login", dataPost);
                 JSONObject JSONResponse = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
@@ -110,7 +112,6 @@ public class LoginPopUp extends Activity {
                     myApp.setPictureUri(pictureUri);
                 }
                 //TODO handle error
-                startActivity(new Intent(LoginPopUp.this, MainActivity.class));
 
             } catch(MalformedURLException ex){
                 Log.e("thread", ex.toString());
