@@ -42,7 +42,7 @@ public class QueryEventService extends QueryIntentService {
     private String handleActionGetMarkers(String lat, String longitude) throws MalformedURLException,IOException {
         HttpURLConnection conn = createGetURLConnection("/api/events?lat=" + lat + "&lng=" + longitude);
         Log.i(TAG, "call to/api/events?lat=" + lat + "&long=" + longitude);
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+        String html = readAnswer(conn);
         conn.disconnect();
         return html;
     }

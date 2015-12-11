@@ -68,25 +68,23 @@ public abstract class QueryIntentService extends IntentService {
         if(getApiToken().equals("") ) {
             setApiToken(myApplication.getApiToken());
         }
-        URL src = new URL(HttpHelper.LOCALHOST + url);
-        HttpURLConnection conn = (HttpURLConnection)src.openConnection();
+        HttpURLConnection conn = HttpHelper.createGetURLConnection(HttpHelper.LOCALHOST + url);
         conn.addRequestProperty("X-Access-Token", getApiToken());
         return conn;
     }
     // String urlParameters  = "param1=a&param2=b&param3=c";
     protected HttpURLConnection createPostURLConnection(String url,String urlParameters) throws MalformedURLException,IOException{
-        //Buffer from post data
-        byte[] postData = urlParameters.getBytes(Charset.forName("UTF-8"));
-        int    postDataLength = postData.length;
-        //Create connection
-        HttpURLConnection conn= this.createGetURLConnection(url);
-        conn.setInstanceFollowRedirects(false);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded");
-        conn.setRequestProperty( "charset", "utf-8");
-        conn.setRequestProperty("Content-Length", Integer.toString(postDataLength));
-        DataOutputStream wr = new DataOutputStream( conn.getOutputStream());
-        wr.write(postData);
+        if(getApiToken().equals("") ) {
+            setApiToken(myApplication.getApiToken());
+        }
+        HttpURLConnection conn = HttpHelper.createPostURLConnection(HttpHelper.LOCALHOST + url, urlParameters);
+        conn.addRequestProperty("X-Access-Token", getApiToken());
         return conn;
     }
+
+    protected String readAnswer(HttpURLConnection conn) throws IOException{
+        return  HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+    }
+
+
 }

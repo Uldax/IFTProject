@@ -1,5 +1,6 @@
 package ca.udes.bonc.ift_project;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -7,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
@@ -46,7 +49,6 @@ public class LoginActivity extends AppCompatActivity implements
     private static final int RC_SIGN_IN = 9001;
 
     private GoogleApiClient mGoogleApiClient;
-    private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
     private IFTApplication myApp;
 
@@ -55,13 +57,12 @@ public class LoginActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.service_layout);
 
-        // Views
-        mStatusTextView = (TextView) findViewById(R.id.status);
+        myApp = (IFTApplication)getApplication();
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
-        findViewById(R.id.disconnect_button).setOnClickListener(this);
+        findViewById(R.id.login_button).setOnClickListener(this);
+        findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
 
         // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
@@ -94,7 +95,6 @@ public class LoginActivity extends AppCompatActivity implements
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setScopes(gso.getScopeArray());
         // [END customize_button]
-        myApp = (IFTApplication)getApplication();
     }
 
     @Override
@@ -122,7 +122,6 @@ public class LoginActivity extends AppCompatActivity implements
             });
         }
     }
-
 
     //Starting the intent prompts the user to select a Google account to sign in with.
     //If you requested scopes beyond profile, email, and openid, the user is also prompted to grant access to the requested resources.
@@ -240,7 +239,6 @@ public class LoginActivity extends AppCompatActivity implements
             mProgressDialog.setMessage(getString(R.string.loading));
             mProgressDialog.setIndeterminate(true);
         }
-
         mProgressDialog.show();
     }
 
@@ -250,12 +248,19 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
+    private void callLoginDialog()
+    {
+       startActivity(new Intent(LoginActivity.this,LoginPopUp.class));
+    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signIn();
+                break;
+            case R.id.login_button:
+                callLoginDialog();
                 break;
         }
     }

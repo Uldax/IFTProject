@@ -5,12 +5,17 @@ package ca.udes.bonc.ift_project.communication;
 import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 
 
 /**
@@ -50,6 +55,33 @@ public class HttpHelper {
         //Convert to JSON
         String html =  readAll(input, encoding);
        return new JSONObject(html);
+    }
+
+    // String urlParameters  = "param1=a&param2=b&param3=c";
+    public static HttpURLConnection createPostURLConnection(String url,String urlParameters) throws MalformedURLException,IOException {
+        //Buffer from post data
+        byte[] postData = urlParameters.getBytes(Charset.forName("UTF-8"));
+        int    postDataLength = postData.length;
+        //Create connection
+        URL src = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection)src.openConnection();
+        conn.setInstanceFollowRedirects(false);
+        conn.setRequestMethod("POST");
+        conn.setReadTimeout(10000);
+        conn.setConnectTimeout(15000);
+        conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty( "charset", "utf-8");
+        conn.setRequestProperty("Content-Length", Integer.toString(postDataLength));
+        DataOutputStream wr = new DataOutputStream( conn.getOutputStream());
+        wr.write(postData);
+        return conn;
+    }
+
+    //Create request with token
+    public static HttpURLConnection createGetURLConnection(String url) throws MalformedURLException,IOException{
+        URL src = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection)src.openConnection();
+        return conn;
     }
 
 
