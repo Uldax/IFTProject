@@ -51,6 +51,18 @@ var evenement = {
         }
     },
 
+    findForUser: function(req, res) {
+        var idUser = req.params.id;
+        Events.find({
+                'detail.participants': idUser
+            })
+            .populate('detail.participants', 'name')
+            .populate('detail.createBy', 'name')
+            .exec(function(err, evt) {
+                returnResult(res, err, evt);
+            });
+    },
+
     //return one event with populate
     getOne: function(req, res) {
         if (req.params.id) {
@@ -119,7 +131,7 @@ var evenement = {
     },
 
     create: function(req, res) {
-        var evt = createEvenementObject(req.body,true);
+        var evt = createEvenementObject(req.body, true);
         var marker = createMarkerObject(req.body, evt);
         console.log("create event");
         if (marker !== null && evt !== null) {
@@ -128,8 +140,7 @@ var evenement = {
                     if (err) {
                         console.log(err);
                         res.send(err);
-                    }
-                    else {
+                    } else {
                         console.log(saved);
                         res.json({
                             message: 'Event save with success!'
@@ -167,7 +178,7 @@ var evenement = {
 
 
     delEvent: function(req, res) {
-         if (req.params.id ) {
+        if (req.params.id) {
             checkPermission(req).then(function(evt) {
                 evt.remove(function(err) {
                     if (err) res.send(err);
@@ -274,4 +285,5 @@ function checkPermission(req) {
             });
     });
 }
+
 module.exports = evenement;

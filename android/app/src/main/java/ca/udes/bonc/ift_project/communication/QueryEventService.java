@@ -67,6 +67,7 @@ public class QueryEventService extends QueryIntentService {
     //note : searchString => ?type=X&category=Y&title=Z etc...
     public static void startActionFindEvent(Context context,ResultReceiver mReceiver, String searchString) {
         //binding to the service with startService()
+        Log.d(TAG, "Start find event");
         Intent intent = new Intent(context, QueryEventService.class);
         intent.setAction(ACTION_FIND_EVENT);
         intent.putExtra(EXTRA_RECEIVER, mReceiver);
@@ -83,6 +84,7 @@ public class QueryEventService extends QueryIntentService {
 
     public static void startActionGetOneEvent(Context context,ResultReceiver mReceiver, String eventId) {
         //binding to the service with startService()
+        Log.d(TAG, "Start getOne event");
         Intent intent = new Intent(context, QueryEventService.class);
         intent.setAction(ACTION_GET_ONE);
         intent.putExtra(EXTRA_RECEIVER, mReceiver);
@@ -124,7 +126,7 @@ public class QueryEventService extends QueryIntentService {
 
     public static void startActionDeleteEvent(Context context, ResultReceiver mReceiver, String eventID) {
         //binding to the service with startService()
-        Log.d(TAG, "Start createMarkers");
+        Log.d(TAG, "Start delete event");
         Intent intent = new Intent(context, QueryEventService.class);
         intent.setAction(ACTION_DELETE_EVENT);
         intent.putExtra(EXTRA_RECEIVER, mReceiver);
@@ -167,8 +169,7 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_USER_ID, userID);
         context.startService(intent);
     }
-    //Todo : add to handleIntent
-    //post
+
     private String handleActionAddAdmin(String idEvent,String idAdmin) throws MalformedURLException,IOException {
         HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/addAdmin", HttpHelper.encodeParamUTF8("idAdmin", idAdmin));
         String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
@@ -186,10 +187,26 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_USER_ID, userID);
         context.startService(intent);
     }
-    //Todo : add to handleIntent
     //post
     private String handleActionRemoveParticipant(String idEvent,String idParticipant) throws MalformedURLException,IOException {
         HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/removeParticipant", HttpHelper.encodeParamUTF8("idParticipant", idParticipant));
+        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+        conn.disconnect();
+        return html;
+    }
+
+    public static void startActionFindForUser(Context context, ResultReceiver mReceiver,String userID) {
+        //binding to the service with startService()
+        Log.d(TAG, "Start find event for user");
+        Intent intent = new Intent(context, QueryEventService.class);
+        intent.setAction(ACTION_FIND_EVENT_USER);
+        intent.putExtra(EXTRA_RECEIVER, mReceiver);
+        intent.putExtra(EXTRA_USER_ID, userID);
+        context.startService(intent);
+    }
+
+    private String handleActionFindForUser(String idUser) throws MalformedURLException,IOException {
+        HttpURLConnection conn = createGetURLConnection("/api/events/user/" + idUser);
         String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
         conn.disconnect();
         return html;
@@ -261,6 +278,9 @@ public class QueryEventService extends QueryIntentService {
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
                     result = handleActionRemoveParticipant(eventID,userID);
+                } else if(action.equals( ACTION_FIND_EVENT_USER)){
+                    final String userID = intent.getStringExtra(EXTRA_USER_ID);
+                    result = handleActionFindForUser(userID);
                 } else {
                     result = "action doesn't exists";
                 }

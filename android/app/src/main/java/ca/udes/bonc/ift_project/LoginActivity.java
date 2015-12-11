@@ -18,7 +18,6 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +48,7 @@ public class LoginActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
+    private IFTApplication myApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +68,7 @@ public class LoginActivity extends AppCompatActivity implements
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestProfile()
                 .requestIdToken(getString(R.string.server_client_id))
                 .build();
         // [END configure_signin]
@@ -93,6 +94,7 @@ public class LoginActivity extends AppCompatActivity implements
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setScopes(gso.getScopeArray());
         // [END customize_button]
+        myApp = (IFTApplication)getApplication();
     }
 
     @Override
@@ -133,7 +135,6 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -155,38 +156,38 @@ public class LoginActivity extends AppCompatActivity implements
                 try {
                     Thread t = new TokenVerifier(idToken);
                     t.start();
-                    //Wait fir thread to finish to valide auth
+                    //Wait for thread to finish to valide auth
                     t.join();  // wait for thread to finish
                     //TODO : handle error if server do no grant access
+
+
+                    Uri personPhoto = acct.getPhotoUrl();
+                    if( personPhoto != null){
+                        myApp.setPictureUri(personPhoto.toString());
+                    }
+                    //else user don't have g+ picture
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                 } catch( InterruptedException e) {
                     //TODO handle error
                     Log.e(TAG,e.getMessage());
                 }
-                //this is test
-                mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-                updateUI(true);
-                //Uri personPhoto = acct.getPhotoUrl();
-                //Log.d(TAG,personPhoto.toString());
             }
         } else {
             // Signed out, show unauthenticated UI.
-            updateUI(false);
+            //TODO
         }
     }
 
     public class TokenVerifier extends Thread {
         private String idToken = "";
-
         public TokenVerifier(String idToken){
             this.idToken = idToken;
         }
         @Override
         public void run() {
             try {
-                //for emulator we must use 10.0.3.2 instead of 127.0.0.1 for genymotion
-                URL url = new URL("http://10.0.3.2:8080/tokensignin");
+                URL url = new URL(HttpHelper.LOCALHOST +"/tokensignin");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -196,13 +197,10 @@ public class LoginActivity extends AppCompatActivity implements
                 String param = "token=" + URLEncoder.encode(idToken, "UTF-8");
                 conn.setFixedLengthStreamingMode(param.getBytes().length);
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
                 //send the POST out
                 PrintWriter out = new PrintWriter(conn.getOutputStream());
                 out.print(param);
                 out.close();
-
-
 
                 JSONObject JSONResponse = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
                 Log.d(TAG, JSONResponse.toString());
@@ -213,9 +211,9 @@ public class LoginActivity extends AppCompatActivity implements
                 String token = JSONResponse.getString("token");
                 String userId = JSONResponse.getJSONObject("user").getString("_id");
                 Log.d(TAG,"Token acquired : "+ token);
-                IFTApplication myApp = (IFTApplication)getApplication();
+
                 myApp.setApiToken(token);
-                myApp.setUsrId(userId);
+                myApp.setUserId(userId);
 
             } catch(MalformedURLException ex){
                Log.e("thread", ex.toString());
@@ -228,19 +226,6 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    //Warning : If the user deletes their account, you must delete the information that your app obtained from the Google APIs.
-    private void revokeAccess() {
-        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // [START_EXCLUDE]
-                        updateUI(false);
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
-    // [END revokeAccess]
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -265,29 +250,12 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    private void updateUI(boolean signedIn) {
-        if (signedIn) {
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
-        } else {
-            mStatusTextView.setText(R.string.signed_out);
-
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
-        }
-    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signIn();
-                break;
-            case R.id.sign_out_button:
-               // signOut();
-                break;
-            case R.id.disconnect_button:
-                revokeAccess();
                 break;
         }
     }

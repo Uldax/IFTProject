@@ -187,13 +187,26 @@ implements NavigationView.OnNavigationItemSelectedListener,
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
-                        Log.i(TAG,"signout");
-                        Log.i(TAG,status.toString());
+                        Log.i(TAG, "signout");
+                        Log.i(TAG, status.toString());
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
                     }
                 });
     }
+
+    //Warning : If the user deletes their account, you must delete the information that your app obtained from the Google APIs.
+    private void revokeAccess() {
+        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        // [START_EXCLUDE]
+                        // [END_EXCLUDE]
+                    }
+                });
+    }
+    // [END revokeAccess]
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

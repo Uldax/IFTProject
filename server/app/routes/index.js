@@ -20,6 +20,7 @@ router.post('/tokensignin', auth.validateGoogleToken);
 router.get('/api/events', events.getByRadius); //first call from main activity : ?lat=10.2&lng=23&radius=Z
 router.get('/api/events/all', events.getAll); //debug purpose
 router.get('/api/events/find', events.find); //?type=X&category=Y&title=Z
+router.get('/api/events/user/:id', events.findForUser);
 router.get('/api/events/:id', events.getOne);
 router.post('/api/events/create', events.create);
 router.delete('/api/events/del/:id', events.delEvent);
@@ -30,9 +31,11 @@ router.post('/api/events/:id/addAdmin',events.addAdmin);
 
 //todo remove user
 //Routes that can be accessed only by authenticated & authorized users
-router.get('/api/admin/users', users.getAll);
-router.get('/api/users', users.get);
+router.get('/api/users', users.getAll); //debug purpose
+//todo : add name and mail search
+router.get('/api/users', users.get); //?id=X,Y,Z
 router.post('/api/user', users.create);
+
 router.put('/api/admin/user/:id', users.update);
 router.delete('/api/admin/user/:id', users.delete);
 

@@ -40,7 +40,8 @@ import ca.udes.bonc.ift_project.utils.GPSTracker;
  */
 public class MapFragment extends Fragment implements
         GoogleMap.OnMyLocationButtonClickListener,
-        ActivityCompat.OnRequestPermissionsResultCallback  {
+        ActivityCompat.OnRequestPermissionsResultCallback,
+        OnMapReadyCallback {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -137,12 +138,7 @@ public class MapFragment extends Fragment implements
         }
 
         if (mSupportMapFragment != null) {
-            mSupportMapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    theMapReady(googleMap);
-                }
-            });
+            mSupportMapFragment.getMapAsync(this);
         }
 
         fabLoc.setOnClickListener(new View.OnClickListener() {
@@ -158,19 +154,20 @@ public class MapFragment extends Fragment implements
                 toggleListMap();
             }
         });
-
-        // Do a null check to confirm that we have not already instantiated the map
-        //Not working now
-        /*if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            //SupportMapFragment mapFragment = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.map);
-            FragmentManager fragmentManager = getFragmentManager();
-            SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
-        }*/
-
-
         return myView;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Log.e("maps", " Call to on map ready");
+        mMap = googleMap;
+        mMap.setOnMyLocationButtonClickListener(this);
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.e("maps", " Permission to access the location is missing.");
+        } else if (mMap != null) {
+            mMap.setMyLocationEnabled(true);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -195,19 +192,6 @@ public class MapFragment extends Fragment implements
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-
-    public void theMapReady(GoogleMap googleMap) {
-        Log.e("maps", " Call to on map ready");
-        mMap = googleMap;
-        mMap.setOnMyLocationButtonClickListener(this);
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            Log.e("maps", " Permission to access the location is missing.");
-        } else if (mMap != null) {
-            mMap.setMyLocationEnabled(true);
-        }
     }
 
     @Override
