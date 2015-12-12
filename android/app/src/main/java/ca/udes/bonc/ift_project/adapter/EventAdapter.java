@@ -46,7 +46,7 @@ public class EventAdapter extends ArrayAdapter<Object> {
             holder = new EventHolder();
             holder.title = (TextView)row.findViewById(R.id.title);
             holder.date = (TextView)row.findViewById(R.id.title);
-            holder.place = (TextView)row.findViewById(R.id.place);
+            holder.author = (TextView)row.findViewById(R.id.author);
             holder.image = (ImageView)row.findViewById(R.id.image);
 
             row.setTag(holder);
@@ -75,7 +75,7 @@ public class EventAdapter extends ArrayAdapter<Object> {
     {
         TextView title;
         TextView date;
-        TextView place;
+        TextView author;
         ImageView image;
     }
 
