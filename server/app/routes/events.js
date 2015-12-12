@@ -139,7 +139,9 @@ var evenement = {
                 .save(function(err, saved) {
                     if (err) {
                         console.log(err);
-                        res.send(err);
+                        res.json({
+                            error: err.err
+                        });
                     } else {
                         console.log(saved);
                         res.json({
@@ -244,6 +246,7 @@ function createMarkerObject(parameters, evt) {
 }
 
 //create criteria for findOne
+//todo recherche par creater
 function createGetOneCriteria(parameters) {
     var criteria = [];
     if (parameters.type) criteria.push(createFilterObject('detail.type', parameters.type));

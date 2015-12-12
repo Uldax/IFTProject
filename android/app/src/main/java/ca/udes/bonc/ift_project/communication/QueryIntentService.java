@@ -77,8 +77,22 @@ public abstract class QueryIntentService extends IntentService {
         if(getApiToken().equals("") ) {
             setApiToken(myApplication.getApiToken());
         }
-        HttpURLConnection conn = HttpHelper.createPostURLConnection(HttpHelper.LOCALHOST + url, urlParameters);
+        //Buffer from post data
+        byte[] postData = urlParameters.getBytes(Charset.forName("UTF-8"));
+        int    postDataLength = postData.length;
+        //Create connection
+        URL src = new URL(HttpHelper.LOCALHOST + url);
+        HttpURLConnection conn = (HttpURLConnection)src.openConnection();
+        conn.setInstanceFollowRedirects(false);
+        conn.setRequestMethod("POST");
+        conn.setReadTimeout(10000);
+        conn.setConnectTimeout(15000);
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty( "charset", "utf-8");
+        conn.setRequestProperty("Content-Length", Integer.toString(postDataLength));
         conn.addRequestProperty("X-Access-Token", getApiToken());
+        DataOutputStream wr = new DataOutputStream( conn.getOutputStream());
+        wr.write(postData);
         return conn;
     }
 
