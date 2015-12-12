@@ -38,6 +38,10 @@ var EventsSchema = new Schema({
             type: String,
             ref: 'users'
         }],
+        teams: [{
+            type: String,
+            ref: 'teams'
+        }],
         start: Date,
         updated: {
             type: Date,
