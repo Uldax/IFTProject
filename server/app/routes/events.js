@@ -330,7 +330,10 @@ function createEvenementObject(parameters, addCreator) {
             newEvent.participants = [parameters.createBy];
         }
         return newEvent;
-    } else return null;
+    } else {
+        console.log("createEvenementObject: wrong number of parameters");
+        return null;
+    }
 }
 
 function createMarkerObject(parameters, evt) {
@@ -348,7 +351,10 @@ function createMarkerObject(parameters, evt) {
             marker.picture = parameters.picture;
         }
         return marker;
-    } else return null;
+    } else {
+        console.log("createMarkerObject: wrong number of parameters");
+        return null;
+    }
 }
 
 //create criteria for findOne
