@@ -103,6 +103,75 @@ var evenement = {
             });
         }
     },
+    
+    createTeams: function(req, res) {
+        if (req.params.id && req.body.nbTeams) {
+            Promise.resolve(Events.findById(req.params.id).exec())
+                .then(function(evt) {
+                    
+                    //team creation loop
+                    for(var i = 0 ; i <req.body.nbTeams; i++ ){
+                        
+                        var team = {    
+                            idEvent: req.params.id,
+                        };                        
+                        
+                        //We add the team in the DB, and we keep the returned id
+                        var idTeam = handleNewTeam(team);                        
+                        
+                        //We add the recent team id into the detail.teams array of the current event
+                        evt.detail.teams.push(idTeam);
+                    }
+                    
+                    //We shuffle the participants into n teams
+                    var randomizedArray = shuffle(evt.detail.participants);
+                    
+                    //The counter that we will use to distribute the participants into all the teams
+                    var counter = 0;
+                    
+                    //Repartition loop
+                    for each (var participant in evt.detail.randomizedArray) {
+                        
+                        Promise.resolve(Team.findById(evt.detail.teams[counter]).exec())
+                        .then(function(nestedEvt) {
+                            nestedEvt.listParticipants.push(participant);
+                            return nestedEvt.save(); // returns a promise
+                        })
+                        .then(function(newEvt) {
+                            res.json({
+                                message: 'participant added to a team!'
+                            });
+                        })
+                        .catch(function(err) {
+                            console.log('error:', err);
+                            res.send(err);
+                        });
+                        
+                        //if the counter == nbTeams - 1 then we reset it, otherwise we increment it.
+                        if(counter === req.body.nbTeams - 1){
+                            counter = 0;
+                        }
+                        else{
+                            counter++;
+                        }
+                    };    
+                    return evt.save(); // returns a promise
+                })
+                .then(function(newEvt) {
+                    res.json({
+                        message: 'Team and participants were added to the event!'
+                    });
+                })
+                .catch(function(err) {
+                    console.log('error:', err);
+                    res.send(err);
+                });
+        } else {
+            res.json({
+                message: 'Wrong number of parameters!'
+            });
+        }
+    },
 
     removeParticipant: function(req, res) {
         if (req.params.id && req.body.idParticipant) {
@@ -196,6 +265,45 @@ var evenement = {
         }
     }
 };
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+function handleNewTeam(teamData) {
+    console.log("call to handleNewTeam");
+    Promise.resolve().exec()
+        .then(function() {            
+            var team = new Team();
+                team.idEvent = userData.idEvent;                
+                team.save(function(err, obj) {
+                    if (err) {
+                        console.log(err.err);
+                        return false;
+                    } else {
+                        return obj.id;
+                    }
+                });            
+        })
+        .catch(function(err) {
+            console.log('error:', err);
+            res.send(err);
+        });
+    }
+
 //Private function
 function returnResult(res, err, evt) {
     if (err) {
