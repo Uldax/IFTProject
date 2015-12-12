@@ -33,7 +33,7 @@
         android:textColor="@android:color/black"
         android:layout_below="@+id/title"
         android:layout_toLeftOf="@+id/fleche"
-        android:layout_toRightOf="@+id/imageView2"
+        android:layout_toRightOf="@+id/img_cat"
         android:singleLine="true"
         android:maxLines="1" />
 
@@ -47,10 +47,21 @@
         android:text="\@ localisation"
         android:textColor="@android:color/black"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/imageView2"
+        android:layout_toRightOf="@+id/img_cat"
         android:layout_alignRight="@+id/date"
         android:layout_alignEnd="@+id/date"
         android:layout_below="@+id/date" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/img_cat"
+        android:src="@drawable/run"
+        android:layout_below="@+id/title"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        android:scaleType="fitCenter" />
 
     <TextView android:id="@+id/fleche"
         android:layout_width="40dp"
@@ -64,16 +75,5 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="10dp" />
-
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView2"
-        android:src="@drawable/run"
-        android:layout_below="@+id/title"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"
-        android:scaleType="fitCenter" />
 
 </RelativeLayout>
