@@ -118,8 +118,14 @@ public class QueryEventService extends QueryIntentService {
         Log.d(TAG, "Call createEvent with " + dataPost);
         HttpURLConnection conn = createPostURLConnection("/api/events/create", dataPost);
         JSONObject json = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        String message = json.getString("message");
-        Log.d(TAG, "message receive from api = " + message);
+        //Use getString if it's an error for the data to be missing, or optString if you're not sure if it will be there.
+        String error = json.optString ("error");
+        String message = null;
+        if(error != ""){
+            Log.e(TAG, "message receive from api = " + error);
+        } else{
+            message = json.getString ("message");
+        }
         conn.disconnect();
         return message;
     }
@@ -284,9 +290,15 @@ public class QueryEventService extends QueryIntentService {
                 } else {
                     result = "action doesn't exists";
                 }
-                b.putString("results", result);
-                receiver.send(STATUS_FINISHED, b);
-                Log.i(TAG, "receiver send");
+                if(result == null){
+                    b.putString(Intent.EXTRA_TEXT, "error");
+                    receiver.send(STATUS_ERROR, b);
+                }
+                else {
+                    b.putString("results", result);
+                    receiver.send(STATUS_FINISHED, b);
+                    Log.i(TAG, "receiver send");
+                }
             } catch(Exception e) {
                 b.putString(Intent.EXTRA_TEXT, e.toString());
                 receiver.send(STATUS_ERROR, b);

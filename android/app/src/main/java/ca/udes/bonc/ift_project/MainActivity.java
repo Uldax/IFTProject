@@ -27,6 +27,8 @@ import com.google.android.gms.common.api.Status;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
+import ca.udes.bonc.ift_project.dataObject.Categories;
+import ca.udes.bonc.ift_project.dataObject.Types;
 import ca.udes.bonc.ift_project.fragment.ListFragment;
 import ca.udes.bonc.ift_project.fragment.MapFragment;
 import ca.udes.bonc.ift_project.fragment.MyEventFragment;
@@ -115,8 +117,8 @@ implements NavigationView.OnNavigationItemSelectedListener,
 
         //test
         //TODO define category and get date from datepicker
-        //QueryIntentService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", "chill",12,"fun");
-        QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
+        QueryEventService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", Categories.HOCKEY, 12, Types.LOISIR);
+        //QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
 
 
     }
@@ -129,7 +131,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
                 break;
             case QueryIntentService.STATUS_FINISHED:
                 String results = resultData.getString("results");
-                Log.i(TAG, "result =");
+                Log.i(TAG, "result status =");
                 Log.i(TAG, results);
                 // do something interesting
                 // hide progress
@@ -137,7 +139,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
             case QueryIntentService.STATUS_ERROR:
                 //todo handl error
                 String error = resultData.getString(Intent.EXTRA_TEXT);
-                Log.d(TAG, "error = " + error);
+                Log.e(TAG, "error = " + error);
                 break;
         }
     }
