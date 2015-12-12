@@ -130,11 +130,11 @@ var evenement = {
                     var counter = 0;
                     
                     //Repartition loop
-                    for each (var participant in evt.detail.randomizedArray) {
+                    for (var p = 0; p < randomizedArray.length; p++) {
                         
                         Promise.resolve(Team.findById(evt.detail.teams[counter]).exec())
                         .then(function(nestedEvt) {
-                            nestedEvt.listParticipants.push(participant);
+                            nestedEvt.listParticipants.push(randomizedArray[p]);
                             return nestedEvt.save(); // returns a promise
                         })
                         .then(function(newEvt) {
