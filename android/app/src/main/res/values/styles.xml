@@ -22,4 +22,10 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <!-- Transparent -->
+    <style name="AppTheme.PopUpTheme" >
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
 </resources>

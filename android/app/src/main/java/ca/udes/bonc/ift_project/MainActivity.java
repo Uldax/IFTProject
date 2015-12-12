@@ -183,6 +183,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
     }
 
     private void signOut() {
+        //handle case with default type account
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
@@ -193,6 +194,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
                         startActivity(intent);
                     }
                 });
+        finish();
     }
 
     //Warning : If the user deletes their account, you must delete the information that your app obtained from the Google APIs.

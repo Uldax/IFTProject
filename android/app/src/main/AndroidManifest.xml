@@ -13,13 +13,11 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-
-
     <application
+        android:name=".IFTApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".IFTApplication"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar" >
         <meta-data
@@ -40,15 +38,19 @@
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
         </activity>
-
+        <activity
+            android:name=".LoginPopUp"
+            android:theme="@style/AppTheme.PopUpTheme"
+            android:label="@string/title_activity_login_pop_up" >
+        </activity>
     </application>
 
 </manifest>

@@ -20,7 +20,8 @@ var auth = {
                     name: 1,
                     role: 1,
                     _id: 1,
-                    type: 1
+                    type: 1,
+                    picture : 1
                 })
                 .exec(function(err, user) {
                     if (err) {
