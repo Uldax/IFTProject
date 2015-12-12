@@ -162,7 +162,12 @@ var evenement = {
             checkPermission(req).then(function(evt) {
                 evt.detail.admin.push(req.body.idAdmin);
                 evt.save(function(err) {
-                    if (err) res.send(err);
+                    if (err) {
+                        console.log(err);
+                        res.json({
+                            error: err.err
+                        });
+                    }
                     else {
                         res.json({
                             message: 'Event save with success!'
@@ -172,7 +177,7 @@ var evenement = {
             }).catch(function(err) {
                 console.log(err);
                 res.json({
-                    message: 'not authorized'
+                    error: 'not authorized'
                 });
             });
         }
@@ -183,7 +188,12 @@ var evenement = {
         if (req.params.id) {
             checkPermission(req).then(function(evt) {
                 evt.remove(function(err) {
-                    if (err) res.send(err);
+                    if (err) {
+                        console.log(err);
+                          res.json({
+                            error: err.err
+                        });
+                    }
                     else {
                         res.json({
                             message: 'Event removed with success!'
@@ -192,7 +202,7 @@ var evenement = {
                 });
             }).catch(function(err) {
                 res.json({
-                    message: 'not authorized'
+                    error: 'not authorized'
                 });
             });
         }
@@ -202,7 +212,9 @@ var evenement = {
 function returnResult(res, err, evt) {
     if (err) {
         console.log(err);
-        res.send(err);
+          res.json({
+                            error: err.err
+                        });
     } else {
         res.json(evt);
     }
