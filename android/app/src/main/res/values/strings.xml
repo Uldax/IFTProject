@@ -18,7 +18,7 @@
 
     <string name="server_client_id">1072463738258-ds4nu5hec07eu5ksk7pe2ucd3cn5d1fi.apps.googleusercontent.com</string>
 
-    <string name="title_text">Google Sign-In\nQuickstart</string>
+    <string name="title_text">Our Supra Application\nHave FUN</string>
     <!-- Sign-in status messages -->
     <string name="signed_in_fmt">Signed in as: %s</string>
     <string name="signed_in">Signed in</string>

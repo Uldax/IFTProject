@@ -3,6 +3,7 @@ package ca.udes.bonc.ift_project.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,16 +14,17 @@ import android.widget.TextView;
 import java.util.List;
 
 import ca.udes.bonc.ift_project.R;
+import ca.udes.bonc.ift_project.dataObject.Event;
 
 /**
  * Created by cbongiorno on 12/12/2015.
  */
-public class EventAdapter extends ArrayAdapter<Object> {
+public class EventAdapter extends ArrayAdapter<Event> {
     Context context;
     int layoutResourceId;
-    private List<Object> data;
+    private List<Event> data;
 
-    public EventAdapter(Context context, int layoutResourceId, List<Object> data) {
+    public EventAdapter(Context context, int layoutResourceId, List<Event> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -36,7 +38,7 @@ public class EventAdapter extends ArrayAdapter<Object> {
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
         EventHolder holder = null;
-        Object event = data.get(position);
+        Event event = data.get(position);
 
         if(row == null)
         {
@@ -56,11 +58,11 @@ public class EventAdapter extends ArrayAdapter<Object> {
             holder = (EventHolder)row.getTag();
         }
 
-        /*holder.title.setText(event.getName());
-        holder.date.setText(event.getDate());
-        holder.place.setText(event.getPlace());
+        holder.title.setText(event.getTitle());
+        holder.date.setText(DateFormat.format("dd MMM -> k:m", event.getDate()));
+        holder.author.setText("By "+event.getAuthor());
 
-        switch (event.getCategorie()){
+        /*switch (event.getCategorie()){
             case ... :
                 holder.image.setImageDrawable(R.drawable.run);
             break;
@@ -85,7 +87,7 @@ public class EventAdapter extends ArrayAdapter<Object> {
         Log.i("EventAdapter","Update View");
     }
 
-    public List<Object> getData(){
+    public List<Event> getData(){
         return data;
     }
 }

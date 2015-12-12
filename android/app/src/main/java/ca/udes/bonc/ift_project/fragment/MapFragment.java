@@ -36,6 +36,7 @@ import ca.udes.bonc.ift_project.adapter.EventAdapter;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
+import ca.udes.bonc.ift_project.dataObject.Event;
 import ca.udes.bonc.ift_project.utils.AlertDialogManager;
 import ca.udes.bonc.ift_project.utils.GPSTracker;
 
@@ -255,7 +256,7 @@ public class MapFragment extends Fragment implements
         }
     }
 
-    public void updateEventList(List<Object> listEvent){
+    public void updateEventList(List<Event> listEvent){
         listMap = (ListView) myView.findViewById(R.id.listMap);
 
         if((listEvent==null)||(listEvent.size()==0)){
