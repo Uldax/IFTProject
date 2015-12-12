@@ -33,16 +33,27 @@ var evenement = {
 
     //return bench of event matching criteria
     //find with title doesn't work : TODO : FIX IT
+    ////you can't serch user field in futur populate with where close
     find: function(req, res) {
-        var criteria = createGetOneCriteria(req.query);
+        var criteria = createFindCriteria(req.query);
+        var createByMatch = createMatchPopulate(req.query);
+        console.log("criteriaMatch");
+        console.log(createByMatch);
         //At lest one criteria
-        if (Object.keys(criteria).length) {
-            var query = Events.find().populate('detail.participants', 'name'); // only return the Persons name
+        if (Object.keys(criteria).length || Object.keys(createByMatch).length ) {
+            var query = Events.find()
+                .populate('detail.participants', 'name')
+                //.populate('detail.createBy', null, { 'name.last': 'phone' } );
+                .populate('detail.createBy', null, createByMatch);
             for (var i = 0; i < criteria.length; i++) {
                 query.where(criteria[i].fieldName).equals(criteria[i].value);
             }
-            query.exec(function(err, evt) {
-                returnResult(res, err, evt);
+            query.exec(function(err, evts) {
+                //remove evts that doesn't fit match populate
+                evts = evts.filter(function(evt) {
+                    return (typeof evt.detail.createBy !== 'undefined' && evt.detail.createBy !== null);
+                });
+                returnResult(res, err, evts);
             });
         } else {
             res.json({
@@ -167,8 +178,7 @@ var evenement = {
                         res.json({
                             error: err.err
                         });
-                    }
-                    else {
+                    } else {
                         res.json({
                             message: 'Event save with success!'
                         });
@@ -190,11 +200,10 @@ var evenement = {
                 evt.remove(function(err) {
                     if (err) {
                         console.log(err);
-                          res.json({
+                        res.json({
                             error: err.err
                         });
-                    }
-                    else {
+                    } else {
                         res.json({
                             message: 'Event removed with success!'
                         });
@@ -212,9 +221,9 @@ var evenement = {
 function returnResult(res, err, evt) {
     if (err) {
         console.log(err);
-          res.json({
-                            error: err.err
-                        });
+        res.json({
+            error: err.err
+        });
     } else {
         res.json(evt);
     }
@@ -259,7 +268,7 @@ function createMarkerObject(parameters, evt) {
 
 //create criteria for findOne
 //todo recherche par creater
-function createGetOneCriteria(parameters) {
+function createFindCriteria(parameters) {
     var criteria = [];
     if (parameters.type) criteria.push(createFilterObject('detail.type', parameters.type));
     if (parameters.category) criteria.push(createFilterObject('detail.category', parameters.category));
@@ -276,6 +285,19 @@ function createGetOneCriteria(parameters) {
     return criteria;
 }
 
+//only manner to search throw populate document
+function createMatchPopulate(parameters) {
+    var createByMatch = {};
+    if (parameters.hasOwnProperty('lastName')) {
+        createByMatch['name.last'] = parameters.lastName;
+    }
+    if (parameters.hasOwnProperty('email')) {
+        createByMatch.email = parameters.email;
+    }
+    return createByMatch;
+}
+
+
 function createFilterObject(name, filterValue) {
     var filter = {
         fieldName: name,
@@ -283,7 +305,7 @@ function createFilterObject(name, filterValue) {
     };
     return filter;
 }
-
+//if admin
 function checkPermission(req) {
     return new Promise(function(resolve, reject) {
         token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];

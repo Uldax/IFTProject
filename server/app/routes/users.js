@@ -14,6 +14,7 @@ var user = {
     },
 
     //Get one or multiple user
+    //Todo fix it !
     get: function(req, res) {
         //req.query.id => get &id =
         //check if multiple user asked
