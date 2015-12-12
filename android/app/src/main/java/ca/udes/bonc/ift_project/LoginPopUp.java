@@ -44,7 +44,7 @@ public class LoginPopUp extends Activity {
         myApp = (IFTApplication)getApplication();
 
         Double width =  dm.widthPixels * 0.8;
-        Double height = dm.heightPixels* 0.8;
+        Double height = dm.heightPixels* 0.4;
         getWindow().setLayout( width.intValue() , height.intValue());
         emailEditText = (AutoCompleteTextView) findViewById(R.id.email);
         passwordEditText = (EditText) findViewById(R.id.password);

@@ -23,9 +23,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/listMap"
-            android:layout_gravity="center_horizontal|bottom"
             android:layout_weight="0.5"
-            android:visibility="visible" />
+            android:visibility="visible"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp"
+            android:drawSelectorOnTop="false"
+            android:headerDividersEnabled="true" />
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton android:id="@+id/fabLoc"
@@ -40,5 +43,12 @@
         android:layout_gravity="right|bottom" android:layout_margin="@dimen/fab_margin"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:scaleType="center" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_gravity="center"
+        android:visibility="visible" />
 
 </FrameLayout>
