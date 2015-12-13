@@ -168,55 +168,52 @@ var evenement = {
                         //We clean the current participantList in each teams                        
                         for(var i=0; i < nbTeam; i++){
                                 console.log("shuffleParticipants: we add a promise into the promiseArray");
-                                promiseArray.push(generatePromiseForEmptyTeam(evt,i));
-                         } 
+                                promiseArray.push(generatePromiseForTeam(evt,i));
+                        } 
                                  
-                        Promise.all(promiseArray).then(function(team){
+                        Promise.all(promiseArray)
+                        .then(function(team){
+                            console.log("shuffleParticipants-emptyTeam-loop: start");
                             for(var i=0; i < team.length;i++){
-                                console.log("shuffleParticipants: we empty the team:" + i);
+                                console.log("shuffleParticipants: emptied the team:" + team[i].name);
                                 emptyTeam(team[i]);                                
                             }
+                            return team;
                         })
+                        .then(function(team){
+                            
+                            //We shuffle the participants into n teams
+                            var randomizedArray = shuffle(evt.detail.participants);
+                            
+                            //The counter that we will use to distribute the participants into all the teams
+                            var counter = 0; 
+                             
+                            console.log("shuffleParticipants-repartition-loop: start");
+                            //Repartition loop
+                            for (var p = 0; p < randomizedArray.length; p++) {
+                                                                
+                                console.log("shuffleParticipants: we added the participant:" + p + " to the team: " + team[counter].name);
+                                
+                                //We add the current participant into the team[counter]
+                                addParticipantIntoTeam(randomizedArray[p],team[counter])
+
+                                //if the counter == nbTeams - 1 then we reset it, otherwise we increment it.
+                                if(counter === nbTeam - 1){
+                                    counter = 0;
+                                }
+                                else{
+                                    counter++;
+                                }                            
+                            }//ENDFOR REPARTITION LOOP
+                        }).then(function(team) {
+                            res.json({
+                                message: 'shuffleParticipants was a success!'
+                            });
+                        }) 
                         .catch(function(err) {
-                            console.log('shuffleParticipants-teamwiping: error:' + err);
+                            console.log('shuffleParticipants-promiseall: error:' + err);
                             res.send(err);
                         });
-                                
-
-                        //We shuffle the participants into n teams
-                        var randomizedArray = shuffle(evt.detail.participants);
-                        console.log(randomizedArray);
-
-                        //The counter that we will use to distribute the participants into all the teams
-                        var counter = 0;
-
-                        //Repartition loop
-                        for (var p = 0; p < randomizedArray.length; p++) {
-                            console.log("shuffleParticipants-repartition-loop: start");
-                            
-                            var teamId = evt.detail.teams[counter];
-                            
-                            //We add the current participant into the team[counter]
-                            addParticipantIntoTeam(randomizedArray[p],teamId);
-                            
-                            //if the counter == nbTeams - 1 then we reset it, otherwise we increment it.
-                            if(counter === nbTeam - 1){
-                                counter = 0;
-                            }
-                            else{
-                                counter++;
-                            }
-                            
-                        }//ENDFOR REPARTITION LOOP
-                        /* .then(function(team) {
-        res.json({
-            message: 'participant added to a team!'
-        });
-    })                                    
-    .catch(function(err) {
-        console.log('shuffleParticipants-repartitionloop:' + err);
-        res.send(err);
-    });*/
                     }
                     else{
                         res.json({
@@ -323,28 +320,20 @@ var evenement = {
     }
 };
 
-function generatePromiseForaddParticipantIntoTeam(teamId){
-   return new Promise(function(resolve,reject){       
-       resolve(Team.findById(teamId).exec());
-   });
-}
-
 function addParticipantIntoTeam(participantId,team){                                  
         team.participants.push(participantId);
-
-        console.log("addParticipantIntoTeam: participant was added to the team: " + team.name);
-        
+        console.log("addParticipantIntoTeam: participant was added to the team: " + team.name);        
         return team.save(); // returns a promise   
    
 }
-function generatePromiseForEmptyTeam(evt,index){
+function generatePromiseForTeam(evt,index){
    return new Promise(function(resolve,reject){       
        resolve(Team.findById(evt.detail.teams[index]).exec());
    });
 }
 function emptyTeam(team){ 
         team.participants = [];
-        console.log('shuffleParticipants-teamwiping: participants list for the team: ' + team.name + "has been wiped out");                                
+        console.log('emptyTeam: participants list for the team: ' + team.name + "has been wiped out");                                
         return team.save(); // returns a promise
     
 }
