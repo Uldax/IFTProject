@@ -10,16 +10,22 @@ var evenement = {
     //Todo : test
     getByRadius: function(req, res) {
         if (req.query.lng && req.query.lat) {
-            var radius = req.query.radius || defaultRadius;
+            var radius = parseFloat(req.query.radius) || defaultRadius,
+            lat = parseFloat(req.query.lat),
+            lng = parseFloat(req.query.lng),
+            maxLat = lat + radius,
+            minLat = lat - radius,
+            maxLng = lng + radius,
+            minLng = lng - radius;
             Events.find({
                     'position.lat': {
-                        $gt: req.query.lat - radius,
-                        $lt: req.query.lat + radius
-                    },
-                    'position.lng': {
-                        $gt: req.query.lng - radius,
-                        $lt: req.query.lng + radius
-                    },
+                        $gt: minLat,
+                        $lt: maxLat
+                     },
+                   'position.lng': {
+                        $gt: minLng,
+                        $lt: maxLng
+                    }
                 })
                 .exec(function(err, evt) {
                     returnResult(res, err, evt);
@@ -143,7 +149,9 @@ var evenement = {
 
     create: function(req, res) {
         var evt = createEvenementObject(req.body, true);
+        console.log(evt);
         var marker = createMarkerObject(req.body, evt);
+        console.log(marker);
         console.log("create event");
         if (marker !== null && evt !== null) {
             marker
@@ -230,11 +238,11 @@ function returnResult(res, err, evt) {
 }
 
 function createEvenementObject(parameters, addCreator) {
-    if (parameters.category && parameters.createBy && parameters.admin && parameters.start && parameters.maxParticipants) {
+    if (parameters.category && parameters.createBy && parameters.start && parameters.maxParticipants) {
         //Create event object
         var newEvent = {
             category: parameters.category,
-            admin: parameters.admin,
+            admin: parameters.createBy,
             start: parameters.start,
             createBy: parameters.createBy,
             status: Const.eventStatus.created,
@@ -244,6 +252,7 @@ function createEvenementObject(parameters, addCreator) {
         if (addCreator) {
             newEvent.participants = [parameters.createBy];
         }
+        console.log("Unable to create event object");
         return newEvent;
     } else return null;
 }
