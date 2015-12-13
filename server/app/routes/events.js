@@ -150,57 +150,83 @@ var evenement = {
     },
     
       shuffleParticipants: function(req, res) {
-        Promise.resolve(Team.count({
-            'idEvent': req.params.id
-        }).exec())
-        .then(function(count) {
-            console.log("shuffleParticipants: current number of team for this event " + count);
-            if (count < 2) {
-               console.log("shuffleParticipants: start");
-                    //We shuffle the participants into n teams
-                    var randomizedArray = shuffle(newEvt.detail.participants);
-                    
-                    //The counter that we will use to distribute the participants into all the teams
-                    var counter = 0;
-                    
-                    //Repartition loop
-                    for (var p = 0; p < randomizedArray.length; p++) {
-                    console.log("createTeams-then-repartition-loop: start");    
-                        Promise.resolve(Team.findById(newEvt.detail.teams[counter]).exec()).then(function(nestedEvt) {
-                            console.log("createTeams-then-repartition-loop-promise: start");
-                            nestedEvt.listParticipants.push(randomizedArray[p]);
-                            return nestedEvt.save(); // returns a promise
-                        })
-                        .then(function(nestednewEvt) {
-                            res.json({
-                                message: 'participant added to a team!'
-                            });
-                        })
-                        .catch(function(err) {
-                            console.log('error:', err);
-                            res.send(err);
-                        });
+        
+          //Getting the current Events informations as evt
+          Promise.resolve(Events.findById(req.params.id).exec())
+                .then(function(evt) {       
+                
+                //Getting the team.cout for the current event
+                Promise.resolve(Team.count({'idEvent': req.params.id}).exec())
+                    .then(function(count) {
                         
-                        //if the counter == nbTeams - 1 then we reset it, otherwise we increment it.
-                        if(counter === req.body.nbTeams - 1){
-                            counter = 0;
+                        console.log("shuffleParticipants: current number of team for this event " + count);
+
+                        if (count < 2) {
+
+                            console.log("shuffleParticipants: start");
+
+                            //We clean the current participantList in each teams
+                            for(var i=0; i < count; i++){
+                                Promise.resolve(Team.findById(evt.detail.teams[i]).exec())
+                                .then(function(team) {
+                                    team.participants = [];
+                                    return team.save(); // returns a promise
+                                })
+                                .catch(function(err) {
+                                    console.log('shuffleParticipants: error:', err);
+                                    res.send(err);
+                                });
+                            }  
+
+                            //We shuffle the participants into n teams
+                            var randomizedArray = shuffle(evt.detail.participants);
+
+                            //The counter that we will use to distribute the participants into all the teams
+                            var counter = 0;
+
+                            //Repartition loop
+                            for (var p = 0; p < randomizedArray.length; p++) {
+                                console.log("shuffleParticipants-repartition-loop: start");
+                                
+                                Promise.resolve(Team.findById(evt.detail.teams[counter]).exec())
+                                    .then(function(team) {                                        
+                                        team.participants.push(randomizedArray[p]);
+                                        return team.save(); // returns a promise
+                                    })
+                                    .then(function(team) {
+                                        res.json({
+                                            message: 'participant added to a team!'
+                                        });
+                                        
+                                        //if the counter == nbTeams - 1 then we reset it, otherwise we increment it.
+                                        if(counter === count - 1){
+                                            counter = 0;
+                                        }
+                                        else{
+                                            counter++;
+                                        }
+                                    })                                    
+                                    .catch(function(err) {
+                                        console.log('error:', err);
+                                        res.send(err);
+                                    });
+                            }//ENDFOR REPARTITION LOOP  
                         }
                         else{
-                            counter++;
+                            res.json({
+                                message: 'You need at least 2 teams!'
+                            });
                         }
-                    };
-            }
-            else{
-                res.json({
-                    message: 'You need at least 2 teams!'
+                    })
+                    .catch(function(err) {
+                        console.log('error:', err);
+                        res.send(err);
+                    });
+                })
+                .catch(function(err) {
+                        console.log('error:', err);
+                        res.send(err);
                 });
-            }
-                
-        })
-        .catch(function(err) {
-            console.log('error:', err);
-            res.send(err);
-        });
     },
     
 
