@@ -35,7 +35,7 @@ public class ConvertJson {
                 event.setType(oneObject.getJSONObject("detail").getString("type"));
                 event.setDate(formatter.parse(oneObject.getJSONObject("detail").getString("start")));
                 event.setLatitude(oneObject.getJSONObject("position").getDouble("lat"));
-                event.setLatitude(oneObject.getJSONObject("position").getDouble("lng"));
+                event.setLongitude(oneObject.getJSONObject("position").getDouble("lng"));
 
                 listEvent.add(event);
             }
