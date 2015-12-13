@@ -12,13 +12,13 @@ var team = {
     //Get one or multiple team
     get: function(req, res) {
         //req.query.id => get &id =
-        //check if multiple user asked
+        //check if multiple team asked
         if( !( req.query.id.indexOf(',') === -1))
         {
           console.log(req.query.id);
           var ids = req.query.id.split(',');
           console.log(ids);
-          User.find({
+          Team.find({
               '_id': { $in: ids}
           }, function(err, teams){
                 if (err) {
@@ -28,7 +28,7 @@ var team = {
           });
         }
         else {
-            User.findById(req.query.id, function(err, team) {
+            Team.findById(req.query.id, function(err, team) {
                 if (err) {
                     res.send(err);
                 }
@@ -85,7 +85,7 @@ var team = {
         });
     }
 };
-//Private methode :
-//Add user if not eixiste
+
+
 
 module.exports = team;

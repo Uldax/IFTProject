@@ -2,28 +2,10 @@ var mongoose = require('mongoose');
 var counter = require('./counter');
 var Schema = mongoose.Schema;
 
-var UsersSchema = new Schema({
+var TeamsSchema = new Schema({
     _id: String,
-    email: {
-        type: String,
-        unique: true,
-        required: true,
-        dropDups: true
-    }, //login
-    password: String,
-    picture: {
-        type: String,
-        default: null
-    },
-    type: {
-        type: String,
-        default: 'default'
-    },
-    name: {
-        first: String,
-        last: String
-    },
-    role: String
+    idEvent: String,
+    name: String    
 }, {
     toObject: {
         virtuals: true
@@ -33,22 +15,11 @@ var UsersSchema = new Schema({
     }
 });
 
-//console.log('%s is insane', user.name.full);
-UsersSchema.virtual('name.full')
-    .get(function() {
-        return this.name.first + ' ' + this.name.last;
-    })
-    .set(function(name) {
-        var split = name.split(' ');
-        this.name.first = split[0];
-        this.name.last = split[1];
-    });
-
 //Auto-increment
-UsersSchema.pre('save', function(next) {
+TeamsSchema.pre('save', function(next) {
     var doc = this;
     counter.findByIdAndUpdate({
-        _id: 'userid'
+        _id: 'teamid'
     }, {
         $inc: {
             seq: 1
@@ -63,19 +34,13 @@ UsersSchema.pre('save', function(next) {
     });
 });
 
-var User = mongoose.model('users', UsersSchema);
+var Team = mongoose.model('teams', TeamsSchema);
 
-var userTest = new User();
-userTest.email = "user@api.fr";
-userTest.password = "user";
-userTest.role = "admin";
-userTest.type = 'default';
-userTest.name = {
-    first: "super",
-    last: "test"
-};
-userTest.save(function(err) {
+var teamTest = new Team();
+teamTest.idEvent = "566cc0d1ee0ee66c01000001";
+teamTest.name = "Test Équipe";
+teamTest.save(function(err) {
     if (err) console.log(err.err);
 });
 
-module.exports = User;
+module.exports = Team;
