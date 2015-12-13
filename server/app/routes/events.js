@@ -121,9 +121,14 @@ var evenement = {
                         
                         //We add the team in the DB, and we keep the returned id
                         var idTeam = handleNewTeam(team);                        
+                        console.log("createTeams: the new team id: " + idTeam);
                         
+                        if(idTeam != 0){
                         //We add the recent team id into the detail.teams array of the current event
                         evt.detail.teams.push(idTeam);
+                        
+                        console.log("createTeams: the team " + (i + 1) + " was successfully created and added to the event" );
+                    }else console.log("createTeams: the team " + (i + 1) + " was NOT successfully created and added to the event" );
                     }
                     
                     //We shuffle the participants into n teams
@@ -289,15 +294,22 @@ function shuffle(array) {
 function handleNewTeam(teamData) {
     console.log("call to handleNewTeam");
     var team = new Team();
-    team.idEvent = teamData.idEvent;                
+    team.idEvent = teamData.idEvent;
+    var id = 0; 
     team.save(function(err, obj) {
+        
+       
         if (err) {
-            console.log(err.err);
+            console.log("handleNewTeam:" + err.err);
             return false;
         } else {
-            return obj.id;
+             console.log("handleNewTeam: succes");
+             console.log("handleNewTeam: a new team has been creadted with the id: " + obj._id);
+             id = obj._id;
+             return true;
         }
-    });            
+    });
+    return id;
         
     }
 
