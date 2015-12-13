@@ -12,7 +12,19 @@
             android:id="@+id/listView"
             android:layout_gravity="top"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp"
+            android:drawSelectorOnTop="false"
+            android:headerDividersEnabled="true"/>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:indeterminate="false" />
     </RelativeLayout>
 
 </FrameLayout>

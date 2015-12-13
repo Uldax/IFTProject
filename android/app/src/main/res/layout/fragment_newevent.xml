@@ -14,7 +14,6 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignBottom="@+id/editText"
             android:textSize="20dp"
             android:textColor="#000000"
             android:layout_marginLeft="5dp"
@@ -22,45 +21,19 @@
             android:gravity="center_vertical"
             android:layout_marginTop="5dp" />
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:id="@+id/editText"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_toRightOf="@+id/textView2"
-            android:layout_toEndOf="@+id/textView2"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="5dp" />
-
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:text="Date :"
             android:id="@+id/textView3"
             android:textSize="20dp"
             android:textColor="#000000"
             android:gravity="center_vertical"
-            android:layout_alignBottom="@+id/editText2"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginLeft="5dp"
-            android:layout_alignTop="@+id/editText2"
-            android:layout_marginRight="5dp" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:inputType="date"
-            android:ems="10"
-            android:id="@+id/editText2"
-            android:layout_below="@+id/editText"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
             android:layout_marginRight="5dp"
-            android:layout_toRightOf="@+id/textView3"
-            android:layout_toEndOf="@+id/textView3" />
+            android:layout_below="@+id/textView2" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -76,10 +49,40 @@
             android:layout_alignParentStart="true"
             android:layout_marginLeft="5dp" />
 
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:id="@+id/edTitle"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@+id/textView2"
+            android:layout_toEndOf="@+id/textView2"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_alignTop="@+id/textView2"
+            android:layout_alignBottom="@+id/textView2" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:inputType="date"
+            android:ems="10"
+            android:id="@+id/edDate"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="5dp"
+            android:layout_toRightOf="@+id/textView3"
+            android:layout_toEndOf="@+id/textView3"
+            android:editable="false"
+            android:focusable="false"
+            android:layout_alignTop="@+id/textView3"
+            android:layout_alignBottom="@+id/textView3" />
+
         <android.widget.Spinner
             android:layout_width="wrap_content"
             android:layout_height="60dp"
-            android:id="@+id/spinner"
+            android:id="@+id/spinnerCategory"
             android:layout_weight="1"
             android:prompt="@string/categories_prompt"
             android:entries="@array/categories_array"
@@ -102,6 +105,19 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_margin="5dp" />
+        <Switch
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Mode"
+            android:id="@+id/swCompet"
+            android:checked="false"
+            android:textSize="20dp"
+            android:textOff="Standard"
+            android:textOn="Competition"
+            android:layout_below="@+id/textView4"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp" />
+
 
     </RelativeLayout>
 

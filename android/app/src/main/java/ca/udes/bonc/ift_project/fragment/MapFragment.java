@@ -206,7 +206,7 @@ public class MapFragment extends Fragment implements
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 Log.i("maps Cam change", "Camera : " + cameraPosition.target.latitude + " - " + cameraPosition.target.longitude);
-                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude),String.valueOf(cameraPosition.target.latitude), 100);
+                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude),String.valueOf(cameraPosition.target.latitude), 1000000000);
             }
         });
         //QueryEventService.startActionGetMarkers(getContext(), mReceiver, "10.2", "23");

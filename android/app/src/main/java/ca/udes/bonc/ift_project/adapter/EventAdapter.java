@@ -50,6 +50,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
             holder.title = (TextView)row.findViewById(R.id.title);
             holder.date = (TextView)row.findViewById(R.id.date);
             holder.author = (TextView)row.findViewById(R.id.author);
+            holder.star = (TextView)row.findViewById(R.id.star);
             holder.image = (ImageView)row.findViewById(R.id.img_cat);
 
             row.setTag(holder);
@@ -74,6 +75,8 @@ public class EventAdapter extends ArrayAdapter<Event> {
                 holder.image.setImageResource(R.drawable.social);
                 break;
         }
+        if (true) holder.star.setVisibility(View.VISIBLE);
+        else holder.star.setVisibility(View.GONE);
 
         return row;
     }
@@ -83,6 +86,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         TextView title;
         TextView date;
         TextView author;
+        TextView star;
         ImageView image;
     }
 

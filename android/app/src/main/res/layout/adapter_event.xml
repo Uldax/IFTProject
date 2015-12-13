@@ -80,4 +80,17 @@
         android:layout_alignParentEnd="true"
         android:layout_marginRight="10dp" />
 
+    <TextView
+        android:id="@+id/star"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:background="@drawable/star"
+        android:textColor="#FFFFFF"
+        android:paddingRight="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>

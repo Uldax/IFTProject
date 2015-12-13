@@ -1,12 +1,19 @@
 package ca.udes.bonc.ift_project.fragment;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.TimePicker;
+
+import java.util.Calendar;
 
 import ca.udes.bonc.ift_project.R;
 
@@ -29,6 +36,10 @@ public class NewEventFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private int currentYear;
+    private int currentMonth;
+    private int currentDay;
+    private EditText edDate;
 
     /**
      * Use this factory method to create a new instance of
@@ -59,15 +70,50 @@ public class NewEventFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        final Calendar c = Calendar.getInstance();
+        currentYear = c.get(Calendar.YEAR);
+        currentMonth = c.get(Calendar.MONTH);
+        currentDay = c.get(Calendar.DAY_OF_MONTH);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_newevent, container, false);
-
+        this.edDate = (EditText) view.findViewById(R.id.edDate);
+        edDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDatePicker();
+            }
+        });
         return view;
     }
+
+    public void openDatePicker(){
+        new DatePickerDialog(this.getContext(), setDate, currentYear, currentMonth, currentDay).show();
+    }
+    public void openTimePicker(){
+        new TimePickerDialog(this.getContext(),setTime,12,00,true).show();
+    }
+
+    private DatePickerDialog.OnDateSetListener setDate = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+            edDate.setText((month + 1) + "-" + day + "-" + year);
+            openTimePicker();
+        }
+    };
+    private TimePickerDialog.OnTimeSetListener setTime = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+            String sMinute = String.valueOf(minute);
+            if(minute < 10) sMinute = "0"+minute;
+            edDate.setText(edDate.getText().toString() + " @ " + hour + "h" + sMinute);
+        }
+
+    };
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
