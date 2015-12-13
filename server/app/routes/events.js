@@ -115,13 +115,29 @@ var evenement = {
                     //team creation loop
                     for(var i = 0 ; i <req.body.nbTeams; i++ ){
                         
-                        var team = {    
+                       /* var team = {    
                             idEvent: req.params.id,
                         };                        
                         
                         //We add the team in the DB, and we keep the returned id
-                        var idTeam = handleNewTeam(team);                        
-                        console.log("createTeams: the new team id: " + idTeam);
+                        var idTeam = handleNewTeam(team);
+                        */
+                        var team = new Team();
+                        team.idEvent = req.params.id;
+
+                        team.save(function(err, obj) {
+
+
+                            if (err) {
+                                console.log("handleNewTeam:" + err.err);
+                                return false;
+                            } else {                                 
+                                 evt.detail.teams.push(obj._id);
+                                 console.log("handleNewTeam: a new team has been creadted with the id: " + obj._id);
+                                 return true;
+                            }
+                        });
+                        /*console.log("createTeams: the new team id: " + idTeam);
                         
                         if(idTeam != 0){
                         //We add the recent team id into the detail.teams array of the current event
@@ -129,7 +145,8 @@ var evenement = {
                         
                         console.log("createTeams: the team " + (i + 1) + " was successfully created and added to the event" );
                     }else console.log("createTeams: the team " + (i + 1) + " was NOT successfully created and added to the event" );
-                    }
+                    */
+                        }
                     
                     //We shuffle the participants into n teams
                     var randomizedArray = shuffle(evt.detail.participants);
@@ -140,7 +157,7 @@ var evenement = {
                     //Repartition loop
                     for (var p = 0; p < randomizedArray.length; p++) {
                         
-                        Promise.resolve(Team.findById(evt.detail.teams[counter]).exec())
+                        /*Promise.resolve(Team.findById(evt.detail.teams[counter]).exec())
                         .then(function(nestedEvt) {
                             nestedEvt.listParticipants.push(randomizedArray[p]);
                             return nestedEvt.save(); // returns a promise
@@ -153,7 +170,7 @@ var evenement = {
                         .catch(function(err) {
                             console.log('error:', err);
                             res.send(err);
-                        });
+                        });*/
                         
                         //if the counter == nbTeams - 1 then we reset it, otherwise we increment it.
                         if(counter === req.body.nbTeams - 1){
@@ -293,9 +310,10 @@ function shuffle(array) {
 }
 function handleNewTeam(teamData) {
     console.log("call to handleNewTeam");
+    var id = 0; 
     var team = new Team();
     team.idEvent = teamData.idEvent;
-    var id = 0; 
+    
     team.save(function(err, obj) {
         
        
