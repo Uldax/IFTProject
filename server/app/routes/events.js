@@ -106,43 +106,58 @@ var evenement = {
         }
     },
     
-    createTeams: function(req, res) {
-        console.log("createTeams: start");
-        if (req.params.id && req.body.nbTeams) {
-            console.log("createTeams: retreived the params correctly");
+    createTeam: function(req, res) { 
+        
+        console.log("createTeam: start");
+        
+        //Params validation
+        if (req.params.id && req.body.name) {
+            
+            console.log("createTeam: retreived the params correctly");
+            
             Promise.resolve(Events.findById(req.params.id).exec())
-                .then(function(evt) {
-                    
-                    //team creation loop
-                    for(var i = 0 ; i < req.body.nbTeams; i++ ){
-                        
-                       /* var team = {    
-                            idEvent: req.params.id,
-                        };                        
-                        
-                        //We add the team in the DB, and we keep the returned id
-                        var idTeam = handleNewTeam(team);
-                        */
-                        var team = new Team();
-                        team.idEvent = req.params.id;
-
-                        team.save(function(err, obj) {
-                            if (err) {
-                                console.log("handleNewTeam:" + err.err);
+                .then(function(evt) {  
+                    var team = new Team();
+                    team.idEvent = req.params.id;
+                    team.name = req.body.name
+                    team.save(function(err, obj) {
+                        if (err) {
+                            console.log("createTeams:" + err.err);
                                 return false;
-                            } else {
-                                 evt.detail.teams.push(obj._id);
-                                 evt.save();
-                                 console.log(evt.detail);
-                                 console.log("handleNewTeam: a new team has been created with the id: " + obj._id);
-                                 return true;
-                            }
-                        });
-                    }//end team creation loop
-                    return evt.save(); // returns a promise 
-                })
+                        } else {
+                            evt.detail.teams.push(obj._id);
+                            evt.save();                                 
+                            console.log("createTeams: a new team has been created with the id: " + obj._id);
+                            return true;
+                        }
+                    });
+                return evt.save(); // returns a promise     
+                }) 
                 .then(function(newEvt) {
-                     //We shuffle the participants into n teams
+                    res.json({
+                        message: 'A new Team was added to the event!'
+                    });
+                })
+                .catch(function(err) {
+                    console.log('error:', err);
+                    res.send(err);
+                });
+        } else {
+            res.json({
+                message: 'Wrong number of parameters!'
+            });
+        }
+    },
+    
+      shuffleParticipants: function(req, res) {
+        Promise.resolve(Team.count({
+            'idEvent': req.params.id
+        }).exec())
+        .then(function(count) {
+            console.log("shuffleParticipants: current number of team for this event " + count);
+            if (count < 2) {
+               console.log("shuffleParticipants: start");
+                    //We shuffle the participants into n teams
                     var randomizedArray = shuffle(newEvt.detail.participants);
                     
                     //The counter that we will use to distribute the participants into all the teams
@@ -150,9 +165,9 @@ var evenement = {
                     
                     //Repartition loop
                     for (var p = 0; p < randomizedArray.length; p++) {
-                        
-                        Promise.resolve(Team.findById(newEvt.detail.teams[counter]).exec())
-                        .then(function(nestedEvt) {
+                    console.log("createTeams-then-repartition-loop: start");    
+                        Promise.resolve(Team.findById(newEvt.detail.teams[counter]).exec()).then(function(nestedEvt) {
+                            console.log("createTeams-then-repartition-loop-promise: start");
                             nestedEvt.listParticipants.push(randomizedArray[p]);
                             return nestedEvt.save(); // returns a promise
                         })
@@ -174,20 +189,57 @@ var evenement = {
                             counter++;
                         }
                     };
-                    res.json({
-                        message: 'Team and participants were added to the event!'
-                    });
-                })
-                .catch(function(err) {
-                    console.log('error:', err);
-                    res.send(err);
+            }
+            else{
+                res.json({
+                    message: 'You need at least 2 teams!'
                 });
-        } else {
-            res.json({
-                message: 'Wrong number of parameters!'
-            });
-        }
+            }
+                
+        })
+        .catch(function(err) {
+            console.log('error:', err);
+            res.send(err);
+        });
     },
+    
+
+/* .then(function(newEvt) {
+                    
+                    console.log("createTeams-then: start");
+                    //We shuffle the participants into n teams
+                    var randomizedArray = shuffle(newEvt.detail.participants);
+                    
+                    //The counter that we will use to distribute the participants into all the teams
+                    var counter = 0;
+                    
+                    //Repartition loop
+                    for (var p = 0; p < randomizedArray.length; p++) {
+                    console.log("createTeams-then-repartition-loop: start");    
+                        Promise.resolve(Team.findById(newEvt.detail.teams[counter]).exec()).then(function(nestedEvt) {
+                            console.log("createTeams-then-repartition-loop-promise: start");
+                            nestedEvt.listParticipants.push(randomizedArray[p]);
+                            return nestedEvt.save(); // returns a promise
+                        })
+                        .then(function(nestednewEvt) {
+                            res.json({
+                                message: 'participant added to a team!'
+                            });
+                        })
+                        .catch(function(err) {
+                            console.log('error:', err);
+                            res.send(err);
+                        });
+                        
+                        //if the counter == nbTeams - 1 then we reset it, otherwise we increment it.
+                        if(counter === req.body.nbTeams - 1){
+                            counter = 0;
+                        }
+                        else{
+                            counter++;
+                        }
+                    };
+                })  */
 
     removeParticipant: function(req, res) {
         if (req.params.id && req.body.idParticipant) {
