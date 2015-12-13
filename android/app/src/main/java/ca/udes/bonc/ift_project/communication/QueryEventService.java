@@ -152,12 +152,51 @@ public class QueryEventService extends QueryIntentService {
         context.startService(intent);
     }
     //post
+
     private String handleActionAddParticipant(String idEvent,String idParticipant) throws MalformedURLException,IOException {
         HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/addParticipant", HttpHelper.encodeParamUTF8("idParticipant", idParticipant));
         String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
         conn.disconnect();
         return html;
     }
+
+    public static void startActionCreateTeam(Context context, ResultReceiver mReceiver, String eventID,String teamName) {
+        //binding to the service with startService()
+        Log.d(TAG, "Start create team");
+        Intent intent = new Intent(context, QueryEventService.class);
+        intent.setAction(ACTION_CREATE_TEAM);
+        intent.putExtra(EXTRA_RECEIVER, mReceiver);
+        intent.putExtra(EXTRA_EVENT_ID, eventID);
+        intent.putExtra(EXTRA_TEAM_NAME, teamName);
+        context.startService(intent);
+    }
+
+    private String handleActionCreateTeam(String idEvent,String name) throws MalformedURLException,IOException {
+        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/createTeam", HttpHelper.encodeParamUTF8("name", name));
+        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+        conn.disconnect();
+        return html;
+    }
+
+    public static void startActionShuffleParticipants(Context context, ResultReceiver mReceiver, String eventID,String teamName) {
+        //binding to the service with startService()
+        Log.d(TAG, "Start create team");
+        Intent intent = new Intent(context, QueryEventService.class);
+        intent.setAction(ACTION_SHUFFLE_PARTICIPANTS);
+        intent.putExtra(EXTRA_RECEIVER, mReceiver);
+        intent.putExtra(EXTRA_EVENT_ID, eventID);
+        intent.putExtra(EXTRA_USER_ID, teamName);
+        context.startService(intent);
+    }
+
+    private String handleActionShuffleParticipants(String idEvent,String name) throws MalformedURLException,IOException {
+        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/shuffleParticipants", HttpHelper.encodeParamUTF8("name", name));
+        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+        conn.disconnect();
+        return html;
+    }
+
+
 
     public static void startActionAddAdmin(Context context, ResultReceiver mReceiver, String eventID,String userID) {
         //binding to the service with startService()
