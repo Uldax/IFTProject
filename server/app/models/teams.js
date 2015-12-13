@@ -5,6 +5,10 @@ var Schema = mongoose.Schema;
 var TeamsSchema = new Schema({
     _id: String,
     idEvent: String,
+    participants: [{
+            type: String,
+            ref: 'users'
+        }],
     name: String    
 }, {
     toObject: {

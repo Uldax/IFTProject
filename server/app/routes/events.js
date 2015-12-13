@@ -68,6 +68,7 @@ var evenement = {
     getOne: function(req, res) {
         if (req.params.id) {
             Events.findById(req.params.id)
+                .populate('detail.teams')
                 .populate('detail.participants', 'name') // only return the Persons name
                 .populate('detail.createBy', 'name')
                 .exec(function(err, evt) {
@@ -113,7 +114,7 @@ var evenement = {
                 .then(function(evt) {
                     
                     //team creation loop
-                    for(var i = 0 ; i <req.body.nbTeams; i++ ){
+                    for(var i = 0 ; i < req.body.nbTeams; i++ ){
                         
                        /* var team = {    
                             idEvent: req.params.id,
@@ -126,30 +127,23 @@ var evenement = {
                         team.idEvent = req.params.id;
 
                         team.save(function(err, obj) {
-
-
                             if (err) {
                                 console.log("handleNewTeam:" + err.err);
                                 return false;
-                            } else {                                 
+                            } else {
                                  evt.detail.teams.push(obj._id);
-                                 console.log("handleNewTeam: a new team has been creadted with the id: " + obj._id);
+                                 evt.save();
+                                 console.log(evt.detail);
+                                 console.log("handleNewTeam: a new team has been created with the id: " + obj._id);
                                  return true;
                             }
                         });
-                        /*console.log("createTeams: the new team id: " + idTeam);
-                        
-                        if(idTeam != 0){
-                        //We add the recent team id into the detail.teams array of the current event
-                        evt.detail.teams.push(idTeam);
-                        
-                        console.log("createTeams: the team " + (i + 1) + " was successfully created and added to the event" );
-                    }else console.log("createTeams: the team " + (i + 1) + " was NOT successfully created and added to the event" );
-                    */
-                        }
-                    
-                    //We shuffle the participants into n teams
-                    var randomizedArray = shuffle(evt.detail.participants);
+                    }//end team creation loop
+                    return evt.save(); // returns a promise 
+                })
+                .then(function(newEvt) {
+                     //We shuffle the participants into n teams
+                    var randomizedArray = shuffle(newEvt.detail.participants);
                     
                     //The counter that we will use to distribute the participants into all the teams
                     var counter = 0;
@@ -157,12 +151,12 @@ var evenement = {
                     //Repartition loop
                     for (var p = 0; p < randomizedArray.length; p++) {
                         
-                        /*Promise.resolve(Team.findById(evt.detail.teams[counter]).exec())
+                        Promise.resolve(Team.findById(newEvt.detail.teams[counter]).exec())
                         .then(function(nestedEvt) {
                             nestedEvt.listParticipants.push(randomizedArray[p]);
                             return nestedEvt.save(); // returns a promise
                         })
-                        .then(function(newEvt) {
+                        .then(function(nestednewEvt) {
                             res.json({
                                 message: 'participant added to a team!'
                             });
@@ -170,7 +164,7 @@ var evenement = {
                         .catch(function(err) {
                             console.log('error:', err);
                             res.send(err);
-                        });*/
+                        });
                         
                         //if the counter == nbTeams - 1 then we reset it, otherwise we increment it.
                         if(counter === req.body.nbTeams - 1){
@@ -179,10 +173,7 @@ var evenement = {
                         else{
                             counter++;
                         }
-                    };    
-                    return evt.save(); // returns a promise
-                })
-                .then(function(newEvt) {
+                    };
                     res.json({
                         message: 'Team and participants were added to the event!'
                     });
