@@ -47,7 +47,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
             holder = new EventHolder();
             holder.title = (TextView)row.findViewById(R.id.title);
-            holder.date = (TextView)row.findViewById(R.id.title);
+            holder.date = (TextView)row.findViewById(R.id.date);
             holder.author = (TextView)row.findViewById(R.id.author);
             holder.image = (ImageView)row.findViewById(R.id.image);
 
@@ -59,7 +59,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         }
 
         holder.title.setText(event.getTitle());
-        holder.date.setText(DateFormat.format("dd MMM -> k:m", event.getDate()));
+        holder.date.setText(DateFormat.format("d MMM @ kk:mm", event.getDate()));
         holder.author.setText("By "+event.getAuthor());
 
         /*switch (event.getCategorie()){

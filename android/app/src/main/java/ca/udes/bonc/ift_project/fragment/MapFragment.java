@@ -38,6 +38,7 @@ import ca.udes.bonc.ift_project.communication.QueryIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.dataObject.Event;
 import ca.udes.bonc.ift_project.utils.AlertDialogManager;
+import ca.udes.bonc.ift_project.utils.ConvertJson;
 import ca.udes.bonc.ift_project.utils.GPSTracker;
 
 
@@ -242,10 +243,8 @@ public class MapFragment extends Fragment implements
             case QueryIntentService.STATUS_FINISHED:
                 String results = resultData.getString("results");
                 this.progressBar.setVisibility(View.GONE);
-                Log.i(TAG, "result =");
-                Log.i(TAG, results);
-                // TODO : update listMap (How ? I don't now !)
-                updateEventList(null);
+                Log.i(TAG, "result = " + results);
+                updateEventList(ConvertJson.convert_event(results));
                 break;
             case QueryIntentService.STATUS_ERROR:
                 //todo handl error

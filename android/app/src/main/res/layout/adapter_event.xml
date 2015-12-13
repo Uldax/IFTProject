@@ -18,7 +18,9 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        android:singleLine="true"
+        android:maxLines="1">
 
     </TextView>
 
@@ -51,7 +53,9 @@
         android:layout_alignRight="@+id/date"
         android:layout_alignEnd="@+id/date"
         android:layout_below="@+id/date"
-        android:layout_marginLeft="10dp" />
+        android:layout_marginLeft="10dp"
+        android:maxLines="1"
+        android:singleLine="true" />
 
     <ImageView
         android:layout_width="100dp"
