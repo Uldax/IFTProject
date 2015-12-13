@@ -6,7 +6,7 @@ import java.util.Date;
  * Created by cbongiorno on 12/12/2015.
  */
 public class Event {
-    private int id;
+    private String id;
     private double latitude;
     private double longitude;
     private String title;
@@ -15,11 +15,11 @@ public class Event {
     private String category;
     private String type;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

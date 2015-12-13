@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ca.udes.bonc.ift_project.R;
+import ca.udes.bonc.ift_project.dataObject.Categories;
 import ca.udes.bonc.ift_project.dataObject.Event;
 
 /**
@@ -47,9 +48,9 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
             holder = new EventHolder();
             holder.title = (TextView)row.findViewById(R.id.title);
-            holder.date = (TextView)row.findViewById(R.id.title);
+            holder.date = (TextView)row.findViewById(R.id.date);
             holder.author = (TextView)row.findViewById(R.id.author);
-            holder.image = (ImageView)row.findViewById(R.id.image);
+            holder.image = (ImageView)row.findViewById(R.id.img_cat);
 
             row.setTag(holder);
         }
@@ -59,16 +60,20 @@ public class EventAdapter extends ArrayAdapter<Event> {
         }
 
         holder.title.setText(event.getTitle());
-        holder.date.setText(DateFormat.format("dd MMM -> k:m", event.getDate()));
+        holder.date.setText(DateFormat.format("d MMM @ kk:mm", event.getDate()));
         holder.author.setText("By "+event.getAuthor());
 
-        /*switch (event.getCategorie()){
-            case ... :
-                holder.image.setImageDrawable(R.drawable.run);
-            break;
-            default:
-                holder.image.setImageDrawable(R.drawable.run);
-        }*/
+        switch (event.getCategory()){
+            case Categories.FOOTBALL :
+                holder.image.setImageResource(R.drawable.football);
+                break;
+            case Categories.HOCKEY :
+                holder.image.setImageResource(R.drawable.hockey);
+                break;
+            case Categories.SOCIAL :
+                holder.image.setImageResource(R.drawable.social);
+                break;
+        }
 
         return row;
     }

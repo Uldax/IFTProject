@@ -1,0 +1,79 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="ca.udes.bonc.ift_project.fragment.SearchFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/darker_gray">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/linearLayout"
+            android:layout_above="@+id/button"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp">
+
+            <android.widget.Spinner
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/spinnerCategory"
+                android:prompt="@string/categories_prompt"
+                android:entries="@array/categories_array"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/edName"
+                android:hint="Name" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:ems="10"
+                android:id="@+id/edDate"
+                android:hint="Date"
+                android:inputType="date"
+                android:editable="false"
+                android:focusable="false" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/edAuthor"
+                android:hint="Author" />
+
+            <Switch
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Mode"
+                android:id="@+id/swCompet"
+                android:checked="false"
+                android:textSize="20dp"
+                android:textOff="Standard"
+                android:textOn="Competition" />
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:id="@+id/button"
+            android:backgroundTint="@color/colorAccent"
+            android:layout_gravity="center_vertical"
+            android:backgroundTintMode="add"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
+
+</FrameLayout>

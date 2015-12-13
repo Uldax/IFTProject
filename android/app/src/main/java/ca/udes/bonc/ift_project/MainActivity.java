@@ -20,16 +20,18 @@ import android.view.MenuItem;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
+import ca.udes.bonc.ift_project.communication.RegistrationIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.dataObject.Categories;
 import ca.udes.bonc.ift_project.dataObject.Types;
-import ca.udes.bonc.ift_project.fragment.ListFragment;
+import ca.udes.bonc.ift_project.fragment.SearchFragment;
 import ca.udes.bonc.ift_project.fragment.MapFragment;
 import ca.udes.bonc.ift_project.fragment.MyEventFragment;
 import ca.udes.bonc.ift_project.fragment.NewEventFragment;
@@ -43,6 +45,8 @@ implements NavigationView.OnNavigationItemSelectedListener,
         OnFragmentInteractionListener,
         GoogleApiClient.OnConnectionFailedListener,
         RestApiResultReceiver.Receiver {
+
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     public static FragmentManager fragmentManager;
     public RestApiResultReceiver mReceiver;
@@ -117,11 +121,20 @@ implements NavigationView.OnNavigationItemSelectedListener,
 
         //test
         //TODO define category and get date from datepicker
+        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.385734837128865", "Go to play4", Categories.FOOTBALL, 12, Types.LOISIR);
         QueryEventService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", Categories.HOCKEY, 12, Types.LOISIR);
+        QueryEventService.startActionCreateEvent(this, mReceiver, "10.2", "23", "Let's talk", Categories.SOCIAL, 12, Types.LOISIR);
         //QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
 
 
     }
+
     //call when service send to receiver
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch (resultCode) {
@@ -225,7 +238,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
                 selectedFragment = new MapFragment();
                 break;
             case R.id.nav_list:
-                selectedFragment = new ListFragment();
+                selectedFragment = new SearchFragment();
                 break;
             case R.id.nav_newevent:
                 selectedFragment = new NewEventFragment();
@@ -253,5 +266,26 @@ implements NavigationView.OnNavigationItemSelectedListener,
 
     public void onFragmentInteraction(Uri uri) {
         Log.i(this.toString(), uri.toString());
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }

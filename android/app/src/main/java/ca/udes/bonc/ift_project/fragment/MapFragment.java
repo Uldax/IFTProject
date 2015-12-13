@@ -19,15 +19,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,6 +43,7 @@ import ca.udes.bonc.ift_project.communication.QueryIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.dataObject.Event;
 import ca.udes.bonc.ift_project.utils.AlertDialogManager;
+import ca.udes.bonc.ift_project.utils.ConvertJson;
 import ca.udes.bonc.ift_project.utils.GPSTracker;
 
 
@@ -76,6 +82,7 @@ public class MapFragment extends Fragment implements
     private AlertDialogManager alert = new AlertDialogManager();
     private EventAdapter adapter;
     private ProgressBar progressBar;
+    private List<Marker> listMarker = new ArrayList<Marker>();
 
     private SupportMapFragment mSupportMapFragment;
 
@@ -172,12 +179,20 @@ public class MapFragment extends Fragment implements
                 toggleListMap();
             }
         });
+
+        listMap.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Marker m = listMarker.get(i);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 12));
+            }
+        });
         return myView;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.e("maps", "Call to on map ready");
+        Log.i("maps", "Call to on map ready");
         mMap = googleMap;
         mMap.setOnMyLocationButtonClickListener(this);
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -186,7 +201,15 @@ public class MapFragment extends Fragment implements
         } else if (mMap != null) {
             mMap.setMyLocationEnabled(true);
         }
-        QueryEventService.startActionGetMarkers(getContext(), mReceiver, "10.2", "23");
+        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude()), 10));
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                Log.i("maps Cam change", "Camera : " + cameraPosition.target.latitude + " - " + cameraPosition.target.longitude);
+                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude),String.valueOf(cameraPosition.target.latitude), 100);
+            }
+        });
+        //QueryEventService.startActionGetMarkers(getContext(), mReceiver, "10.2", "23");
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -242,10 +265,8 @@ public class MapFragment extends Fragment implements
             case QueryIntentService.STATUS_FINISHED:
                 String results = resultData.getString("results");
                 this.progressBar.setVisibility(View.GONE);
-                Log.i(TAG, "result =");
-                Log.i(TAG, results);
-                // TODO : update listMap (How ? I don't now !)
-                updateEventList(null);
+                Log.i(TAG, "result = " + results);
+                updateEventList(ConvertJson.convert_event(results));
                 break;
             case QueryIntentService.STATUS_ERROR:
                 //todo handl error
@@ -259,15 +280,19 @@ public class MapFragment extends Fragment implements
     public void updateEventList(List<Event> listEvent){
         listMap = (ListView) myView.findViewById(R.id.listMap);
 
+
         if((listEvent==null)||(listEvent.size()==0)){
+            listMap.setAdapter(null);
+            for (Marker m :listMarker) {
+                m.remove();
+            }
             return;
         }
 
-        /*Collections.sort(listEvent, new Comparator<Event>() {
-            public int compare(Event o1, Event o2) {
-                //TODO : sort by ... somethings
-            }
-        });*/
+        for (Event e:listEvent) {
+            Log.i("maps", "add Marker :" + e.getTitle());
+            listMarker.add(mMap.addMarker(new MarkerOptions().position(new LatLng(e.getLatitude(), e.getLongitude())).title(e.getTitle())));
+        }
 
         adapter = new EventAdapter(getContext(),R.layout.adapter_event, listEvent);
         listMap.setAdapter(adapter);
