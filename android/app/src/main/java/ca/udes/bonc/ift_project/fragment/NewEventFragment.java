@@ -36,7 +36,7 @@ public class NewEventFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ListFragment.
+     * @return A new instance of fragment SearchFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static NewEventFragment newInstance(String param1, String param2) {

@@ -5,7 +5,7 @@
         <item android:id="@+id/nav_maps" android:icon="@android:drawable/ic_menu_mapmode"
             android:title="Maps"/>
         <item android:id="@+id/nav_list" android:icon="@android:drawable/ic_menu_agenda"
-            android:title="Recherche"/>
+            android:title="Search"/>
         <item android:id="@+id/nav_newevent" android:icon="@android:drawable/ic_menu_add"
             android:title="New Event"/>
     </group>
@@ -13,9 +13,9 @@
     <item android:title="Profil">
         <menu>
             <item android:id="@+id/nav_me" android:icon="@android:drawable/ic_menu_my_calendar"
-                android:title="Mon Profil"/>
+                android:title="My Profil"/>
             <item android:id="@+id/nav_my_event" android:icon="@android:drawable/ic_menu_myplaces"
-                android:title="Mes évènements" />
+                android:title="My Events" />
             <item android:id="@+id/nav_logout" android:icon="@android:drawable/ic_menu_close_clear_cancel"
                 android:title="Logout" />
         </menu>

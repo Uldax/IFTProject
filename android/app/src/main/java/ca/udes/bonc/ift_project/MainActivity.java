@@ -2,7 +2,6 @@ package ca.udes.bonc.ift_project;
 
 
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,7 +9,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,12 +27,11 @@ import com.google.android.gms.common.api.Status;
 
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
-import ca.udes.bonc.ift_project.communication.QuickStartPreferences;
 import ca.udes.bonc.ift_project.communication.RegistrationIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.dataObject.Categories;
 import ca.udes.bonc.ift_project.dataObject.Types;
-import ca.udes.bonc.ift_project.fragment.ListFragment;
+import ca.udes.bonc.ift_project.fragment.SearchFragment;
 import ca.udes.bonc.ift_project.fragment.MapFragment;
 import ca.udes.bonc.ift_project.fragment.MyEventFragment;
 import ca.udes.bonc.ift_project.fragment.NewEventFragment;
@@ -124,7 +121,9 @@ implements NavigationView.OnNavigationItemSelectedListener,
 
         //test
         //TODO define category and get date from datepicker
+        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.385734837128865", "Go to play4", Categories.FOOTBALL, 12, Types.LOISIR);
         QueryEventService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", Categories.HOCKEY, 12, Types.LOISIR);
+        QueryEventService.startActionCreateEvent(this, mReceiver, "10.2", "23", "Let's talk", Categories.SOCIAL, 12, Types.LOISIR);
         //QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
 
         if (checkPlayServices()) {
@@ -239,7 +238,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
                 selectedFragment = new MapFragment();
                 break;
             case R.id.nav_list:
-                selectedFragment = new ListFragment();
+                selectedFragment = new SearchFragment();
                 break;
             case R.id.nav_newevent:
                 selectedFragment = new NewEventFragment();

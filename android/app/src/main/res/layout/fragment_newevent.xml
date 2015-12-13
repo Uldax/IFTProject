@@ -1,6 +1,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="ca.udes.bonc.ift_project.fragment.ListFragment">
+    android:layout_height="match_parent" tools:context="ca.udes.bonc.ift_project.fragment.SearchFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -8,7 +8,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:text="Title :"
             android:id="@+id/textView2"
             android:layout_alignParentTop="true"
@@ -24,7 +24,7 @@
 
         <EditText
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:id="@+id/editText"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
@@ -51,7 +51,7 @@
 
         <EditText
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:inputType="date"
             android:ems="10"
             android:id="@+id/editText2"
@@ -64,7 +64,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_height="60dp"
             android:text="Categorie :"
             android:id="@+id/textView4"
             android:textSize="20dp"
@@ -78,7 +78,7 @@
 
         <android.widget.Spinner
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:id="@+id/spinner"
             android:layout_weight="1"
             android:prompt="@string/categories_prompt"
