@@ -27,7 +27,7 @@ router.delete('/api/events/del/:id', events.delEvent);
 router.post('/api/events/:id/addParticipant', events.addParticipant);
 router.post('/api/events/:id/removeParticipant', events.removeParticipant);
 router.post('/api/events/:id/addAdmin',events.addAdmin);
-router.post('/api/events/:idcreateTeams',events.createTeams);//with a body attribut nbTeams
+router.post('/api/events/:id/createTeams',events.createTeams);//with a body attribut nbTeams
 //todo : remove admin
 
 

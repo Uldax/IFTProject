@@ -1,4 +1,5 @@
 var Events = require('../models/events');
+var Team = require('../models/teams');
 var Const = require('../config/const');
 var defaultRadius = 100;
 var jwt = require('jwt-simple');
@@ -105,7 +106,9 @@ var evenement = {
     },
     
     createTeams: function(req, res) {
+        console.log("createTeams: start");
         if (req.params.id && req.body.nbTeams) {
+            console.log("createTeams: retreived the params correctly");
             Promise.resolve(Events.findById(req.params.id).exec())
                 .then(function(evt) {
                     
@@ -285,23 +288,17 @@ function shuffle(array) {
 }
 function handleNewTeam(teamData) {
     console.log("call to handleNewTeam");
-    Promise.resolve().exec()
-        .then(function() {            
-            var team = new Team();
-                team.idEvent = userData.idEvent;                
-                team.save(function(err, obj) {
-                    if (err) {
-                        console.log(err.err);
-                        return false;
-                    } else {
-                        return obj.id;
-                    }
-                });            
-        })
-        .catch(function(err) {
-            console.log('error:', err);
-            res.send(err);
-        });
+    var team = new Team();
+    team.idEvent = teamData.idEvent;                
+    team.save(function(err, obj) {
+        if (err) {
+            console.log(err.err);
+            return false;
+        } else {
+            return obj.id;
+        }
+    });            
+        
     }
 
 //Private function
