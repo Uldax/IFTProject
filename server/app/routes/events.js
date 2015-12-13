@@ -162,20 +162,25 @@ var evenement = {
                     if (nbTeam > 1) {
 
                         console.log("shuffleParticipants: start");
-
-                        //We clean the current participantList in each teams                           
+                        
+                        
+                        var promiseArray = [];
+                        //We clean the current participantList in each teams                        
                         for(var i=0; i < nbTeam; i++){
-                            Promise.resolve(Team.findById(evt.detail.teams[i]).exec())
-                            .then(function(team) {
-                                team.participants = [];
-                                console.log('shuffleParticipants-teamwiping: participants list for the team: ' + team.name + "has been wiped out");
-                                return team.save(); // returns a promise
-                            })
-                            .catch(function(err) {
-                                console.log('shuffleParticipants-teamwiping: error:' + err);
-                                res.send(err);
-                            });
-                        }  
+                                console.log("shuffleParticipants: we add a promise into the promiseArray");
+                                promiseArray.push(generatePromiseForEmptyTeam(evt,i));
+                         } 
+                                 
+                        Promise.all(promiseArray).then(function(team){
+                            for(var i=0; i < team.length;i++){
+                                console.log("shuffleParticipants: we empty the team:" + i);
+                                emptyTeam(team[i]);                                
+                            }
+                        })
+                        .catch(function(err) {
+                            console.log('shuffleParticipants-teamwiping: error:' + err);
+                            res.send(err);
+                        });
                                 
 
                         //We shuffle the participants into n teams
@@ -188,31 +193,30 @@ var evenement = {
                         //Repartition loop
                         for (var p = 0; p < randomizedArray.length; p++) {
                             console.log("shuffleParticipants-repartition-loop: start");
-
-                            Promise.resolve(Team.findById(evt.detail.teams[counter]).exec())
-                                .then(function(team) {
-                                    console.log(team);
-                                    team.participants.push(randomizedArray[p]);
-                                    return team.save(); // returns a promise
-                                })
-                                .then(function(team) {
-                                    res.json({
-                                        message: 'participant added to a team!'
-                                    });
-
-                                    //if the counter == nbTeams - 1 then we reset it, otherwise we increment it.
-                                    if(counter === nbTeam - 1){
-                                        counter = 0;
-                                    }
-                                    else{
-                                        counter++;
-                                    }
-                                })                                    
-                                .catch(function(err) {
-                                    console.log('shuffleParticipants-repartitionloop:' + err);
-                                    res.send(err);
-                                });
-                        }//ENDFOR REPARTITION LOOP 
+                            
+                            var teamId = evt.detail.teams[counter];
+                            
+                            //We add the current participant into the team[counter]
+                            addParticipantIntoTeam(randomizedArray[p],teamId);
+                            
+                            //if the counter == nbTeams - 1 then we reset it, otherwise we increment it.
+                            if(counter === nbTeam - 1){
+                                counter = 0;
+                            }
+                            else{
+                                counter++;
+                            }
+                            
+                        }//ENDFOR REPARTITION LOOP
+                        /* .then(function(team) {
+        res.json({
+            message: 'participant added to a team!'
+        });
+    })                                    
+    .catch(function(err) {
+        console.log('shuffleParticipants-repartitionloop:' + err);
+        res.send(err);
+    });*/
                     }
                     else{
                         res.json({
@@ -318,6 +322,32 @@ var evenement = {
         }
     }
 };
+
+function generatePromiseForaddParticipantIntoTeam(teamId){
+   return new Promise(function(resolve,reject){       
+       resolve(Team.findById(teamId).exec());
+   });
+}
+
+function addParticipantIntoTeam(participantId,team){                                  
+        team.participants.push(participantId);
+
+        console.log("addParticipantIntoTeam: participant was added to the team: " + team.name);
+        
+        return team.save(); // returns a promise   
+   
+}
+function generatePromiseForEmptyTeam(evt,index){
+   return new Promise(function(resolve,reject){       
+       resolve(Team.findById(evt.detail.teams[index]).exec());
+   });
+}
+function emptyTeam(team){ 
+        team.participants = [];
+        console.log('shuffleParticipants-teamwiping: participants list for the team: ' + team.name + "has been wiped out");                                
+        return team.save(); // returns a promise
+    
+}
 function shuffle(array) {
   var currentIndex = array.length, temporaryValue, randomIndex ;
 
