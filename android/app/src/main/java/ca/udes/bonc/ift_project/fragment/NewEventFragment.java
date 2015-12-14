@@ -3,8 +3,10 @@ package ca.udes.bonc.ift_project.fragment;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,9 +15,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TimePicker;
 
 
@@ -25,9 +30,13 @@ import java.util.Calendar;
 
 import ca.udes.bonc.ift_project.R;
 import ca.udes.bonc.ift_project.adapter.PlacesAutoCompleteAdapter;
+import ca.udes.bonc.ift_project.communication.QueryEventService;
+import ca.udes.bonc.ift_project.communication.QueryIntentService;
+import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.dataObject.Categories;
 import ca.udes.bonc.ift_project.dataObject.Location;
 import ca.udes.bonc.ift_project.dataObject.Place;
+import ca.udes.bonc.ift_project.dataObject.Types;
 import ca.udes.bonc.ift_project.utils.GooglePlaces;
 
 /**
@@ -38,7 +47,7 @@ import ca.udes.bonc.ift_project.utils.GooglePlaces;
  * Use the {@link NewEventFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewEventFragment extends Fragment {
+public class NewEventFragment extends Fragment implements RestApiResultReceiver.Receiver{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -55,8 +64,24 @@ public class NewEventFragment extends Fragment {
     private int currentDay;
     private Location location;
     private String placeId;
+
+    public RestApiResultReceiver mReceiver;
+
+    //UI element
     private EditText edDate;
+    private EditText titleEditText;
+    private Button saveButton;
     private Spinner spinnerCateg;
+    private Switch typeSwitch;
+    private EditText maxParticipantEditext;
+    private AutoCompleteTextView autocompleteView;
+
+    //element Value
+    private String edDatValue;
+    private String titleValue;
+    private String categValue ;
+    private String typeValue = Types.LOISIR;
+    private int maxParticipantValue;
 
 
     /**
@@ -92,6 +117,9 @@ public class NewEventFragment extends Fragment {
         currentYear = c.get(Calendar.YEAR);
         currentMonth = c.get(Calendar.MONTH);
         currentDay = c.get(Calendar.DAY_OF_MONTH);
+
+        mReceiver = new RestApiResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
     }
 
     @Override
@@ -109,8 +137,23 @@ public class NewEventFragment extends Fragment {
             }
         });
 
+        //switch value
+        typeSwitch = (Switch) view.findViewById(R.id.swCompet);
+        typeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                   typeValue = Types.COMPETITIF;
+                } else {
+                    typeValue = Types.LOISIR;
+                }
+            }
+        });
+
+
+        titleEditText = (EditText) view.findViewById(R.id.edTitle);
+        maxParticipantEditext = (EditText) view.findViewById(R.id.edMaxParti);
         //Autocomplete
-        AutoCompleteTextView autocompleteView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
+        autocompleteView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
         autocompleteView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item));
         autocompleteView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -128,8 +171,45 @@ public class NewEventFragment extends Fragment {
                 }).start();
             }
         });
+
+        //create button
+        saveButton = (Button) view.findViewById(R.id.eventCreateButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //get and check input
+                if(setArgs() && location != null) {
+                    Log.d(TAG,"All args ok");
+                    QueryEventService.startActionCreateEvent(v.getContext(),mReceiver, location.getLng(),location.getLat(),titleValue,categValue,maxParticipantValue,typeValue );
+                }
+            }
+        });
         return view;
     }
+
+    public boolean setArgs(){
+        boolean missingField = false;
+        if (titleEditText.getText().toString().trim().equals("")){
+            missingField = true;
+            titleEditText.setError("required field");
+        } else titleValue = titleEditText.getText().toString();
+
+        categValue = spinnerCateg.getSelectedItem().toString();
+
+        //TODO : maxparticipant must be int
+        if (maxParticipantEditext.getText().toString().trim().equals("")){
+            missingField = true;
+            maxParticipantEditext.setError("required field");
+        } else maxParticipantValue = Integer.valueOf(maxParticipantEditext.getText().toString());
+
+        if (autocompleteView.getText().toString().trim().equals("")){
+            missingField = true;
+            autocompleteView.setError("required field");
+        }
+        return ! missingField;
+    }
+
+
 
     public void openDatePicker(){
         new DatePickerDialog(this.getContext(), setDate, currentYear, currentMonth, currentDay).show();
@@ -178,5 +258,28 @@ public class NewEventFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    //call when service send to receiver
+    @Override
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+        switch (resultCode) {
+            case QueryIntentService.STATUS_RUNNING:
+                Log.i(TAG, "Runing status");
+                //show progress
+                break;
+            case QueryIntentService.STATUS_FINISHED:
+                String results = resultData.getString("results");
+                Log.i(TAG, "result status =");
+                Log.i(TAG, results);
+                // do something interesting
+                // hide progress
+                break;
+            case QueryIntentService.STATUS_ERROR:
+                //todo handl error
+                String error = resultData.getString(Intent.EXTRA_TEXT);
+                Log.e(TAG, "error = " + error);
+                break;
+        }
     }
 }
