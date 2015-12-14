@@ -78,4 +78,17 @@ userTest.save(function(err) {
     if (err) console.log(err.err);
 });
 
+var userAdminTest = new User();
+userAdminTest.email = "admin@api.fr";
+userAdminTest.password = "admin";
+userAdminTest.role = "admin";
+userAdminTest.type = 'default';
+userAdminTest.name = {
+    first: "super",
+    last: "test"
+};
+userAdminTest.save(function(err) {
+    if (err) console.log(err.err);
+});
+
 module.exports = User;
