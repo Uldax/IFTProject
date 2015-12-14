@@ -1,14 +1,20 @@
 package ca.udes.bonc.ift_project;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,6 +22,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -27,6 +35,7 @@ import com.google.android.gms.common.api.Status;
 
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
+import ca.udes.bonc.ift_project.communication.QuickstartPreferences;
 import ca.udes.bonc.ift_project.communication.RegistrationIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.dataObject.Categories;
@@ -60,9 +69,14 @@ implements NavigationView.OnNavigationItemSelectedListener,
     GoogleApiClient mGoogleApiClient;
     boolean mSignInClicked;
 
+
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private TextView mInformationTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         mReceiver = new RestApiResultReceiver(new Handler());
         mReceiver.setReceiver(this);
@@ -126,13 +140,46 @@ implements NavigationView.OnNavigationItemSelectedListener,
         QueryEventService.startActionCreateEvent(this, mReceiver, "10.2", "23", "Let's talk", Categories.SOCIAL, 12, Types.LOISIR);
         //QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
 
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+                if (sentToken) {
+                    mInformationTextView.setText(getString(R.string.gcm_send_message));
+                } else {
+                    mInformationTextView.setText(getString(R.string.token_error_message));
+                }
+                Log.i(TAG, "should be connected");
+            }
+        };
+
+        mInformationTextView = (TextView) findViewById(R.id.informationTextView);
+
         if (checkPlayServices()) {
+            Log.i(TAG, "service disponible");
+
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         }
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
     }
 
     //call when service send to receiver

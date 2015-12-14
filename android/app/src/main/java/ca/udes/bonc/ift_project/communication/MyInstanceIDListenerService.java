@@ -1,6 +1,7 @@
 package ca.udes.bonc.ift_project.communication;
 
 import android.content.Intent;
+import android.util.Log;
 
 import com.google.android.gms.iid.InstanceIDListenerService;
 
@@ -19,6 +20,8 @@ public class MyInstanceIDListenerService extends InstanceIDListenerService {
     // [START refresh_token]
     @Override
     public void onTokenRefresh() {
+        Log.i(TAG, "jva refresh mon token");
+
         // Fetch updated Instance ID token and notify our app's server of any changes (if applicable).
         Intent intent = new Intent(this, RegistrationIntentService.class);
         startService(intent);

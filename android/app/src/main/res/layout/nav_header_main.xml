@@ -16,6 +16,11 @@
         android:layout_centerInParent="true"
         android:visibility="gone" />
 
+    <TextView android:text="bla" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/informationTextView"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
     <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:src="@android:drawable/sym_def_app_icon" android:id="@+id/imageView" />
