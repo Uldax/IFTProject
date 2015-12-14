@@ -16,7 +16,7 @@ public class AlertDialogManager {
      * @param status - success/failure (used to set icon)
      *               - pass null if you don't want icon
      * */
-    public void showAlertDialog(Context context, String title, String message,
+    public void showAlertDialogWithOk(Context context, String title, String message,
                                 Boolean status) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 context);
@@ -26,7 +26,8 @@ public class AlertDialogManager {
         alertDialogBuilder.setTitle(title);
         // Setting Dialog Message
         alertDialogBuilder
-                .setMessage(message)
+
+
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // if this button is clicked, close
@@ -47,4 +48,18 @@ public class AlertDialogManager {
         alertDialog.show();
 
     }
+
+
+    public void showAlertDialog(Context context, String title, String message) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                context);
+        alertDialogBuilder.
+                setTitle(title)
+                .setMessage(message);
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+    }
+
+
 }

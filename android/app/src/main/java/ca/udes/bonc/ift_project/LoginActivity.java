@@ -1,16 +1,18 @@
 package ca.udes.bonc.ift_project;
 
-import android.app.Dialog;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,6 +35,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import ca.udes.bonc.ift_project.communication.HttpHelper;
+import ca.udes.bonc.ift_project.utils.AlertDialogManager;
+import ca.udes.bonc.ift_project.utils.ConnectionDetector;
 
 
 /**
@@ -51,11 +55,15 @@ public class LoginActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
     private ProgressDialog mProgressDialog;
     private IFTApplication myApp;
+    private ConnectionDetector cd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.service_layout);
+
+        cd = new ConnectionDetector(getApplicationContext());
+        // Check if Internet present
 
         myApp = (IFTApplication)getApplication();
 
@@ -100,7 +108,7 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void onStart() {
         super.onStart();
-
+        handleConnexion();
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
         if (opr.isDone()) {
             // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
@@ -142,8 +150,6 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-        Log.d(TAG, "handleSignInResult:" + result.getStatus().getStatusMessage());
         Log.d(TAG, "handleSignInResult:" + result.getStatus().toString());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
@@ -151,77 +157,68 @@ public class LoginActivity extends AppCompatActivity implements
             GoogleSignInAccount acct = result.getSignInAccount();
             //call server to verify token and create a token for REST API cf https://developers.google.com/identity/sign-in/android/backend-auth
             String idToken = acct.getIdToken();
-            if( idToken != null) {
-                try {
-                    Thread t = new TokenVerifier(idToken);
-                    t.start();
-                    //Wait for thread to finish to valide auth
-                    t.join();  // wait for thread to finish
-                    //TODO : handle error if server do no grant access
-
-
+            if (idToken != null) {
+                    TokenVerifier tv = new TokenVerifier(idToken, this);
+                    tv.execute();
                     Uri personPhoto = acct.getPhotoUrl();
-                    if( personPhoto != null){
+                    if (personPhoto != null) {
                         myApp.setPictureUri(personPhoto.toString());
                     }
-                    //else user don't have g+ picture
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } catch( InterruptedException e) {
-                    //TODO handle error
-                    Log.e(TAG,e.getMessage());
-                }
+            } else {
+                // Signed out, show unauthenticated UI.
             }
-        } else {
-            // Signed out, show unauthenticated UI.
-            //TODO
         }
     }
 
-    public class TokenVerifier extends Thread {
-        private String idToken = "";
-        public TokenVerifier(String idToken){
+    public class TokenVerifier extends AsyncTask<Void, JSONObject, Boolean>
+    {
+        private String idToken;
+        Activity mActivity;
+        public TokenVerifier(String idToken, Activity myActivity) {
             this.idToken = idToken;
+            mActivity = myActivity;
         }
-        @Override
-        public void run() {
-            try {
-                URL url = new URL(HttpHelper.LOCALHOST +"/tokensignin");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestMethod("POST");
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                String param = "token=" + URLEncoder.encode(idToken, "UTF-8");
-                conn.setFixedLengthStreamingMode(param.getBytes().length);
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                //send the POST out
-                PrintWriter out = new PrintWriter(conn.getOutputStream());
-                out.print(param);
-                out.close();
 
+        @Override
+        protected Boolean doInBackground(Void... arg0) {
+            try {
+                Log.d(TAG,"token send :" + idToken);
+                String param = HttpHelper.encodeParamUTF8("token",idToken);
+                HttpURLConnection conn = HttpHelper.createPostURLConnection(HttpHelper.LOCALHOST + "/tokensignin", param);
                 JSONObject JSONResponse = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
                 Log.d(TAG, JSONResponse.toString());
-                String userRole = JSONResponse.getJSONObject("user").getString("role");
 
-
-                //Set token into applicationClass
-                String token = JSONResponse.getString("token");
-                String userId = JSONResponse.getJSONObject("user").getString("_id");
-                Log.d(TAG,"Token acquired : "+ token);
-
-                myApp.setApiToken(token);
-                myApp.setUserId(userId);
+                //Failed to connect
+                if( JSONResponse.has("status") && JSONResponse.getInt("status") == 401 ){
+                    return false;
+                } else {
+                    //Set token into applicationClass
+                    String token = JSONResponse.getString("token");
+                    String userId = JSONResponse.getJSONObject("user").getString("_id");
+                    Log.d(TAG, "Token acquired : " + token);
+                    myApp.setApiToken(token);
+                    myApp.setUserId(userId);
+                    return true;
+                }
 
             } catch(MalformedURLException ex){
-               Log.e("thread", ex.toString());
+                Log.e("thread", ex.toString());
             } catch(JSONException ex){
                 Log.e("thread", ex.toString());
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 Log.e(TAG, "Error sending ID token to backend.", e);
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if( ! result) {
+                Toast.makeText(getApplicationContext(), "Something append with our server", Toast.LENGTH_LONG).show();
+            } else {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                mActivity.finish();
             }
         }
     }
@@ -252,6 +249,42 @@ public class LoginActivity extends AppCompatActivity implements
     private void callLoginDialog()
     {
        startActivity(new Intent(LoginActivity.this,LoginPopUp.class));
+    }
+
+    private void handleConnexion(){
+        if (! (cd.isConnectingToInternet())) {
+            Log.e(TAG, "Internet Connection is not present");
+            final AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                    // Setting Dialog Message
+                    .setTitle("Internet Connection Error")
+                    .setCancelable(false)
+                    .setPositiveButton("Retry", null) //Set to null. We override the onclick
+                    .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // if this button is clicked, just close
+                            // the dialog box and do nothing
+                            dialog.dismiss();
+                            finish();
+                        }
+                    })
+                    .create();
+            //Have to do this to keep the dialog
+            alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    Button b = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    b.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(cd.isConnectingToInternet()) {
+                                alertDialog.dismiss();
+                            }
+                        }
+                    });
+                }
+            });
+            alertDialog.show();
+        }
     }
 
     @Override

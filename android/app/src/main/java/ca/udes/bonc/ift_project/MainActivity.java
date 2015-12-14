@@ -1,8 +1,10 @@
 package ca.udes.bonc.ift_project;
 
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -22,6 +24,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -95,17 +99,6 @@ implements NavigationView.OnNavigationItemSelectedListener,
 
 
         cd = new ConnectionDetector(getApplicationContext());
-        // Check if Internet present
-        if (! (cd.isConnectingToInternet())) {
-            // Internet Connection is not present
-            alert.showAlertDialog(MainActivity.this, "Internet Connection Error",
-                    "Please connect to working Internet connection", false);
-            // stop executing code by return
-            //TODO : handle no connexion (cache / db etc..)
-            return;
-        }
-
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //Create error
@@ -151,6 +144,48 @@ implements NavigationView.OnNavigationItemSelectedListener,
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //Show dialog if not connected to internet
+        handleConnexion();
+
+    }
+    private void handleConnexion(){
+        if (! (cd.isConnectingToInternet())) {
+            Log.e(TAG, "Internet Connection is not present");
+            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                    // Setting Dialog Message
+                    .setTitle("Internet Connection Error")
+                    .setCancelable(false)
+                    .setPositiveButton("Retry", null) //Set to null. We override the onclick
+                    .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // if this button is clicked, just close
+                            // the dialog box and do nothing
+                            dialog.dismiss();
+                            finish();
+                        }
+                    })
+                    .create();
+            //Have to do this to keep the dialog
+            alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    Button b = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    b.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(cd.isConnectingToInternet()) {
+                                alertDialog.dismiss();
+                            }
+                        }
+                    });
+                }
+            });
+            alertDialog.show();
+        }
+    }
 
     //call when service send to receiver
     public void onReceiveResult(int resultCode, Bundle resultData) {
@@ -206,7 +241,6 @@ implements NavigationView.OnNavigationItemSelectedListener,
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO : return to login activity ?
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not

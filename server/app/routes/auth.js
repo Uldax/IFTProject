@@ -144,7 +144,6 @@ function genToken(user) {
     };
 }
 
-//Todo must find then insert to no increment counter
 function handleNewUser(userData) {
     console.log("call to handleNewUser");
     Promise.resolve(User.count({
