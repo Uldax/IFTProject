@@ -17,6 +17,7 @@ public class Event {
     private String category;
     private String type;
     private HashMap<String,String> listParticipant = new HashMap<String,String>();
+    private HashMap<String,String> listEquipe = new HashMap<String,String>();
 
     public String getId() {
         return id;
@@ -95,5 +96,11 @@ public class Event {
     }
     public void addParticipant (String id, String name){
         this.listParticipant.put(id,name);
+    }
+    public HashMap<String, String> getListTeam() {
+        return listEquipe;
+    }
+    public void addTeam (String id, String name){
+        this.listEquipe.put(id,name);
     }
 }

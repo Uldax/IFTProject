@@ -4,7 +4,131 @@
     tools:context="ca.udes.bonc.ift_project.fragment.EventDetailFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|top">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Title Event"
+            android:id="@+id/title"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:textSize="30dp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/img_cat"
+            android:src="@drawable/run"
+            android:scaleType="fitCenter"
+            android:layout_below="@+id/title"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:textSize="20dp"
+            android:text="dd m. : hh:mm"
+            android:textColor="@android:color/black"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:layout_below="@+id/title"
+            android:layout_toRightOf="@+id/img_cat"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:id="@+id/author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:textSize="18dp"
+            android:text="by machin"
+            android:textColor="#c8000000"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:layout_below="@+id/date"
+            android:layout_toRightOf="@+id/img_cat"
+            android:layout_alignRight="@+id/date"
+            android:layout_alignEnd="@+id/date"
+            android:layout_alignBottom="@+id/img_cat" />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/listParticip"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_above="@+id/btParticip"
+            android:layout_below="@+id/modeCompet" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mode Compétition"
+            android:id="@+id/modeCompet"
+            android:textSize="22dp"
+            android:textColor="#c8000000"
+            android:singleLine="true"
+            android:layout_below="@+id/place"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Lieu de la rencontre"
+            android:id="@+id/place"
+            android:layout_below="@+id/img_cat"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textSize="26dp"
+            android:textColor="#c8000000"
+            android:minLines="2"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp" />
+
+        <TextView
+            android:id="@+id/star"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textStyle="bold"
+            android:textSize="30dp"
+            android:background="@drawable/star"
+            android:textColor="#FFFFFF"
+            android:paddingRight="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Participate"
+            android:id="@+id/btParticip"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
 </FrameLayout>
