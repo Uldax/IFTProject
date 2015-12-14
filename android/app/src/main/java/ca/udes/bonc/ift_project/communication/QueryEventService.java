@@ -244,7 +244,7 @@ public class QueryEventService extends QueryIntentService {
         if(!name.equals(""))
             path+="name=" + name + "&";
         if(!author.equals(""))
-            path+="author=" + author + "&";
+            path+="lastName=" + author + "&";
         if(!mode.equals(""))
             path+="type=" + mode + "&";
 
