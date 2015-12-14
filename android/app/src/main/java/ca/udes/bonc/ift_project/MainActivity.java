@@ -35,7 +35,7 @@ import com.google.android.gms.common.api.Status;
 
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
-import ca.udes.bonc.ift_project.communication.QuickstartPreferences;
+import ca.udes.bonc.ift_project.communication.QuickStartPreferences;
 import ca.udes.bonc.ift_project.communication.RegistrationIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.dataObject.Categories;
@@ -146,7 +146,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
                 SharedPreferences sharedPreferences =
                         PreferenceManager.getDefaultSharedPreferences(context);
                 boolean sentToken = sharedPreferences
-                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+                        .getBoolean(QuickStartPreferences.SENT_TOKEN_TO_SERVER, false);
                 if (sentToken) {
                     mInformationTextView.setText(getString(R.string.gcm_send_message));
                 } else {
@@ -173,7 +173,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+                new IntentFilter(QuickStartPreferences.REGISTRATION_COMPLETE));
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,18 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
-import android.widget.Toast;
+
+
+
 
 import java.util.Calendar;
 
 import ca.udes.bonc.ift_project.R;
 import ca.udes.bonc.ift_project.adapter.PlacesAutoCompleteAdapter;
 import ca.udes.bonc.ift_project.dataObject.Categories;
+import ca.udes.bonc.ift_project.dataObject.Location;
+import ca.udes.bonc.ift_project.dataObject.Place;
+import ca.udes.bonc.ift_project.utils.GooglePlaces;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +43,7 @@ public class NewEventFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "NewEventFragment";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -46,8 +53,11 @@ public class NewEventFragment extends Fragment {
     private int currentYear;
     private int currentMonth;
     private int currentDay;
+    private Location location;
+    private String placeId;
     private EditText edDate;
     private Spinner spinnerCateg;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -107,8 +117,15 @@ public class NewEventFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Get data associated with the specified position
                 // in the list (AdapterView)
-                String description = (String) parent.getItemAtPosition(position);
-                Toast.makeText(getActivity(), description, Toast.LENGTH_SHORT).show();
+                Place selectedPlace =  (Place)parent.getItemAtPosition(position);
+                placeId = selectedPlace.getId();
+                Log.e(TAG,  selectedPlace.getId());
+                (new Thread() {
+                    public void run() {
+                        location = GooglePlaces.getPlacesLocation(placeId);
+                        Log.d(TAG,location.toString());
+                    }
+                }).start();
             }
         });
         return view;

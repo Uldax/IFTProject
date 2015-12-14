@@ -1,5 +1,6 @@
 package ca.udes.bonc.ift_project.utils;
 
+import android.nfc.Tag;
 import android.util.Log;
 
 import com.google.api.client.http.GenericUrl;
@@ -25,6 +26,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import ca.udes.bonc.ift_project.communication.HttpHelper;
+import ca.udes.bonc.ift_project.dataObject.Location;
+import ca.udes.bonc.ift_project.dataObject.Place;
 import ca.udes.bonc.ift_project.dataObject.PlacesList;
 
 /**
@@ -33,10 +37,10 @@ import ca.udes.bonc.ift_project.dataObject.PlacesList;
 public class GooglePlaces {
     /** Global instance of the HTTP transport. */
     private static final HttpTransport transport = new ApacheHttpTransport();
-    private final String TAG = "GooglePlaces";
+    private final static String TAG = "GooglePlaces";
 
     // Google API Key
-    private static final String API_KEY = "AIzaSyA9QJInLdgXLWKeBKvty5FTYsvuXkMUKaY";
+    private static final String API_KEY = "AIzaSyBO2R9MekEDkHQNX_5L6s0Y2N4KARLs8Qk";
 
     // Google Places serach url's
     private static final String PLACES_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/search/json?";
@@ -98,12 +102,12 @@ public class GooglePlaces {
         });
     }
 
-    public ArrayList<String> autocomplete (String input) {
-        ArrayList<String> resultList = null;
+    //get json for autocomplete input
+    public ArrayList<Place> autocomplete (String input) {
+        ArrayList<Place> resultList = null;
 
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
-
         try {
             StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
             sb.append("?key=" + API_KEY);
@@ -133,21 +137,43 @@ public class GooglePlaces {
         }
 
         try {
-            // Log.d(TAG, jsonResults.toString());
+             Log.d(TAG, jsonResults.toString());
 
             // Create a JSON object hierarchy from the results
             JSONObject jsonObj = new JSONObject(jsonResults.toString());
             JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
 
             // Extract the Place descriptions from the results
-            resultList = new ArrayList<String>(predsJsonArray.length());
+            resultList = new ArrayList<Place>(predsJsonArray.length());
             for (int i = 0; i < predsJsonArray.length(); i++) {
-                resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
+                resultList.add(new Place(predsJsonArray.getJSONObject(i).getString("description"),predsJsonArray.getJSONObject(i).getString("place_id")));
             }
         } catch (JSONException e) {
             Log.e(TAG, "Cannot process JSON results", e);
         }
 
         return resultList;
+    }
+
+    //getLocation from place
+    public static Location getPlacesLocation(String name){
+        Location placeLocation = null;
+        try {
+            String url = PLACES_DETAILS_URL + "placeid=" + name + "&sensor=false&key=" + API_KEY;
+            HttpURLConnection conn = HttpHelper.createGetURLConnection(url);
+            JSONObject Json = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
+            //Todo handle error here
+            String lat = Json.getJSONObject("result").getJSONObject("geometry").getJSONObject("location").getString("lat");
+            String lng = Json.getJSONObject("result").getJSONObject("geometry").getJSONObject("location").getString("lng");
+            placeLocation = new Location(lat,lng);
+
+        } catch(MalformedURLException e){
+            Log.e(TAG,e.getMessage());
+        } catch(IOException e){
+            Log.e(TAG,e.getMessage());
+        } catch(JSONException e){
+            Log.e(TAG,e.getMessage());
+        }
+        return placeLocation;
     }
 }
