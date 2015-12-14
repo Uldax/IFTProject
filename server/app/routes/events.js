@@ -18,8 +18,8 @@ var evenement = {
                 minLat = lat - radius,
                 maxLng = lng + radius,
                 minLng = lng - radius;
-            console.log("Lattitude" + "min : " + minLat + " max :" + maxLat);
-            console.log("Longitute" + "min : " + minLng + " max :" + maxLng);
+            console.log("Lattitude " + "min : " + minLat + " max :" + maxLat);
+            console.log("Longitute " + "min : " + minLng + " max :" + maxLng);
             Events.find({
                     'position.lat': {
                         $gt: minLat,
@@ -47,8 +47,6 @@ var evenement = {
     find: function(req, res) {
         var criteria = createFindCriteria(req.query);
         var createByMatch = createMatchPopulate(req.query);
-        console.log("criteriaMatch");
-        console.log(createByMatch);
         //At lest one criteria
         if (Object.keys(criteria).length || Object.keys(createByMatch).length) {
             var query = Events.find()
