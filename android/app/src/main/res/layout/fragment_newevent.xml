@@ -159,11 +159,13 @@
             android:numeric="integer"
             android:inputType="number" />
 
-        <EditText
+        <!-- City and Country Selector -->
+        <AutoCompleteTextView
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:ems="10"
-            android:id="@+id/editText2"
+            android:id="@+id/autocomplete"
+            android:hint="Type in your Location"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="5dp"
