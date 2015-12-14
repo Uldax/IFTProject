@@ -38,5 +38,6 @@ router.post('/api/user', users.create);
 
 router.put('/api/admin/user/:id', users.update);
 router.delete('/api/admin/user/:id', users.delete);
-
+//ByPassCheck for devellopment only
+router.delete('/api/admin/events/del/:id', events.delEventAdmin);
 module.exports = router;
