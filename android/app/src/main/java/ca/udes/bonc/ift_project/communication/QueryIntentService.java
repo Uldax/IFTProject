@@ -1,6 +1,10 @@
 package ca.udes.bonc.ift_project.communication;
 
 import android.app.IntentService;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -69,7 +73,7 @@ public abstract class QueryIntentService extends IntentService {
     }
 
     //Create request with token
-    protected HttpURLConnection createGetURLConnection(String url) throws MalformedURLException,IOException{
+    private HttpURLConnection createGetURLConnection(String url) throws MalformedURLException,IOException{
         if(getApiToken().equals("") ) {
             setApiToken(myApplication.getApiToken());
         }
@@ -78,7 +82,7 @@ public abstract class QueryIntentService extends IntentService {
         return conn;
     }
     // String urlParameters  = "param1=a&param2=b&param3=c";
-    protected HttpURLConnection createPostURLConnection(String url,String urlParameters) throws MalformedURLException,IOException{
+    private HttpURLConnection createPostURLConnection(String url,String urlParameters) throws MalformedURLException,IOException{
         if(getApiToken().equals("") ) {
             setApiToken(myApplication.getApiToken());
         }
@@ -101,9 +105,105 @@ public abstract class QueryIntentService extends IntentService {
         return conn;
     }
 
-    protected String readAnswer(HttpURLConnection conn) throws IOException{
-        return  HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+
+    protected JSONObject handleJSONPostResponse(String url,String dataPost){
+        JSONObject json= null;
+        try {
+            HttpURLConnection conn = createPostURLConnection(url, dataPost);
+            json = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
+            conn.disconnect();
+        } catch(JSONException e){
+            Log.e(TAG, e.getMessage());
+        } catch(MalformedURLException e){
+            Log.e(TAG, e.getMessage());
+        }catch(IOException e){
+            Log.e(TAG,e.getMessage());
+        } finally {
+            return json;
+        }
     }
+
+    protected String handlePOSTResponse(String url,String dataPost){
+        String response= null;
+        try {
+            HttpURLConnection conn = createPostURLConnection(url, dataPost);
+            response = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+            conn.disconnect();
+        } catch(MalformedURLException e){
+            Log.e(TAG, e.getMessage());
+        }catch(IOException e){
+            Log.e(TAG,e.getMessage());
+        } finally {
+            return response;
+        }
+    }
+
+    protected String handleGETResponse(String url){
+        String response= null;
+        try {
+            HttpURLConnection conn = createGetURLConnection(url);
+            response = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+            conn.disconnect();
+        } catch(MalformedURLException e){
+            Log.e(TAG, e.getMessage());
+        }catch(IOException e){
+            Log.e(TAG,e.getMessage());
+        } finally {
+            return response;
+        }
+    }
+
+    protected String handleDELETEResponse(String url){
+        String response= null;
+        try {
+            HttpURLConnection conn = createGetURLConnection(url);
+            response = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
+            conn.disconnect();
+        } catch(MalformedURLException e){
+            Log.e(TAG, e.getMessage());
+        }catch(IOException e){
+            Log.e(TAG,e.getMessage());
+        } finally {
+            return response;
+        }
+    }
+
+    protected JSONObject handleJSONGetResponse(String url){
+        JSONObject json= null;
+        try {
+            HttpURLConnection conn = createGetURLConnection(url);
+            json = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
+            conn.disconnect();
+        } catch(JSONException e){
+            Log.e(TAG, e.getMessage());
+        } catch(MalformedURLException e){
+            Log.e(TAG, e.getMessage());
+        }catch(IOException e){
+            Log.e(TAG,e.getMessage());
+        } finally {
+            return json;
+        }
+    }
+
+    protected JSONObject handleJSONDeleteResponse(String url){
+        JSONObject json= null;
+        try {
+            HttpURLConnection conn = createGetURLConnection(url);
+            conn.setRequestMethod("DELETE");
+            json = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
+            conn.disconnect();
+        } catch(JSONException e){
+            Log.e(TAG, e.getMessage());
+        } catch(MalformedURLException e){
+            Log.e(TAG, e.getMessage());
+        }catch(IOException e){
+            Log.e(TAG,e.getMessage());
+        } finally {
+            return json;
+        }
+    }
+
+
 
 
 }

@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -38,13 +40,9 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_LAT, latitude);
         context.startService(intent);
     }
-
-    private String handleActionGetMarkers(String lat, String longitude) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createGetURLConnection("/api/events?lat=" + lat + "&lng=" + longitude);
-        Log.i(TAG, "call to/api/events?lat=" + lat + "&long=" + longitude);
-        String html = readAnswer(conn);
-        conn.disconnect();
-        return html;
+    private String handleActionGetMarkers(String lat, String longitude) {
+        String jsonAnswer = this.handleGETResponse("/api/events?lat=" + lat + "&lng=" + longitude);
+        return jsonAnswer;
     }
 
     public static void startActionGetMarkersByRadius(Context context,ResultReceiver mReceiver, String longitude, String latitude,int radius) {
@@ -57,11 +55,9 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_RADIUS, radius);
         context.startService(intent);
     }
-    private String handleActionGetMarkersByRadius(String lat, String longitude,int radius) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createGetURLConnection("/api/events?lat=" + lat + "&lng=" + longitude + "&radius=" + radius);
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        conn.disconnect();
-        return html;
+    private String handleActionGetMarkersByRadius(String lat, String longitude,int radius) {
+        String jsonAnswer = this.handleGETResponse("/api/events?lat=" + lat + "&lng=" + longitude + "&radius=" + radius);
+        return jsonAnswer;
     }
 
     //note : searchString => ?type=X&category=Y&title=Z etc...
@@ -74,12 +70,9 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_SEARCH, searchString);
         context.startService(intent);
     }
-
-    private String handleActionFindEvent(String searchString) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createGetURLConnection("/api/find" + searchString);
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        conn.disconnect();
-        return html;
+    private String handleActionFindEvent(String searchString) {
+        String jsonAnswer = this.handleGETResponse("/api/find" + searchString);
+        return jsonAnswer;
     }
 
     public static void startActionGetOneEvent(Context context,ResultReceiver mReceiver, String eventId) {
@@ -91,12 +84,9 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_EVENT_ID, eventId);
         context.startService(intent);
     }
-
-    private String handleActionGetOneEvent(String id) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createGetURLConnection("/api/events/" + id);
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        conn.disconnect();
-        return html;
+    private String handleActionGetOneEvent(String id) {
+        String jsonAnswer = this.handleGETResponse("/api/events/" + id);
+        return jsonAnswer;
     }
 
     public static void startActionCreateEvent(Context context, ResultReceiver mReceiver, String longitude, String latitude, String title, String category, int maxPart,String type) {
@@ -113,21 +103,10 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_EVENT_TYPE, type) ;
         context.startService(intent);
     }
-
-    private String handleActionCreateEvent(String dataPost) throws MalformedURLException,IOException,JSONException {
-        Log.d(TAG, "Call createEvent with " + dataPost);
-        HttpURLConnection conn = createPostURLConnection("/api/events/create", dataPost);
-        JSONObject json = HttpHelper.readAllJSON(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        //Use getString if it's an error for the data to be missing, or optString if you're not sure if it will be there.
-        String error = json.optString ("error");
-        String message = null;
-        if(error != ""){
-            Log.e(TAG, "message receive from api = " + error);
-        } else{
-            message = json.getString ("message");
-        }
-        conn.disconnect();
-        return message;
+    private String handleActionCreateEvent(String dataPOST) {
+        Log.d(TAG, "Call createEvent with " + dataPOST);
+        String jsonAnswer = this.handlePOSTResponse("/api/events/create", dataPOST);
+        return jsonAnswer;
     }
 
     public static void startActionDeleteEvent(Context context, ResultReceiver mReceiver, String eventID) {
@@ -139,14 +118,12 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_EVENT_ID, eventID);
         context.startService(intent);
     }
-    private String handleActionDeleteEvent(String id) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createGetURLConnection("/api/events/del/" + id);
-        conn.setRequestMethod("DELETE");
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        conn.disconnect();
-        return html;
+    private String handleActionDeleteEvent(String id) {
+        String jsonAnswer = this.handleDELETEResponse("/api/events/del/" + id);
+        return jsonAnswer;
     }
 
+    //POST
     public static void startActionAddParticipant(Context context, ResultReceiver mReceiver, String eventID,String userID) {
         //binding to the service with startService()
         Log.d(TAG, "Start add participant");
@@ -157,13 +134,9 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_USER_ID, userID);
         context.startService(intent);
     }
-    //post
-
-    private String handleActionAddParticipant(String idEvent,String idParticipant) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/addParticipant", HttpHelper.encodeParamUTF8("idParticipant", idParticipant));
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        conn.disconnect();
-        return html;
+    private String handleActionAddParticipant(String idEvent,String idParticipant) {
+        String jsonAnswer = this.handlePOSTResponse("/api/events/" + idEvent + "/addParticipant", HttpHelper.encodeParamUTF8("idParticipant", idParticipant));
+        return jsonAnswer;
     }
 
     public static void startActionCreateTeam(Context context, ResultReceiver mReceiver, String eventID,String teamName) {
@@ -177,11 +150,9 @@ public class QueryEventService extends QueryIntentService {
         context.startService(intent);
     }
 
-    private String handleActionCreateTeam(String idEvent,String name) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/createTeam", HttpHelper.encodeParamUTF8("name", name));
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        conn.disconnect();
-        return html;
+    private String handleActionCreateTeam(String idEvent,String name) {
+        String jsonAnswer = this.handlePOSTResponse("/api/events/" + idEvent + "/createTeam", HttpHelper.encodeParamUTF8("name", name));
+        return jsonAnswer;
     }
 
     public static void startActionShuffleParticipants(Context context, ResultReceiver mReceiver, String eventID,String teamName) {
@@ -195,11 +166,9 @@ public class QueryEventService extends QueryIntentService {
         context.startService(intent);
     }
 
-    private String handleActionShuffleParticipants(String idEvent,String name) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/shuffleParticipants", HttpHelper.encodeParamUTF8("name", name));
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        conn.disconnect();
-        return html;
+    private String handleActionShuffleParticipants(String idEvent,String name) {
+        String jsonAnswer = this.handlePOSTResponse("/api/events/" + idEvent + "/shuffleParticipants", HttpHelper.encodeParamUTF8("name", name));
+        return jsonAnswer;
     }
 
 
@@ -215,11 +184,9 @@ public class QueryEventService extends QueryIntentService {
         context.startService(intent);
     }
 
-    private String handleActionAddAdmin(String idEvent,String idAdmin) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/addAdmin", HttpHelper.encodeParamUTF8("idAdmin", idAdmin));
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        conn.disconnect();
-        return html;
+    private String handleActionAddAdmin(String idEvent,String idAdmin) {
+        String jsonAnswer = this.handlePOSTResponse("/api/events/" + idEvent + "/addAdmin", HttpHelper.encodeParamUTF8("idAdmin", idAdmin));
+        return jsonAnswer;
     }
 
     public static void startActionRemoveParticipant(Context context, ResultReceiver mReceiver, String eventID,String userID) {
@@ -232,12 +199,10 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_USER_ID, userID);
         context.startService(intent);
     }
-    //post
-    private String handleActionRemoveParticipant(String idEvent,String idParticipant) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/removeParticipant", HttpHelper.encodeParamUTF8("idParticipant", idParticipant));
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        conn.disconnect();
-        return html;
+    //POST
+    private String handleActionRemoveParticipant(String idEvent,String idParticipant) {
+        String jsonAnswer = this.handlePOSTResponse("/api/events/" + idEvent + "/removeParticipant", HttpHelper.encodeParamUTF8("idParticipant", idParticipant));
+        return jsonAnswer;
     }
 
     public static void startActionFindForUser(Context context, ResultReceiver mReceiver,String userID) {
@@ -250,11 +215,9 @@ public class QueryEventService extends QueryIntentService {
         context.startService(intent);
     }
 
-    private String handleActionFindForUser(String idUser) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createGetURLConnection("/api/events/user/" + idUser);
-        String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
-        conn.disconnect();
-        return html;
+    private String handleActionFindForUser(String idUser) {
+        String jsonAnswer = this.handleGETResponse("/api/events/user/" + idUser);
+        return jsonAnswer;
     }
 
     /**
@@ -263,20 +226,25 @@ public class QueryEventService extends QueryIntentService {
      */
 
     //TODO : handle date
-    //Take the intent and return the correct dataPost string to create an event
-    private String formatCreateEventParameters(Intent intent) throws UnsupportedEncodingException {
+    //Take the intent and return the correct dataPOST string to create an event
+    private String formatCreateEventParameters(Intent intent)  {
         final String userId = myApplication.getUserId();
-        //todo add
-        final String eventDate = intent.getStringExtra(EXTRA_EVENT_DATE);
-        String postData = "category=" + URLEncoder.encode(intent.getStringExtra(EXTRA_CATEGORY), "UTF-8") +
-                "&createBy="+ URLEncoder.encode(userId, "UTF-8") +
-                "&admin=" + URLEncoder.encode(userId, "UTF-8") +
-                "&start=" + URLEncoder.encode("01/01/2016", "UTF-8") +
-                "&lat=" + URLEncoder.encode(intent.getStringExtra(EXTRA_LAT), "UTF-8") +
-                "&lng=" + URLEncoder.encode(intent.getStringExtra(EXTRA_LNG), "UTF-8") +
-                "&title=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TITLE), "UTF-8") +
-                "&maxParticipants=" + URLEncoder.encode(String.valueOf(intent.getIntExtra(EXTRA_MAX_PARTICIPANTS, 1)), "UTF-8") +
-                "&type=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TYPE), "UTF-8") ;
+        String postData = null;
+        //todo add date
+        try {
+            final String eventDate = intent.getStringExtra(EXTRA_EVENT_DATE);
+            postData = "category=" + URLEncoder.encode(intent.getStringExtra(EXTRA_CATEGORY), "UTF-8") +
+                    "&createBy=" + URLEncoder.encode(userId, "UTF-8") +
+                    "&admin=" + URLEncoder.encode(userId, "UTF-8") +
+                    "&start=" + URLEncoder.encode("01/01/2016", "UTF-8") +
+                    "&lat=" + URLEncoder.encode(intent.getStringExtra(EXTRA_LAT), "UTF-8") +
+                    "&lng=" + URLEncoder.encode(intent.getStringExtra(EXTRA_LNG), "UTF-8") +
+                    "&title=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TITLE), "UTF-8") +
+                    "&maxParticipants=" + URLEncoder.encode(String.valueOf(intent.getIntExtra(EXTRA_MAX_PARTICIPANTS, 1)), "UTF-8") +
+                    "&type=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TYPE), "UTF-8");
+        } catch (UnsupportedEncodingException e){
+            Log.e(TAG,e.getMessage());
+        }
         return postData;
     }
 
@@ -290,63 +258,81 @@ public class QueryEventService extends QueryIntentService {
             final ResultReceiver receiver = intent.getParcelableExtra(EXTRA_RECEIVER);
             String action = intent.getAction();
             Bundle b = new Bundle();
-            String result;
-            try {
+            String response = null;
+            JSONArray  responseJsonArray;
+            JSONObject responseJsonObject;
+            try{
                 //receiver.send will call onReceiveResult in the activity
                 //switch on string only in java 1.7
                 receiver.send(STATUS_RUNNING, Bundle.EMPTY);
                 if(action.equals(ACTION_GET_MARKERS)) {
                     final String longitude = intent.getStringExtra(EXTRA_LNG);
                     final String lat = intent.getStringExtra(EXTRA_LAT);
-                    result = handleActionGetMarkers(lat,longitude);
+                    response = handleActionGetMarkers(lat,longitude);
                 } else if(action.equals(ACTION_GET_MARKERS_RADIUS)) {
                     final String longitude = intent.getStringExtra(EXTRA_LNG);
                     final String lat = intent.getStringExtra(EXTRA_LAT);
                     final int radius = intent.getIntExtra(EXTRA_RADIUS,100);
-                    result = handleActionGetMarkersByRadius(lat, longitude,radius);
+                    response = handleActionGetMarkersByRadius(lat, longitude,radius);
                 } else if(action.equals(ACTION_CREATE_EVENT)) {
-                    final String dataPost = formatCreateEventParameters(intent);
-                        result = handleActionCreateEvent(dataPost);
+                    final String dataPOST = formatCreateEventParameters(intent);
+                    response = handleActionCreateEvent(dataPOST);
                 } else if(action.equals(ACTION_FIND_EVENT)){
                     final String searchString = intent.getStringExtra(EXTRA_SEARCH);
-                        result = handleActionFindEvent(searchString);
+                    response = handleActionFindEvent(searchString);
                 } else if(action.equals(ACTION_GET_ONE)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                        result = handleActionGetOneEvent(eventID);
+                    response = handleActionGetOneEvent(eventID);
                 } else if(action.equals( ACTION_DELETE_EVENT)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                        result = handleActionDeleteEvent(eventID);
+                    response = handleActionDeleteEvent(eventID);
                 } else if(action.equals( ACTION_ADD_EVENT_PARTICIPANT)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                        result = handleActionAddParticipant(eventID,userID);
+                    response = handleActionAddParticipant(eventID,userID);
                 }else if(action.equals( ACTION_ADD_EVENT_ADMIN)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                        result = handleActionAddAdmin(eventID, userID);
+                    response = handleActionAddAdmin(eventID, userID);
                 } else if(action.equals( ACTION_REMOVE_EVENT_PARTICIPANT)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                        result = handleActionRemoveParticipant(eventID,userID);
+                    response = handleActionRemoveParticipant(eventID,userID);
                 } else if(action.equals( ACTION_FIND_EVENT_USER)){
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                        result = handleActionFindForUser(userID);
-                } else {
-                    result = "action doesn't exists";
+                    response = handleActionFindForUser(userID);
                 }
-                if(result == null){
-                    b.putString(Intent.EXTRA_TEXT, "error");
+
+                //Return the response
+                if(response == null){
+                    b.putString(Intent.EXTRA_TEXT, "internal error");
                     receiver.send(STATUS_ERROR, b);
+                } else {
+                    //convert to json to check error
+                    Object json = new JSONTokener(response).nextValue();
+                    if (json instanceof JSONObject){
+                        responseJsonObject = (JSONObject)json;
+                        if( responseJsonObject.has("error")){
+                            b.putString(Intent.EXTRA_TEXT, responseJsonObject.getString("error"));
+                            receiver.send(STATUS_ERROR, b);
+                        } else {
+                            b.putString("results", response.toString());
+                            receiver.send(STATUS_FINISHED, b);
+                        }
+                    }
+                    else if (json instanceof JSONArray){
+                        //empty array , if array no error
+                        responseJsonArray = (JSONArray)json;
+                        b.putString("results", response.toString());
+                        receiver.send(STATUS_FINISHED, b);
+                    }
+
                 }
-                else {
-                    b.putString("results", result);
-                    receiver.send(STATUS_FINISHED, b);
-                    Log.i(TAG, "receiver send");
-                }
-            } catch(Exception e) {
-                b.putString(Intent.EXTRA_TEXT, e.toString());
-                receiver.send(STATUS_ERROR, b);
+
+            } catch (JSONException e){
+                Log.e(TAG,e.getMessage() + "on handle");
             }
+
         }
     }
 }

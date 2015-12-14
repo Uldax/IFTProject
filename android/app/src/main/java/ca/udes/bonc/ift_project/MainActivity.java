@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -191,20 +192,17 @@ implements NavigationView.OnNavigationItemSelectedListener,
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch (resultCode) {
             case QueryIntentService.STATUS_RUNNING:
-                Log.i(TAG, "Runing status");
                 //show progress
                 break;
             case QueryIntentService.STATUS_FINISHED:
                 String results = resultData.getString("results");
-                Log.i(TAG, "result status =");
                 Log.i(TAG, results);
                 // do something interesting
                 // hide progress
                 break;
             case QueryIntentService.STATUS_ERROR:
-                //todo handl error
                 String error = resultData.getString(Intent.EXTRA_TEXT);
-                Log.e(TAG, "error = " + error);
+                Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
