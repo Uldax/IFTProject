@@ -9,15 +9,19 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
 import ca.udes.bonc.ift_project.R;
+import ca.udes.bonc.ift_project.adapter.PlacesAutoCompleteAdapter;
 import ca.udes.bonc.ift_project.dataObject.Categories;
 
 /**
@@ -92,6 +96,19 @@ public class NewEventFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 openDatePicker();
+            }
+        });
+
+        //Autocomplete
+        AutoCompleteTextView autocompleteView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
+        autocompleteView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item));
+        autocompleteView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get data associated with the specified position
+                // in the list (AdapterView)
+                String description = (String) parent.getItemAtPosition(position);
+                Toast.makeText(getActivity(), description, Toast.LENGTH_SHORT).show();
             }
         });
         return view;

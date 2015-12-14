@@ -50,7 +50,7 @@ public class QueryEventService extends QueryIntentService {
     public static void startActionGetMarkersByRadius(Context context,ResultReceiver mReceiver, String longitude, String latitude,int radius) {
         //binding to the service with startService()
         Intent intent = new Intent(context, QueryEventService.class);
-        intent.setAction(ACTION_GET_MARKERS);
+        intent.setAction(ACTION_GET_MARKERS_RADIUS);
         intent.putExtra(EXTRA_RECEIVER, mReceiver);
         intent.putExtra(EXTRA_LNG, longitude);
         intent.putExtra(EXTRA_LAT, latitude);
@@ -260,33 +260,38 @@ public class QueryEventService extends QueryIntentService {
                     final String longitude = intent.getStringExtra(EXTRA_LNG);
                     final String lat = intent.getStringExtra(EXTRA_LAT);
                     result = handleActionGetMarkers(lat,longitude);
+                } else if(action.equals(ACTION_GET_MARKERS_RADIUS)) {
+                    final String longitude = intent.getStringExtra(EXTRA_LNG);
+                    final String lat = intent.getStringExtra(EXTRA_LAT);
+                    final int radius = intent.getIntExtra(EXTRA_RADIUS,100);
+                    result = handleActionGetMarkersByRadius(lat, longitude,radius);
                 } else if(action.equals(ACTION_CREATE_EVENT)) {
                     final String dataPost = formatCreateEventParameters(intent);
-                    result = handleActionCreateEvent(dataPost);
+                        result = handleActionCreateEvent(dataPost);
                 } else if(action.equals(ACTION_FIND_EVENT)){
                     final String searchString = intent.getStringExtra(EXTRA_SEARCH);
-                    result = handleActionFindEvent(searchString);
+                        result = handleActionFindEvent(searchString);
                 } else if(action.equals(ACTION_GET_ONE)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                    result = handleActionGetOneEvent(eventID);
+                        result = handleActionGetOneEvent(eventID);
                 } else if(action.equals( ACTION_DELETE_EVENT)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                    result = handleActionDeleteEvent(eventID);
+                        result = handleActionDeleteEvent(eventID);
                 } else if(action.equals( ACTION_ADD_EVENT_PARTICIPANT)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                    result = handleActionAddParticipant(eventID,userID);
+                        result = handleActionAddParticipant(eventID,userID);
                 }else if(action.equals( ACTION_ADD_EVENT_ADMIN)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                    result = handleActionAddAdmin(eventID, userID);
+                        result = handleActionAddAdmin(eventID, userID);
                 } else if(action.equals( ACTION_REMOVE_EVENT_PARTICIPANT)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                    result = handleActionRemoveParticipant(eventID,userID);
+                        result = handleActionRemoveParticipant(eventID,userID);
                 } else if(action.equals( ACTION_FIND_EVENT_USER)){
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                    result = handleActionFindForUser(userID);
+                        result = handleActionFindForUser(userID);
                 } else {
                     result = "action doesn't exists";
                 }
