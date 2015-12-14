@@ -257,24 +257,26 @@ public class QueryEventService extends QueryIntentService {
         return html;
     }
 
-    public static void startActionFind(Context context,ResultReceiver mReceiver, String categorie, String name, String date, String author, String mode) {
+    public static void startActionFind(Context context,ResultReceiver mReceiver, String category, String name, String date, String author, String mode) {
         //binding to the service with startService()
         Intent intent = new Intent(context, QueryEventService.class);
         intent.setAction(ACTION_FIND);
         intent.putExtra(EXTRA_RECEIVER, mReceiver);
-        intent.putExtra(EXTRA_EVENT_CATEGORIE, categorie);
+        intent.putExtra(EXTRA_EVENT_CATEGORIE, category);
         intent.putExtra(EXTRA_EVENT_NAME, name);
         intent.putExtra(EXTRA_EVENT_DATE, date);
         intent.putExtra(EXTRA_EVENT_AUTHOR, author);
         intent.putExtra(EXTRA_EVENT_MODE, mode);
         context.startService(intent);
     }
-    private String handleActionFind(String categorie, String name,String date, String author, String mode) throws MalformedURLException,IOException {
+    private String handleActionFind(String category, String name,String date, String author, String mode) throws MalformedURLException,IOException {
         String path = "/api/events/find?";
-        if(!categorie.equals(""))
-            path+="categorie=" + categorie + "&";
+        if(!category.equals(""))
+            path+="category=" + category + "&";
         if(!date.equals(""))
             path+="date=" + date + "&";
+        if(!name.equals(""))
+            path+="name=" + name + "&";
         if(!author.equals(""))
             path+="author=" + author + "&";
         if(!mode.equals(""))

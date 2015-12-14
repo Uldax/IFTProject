@@ -138,6 +138,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
         QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.385734837128865", "Go to play44", Categories.FOOTBALL, 12, Types.LOISIR);
         QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "44.385734837128865", "EVERYTHING IS AWSOMER", Categories.HOCKEY, 12, Types.LOISIR);
         QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "46.385734837128865", "Let's talk dirty", Categories.SOCIAL, 12, Types.LOISIR);
+        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.395734837128865", "Let's talk dirtier", Categories.RANDO, 12, Types.COMPETITIF);
         //QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
 
         if (checkPlayServices()) {
