@@ -188,19 +188,19 @@ public class SearchFragment extends Fragment implements RestApiResultReceiver.Re
         String name;
         String date;
         String author;
-        String categorie;
+        String category;
         String mode;
 
-        categorie = spinnerCateg.getSelectedItem().toString();
-        if (categorie.equals(Categories.CHOISIR))
-            categorie="";
+        category = spinnerCateg.getSelectedItem().toString();
+        if (category.equals(Categories.CHOISIR))
+            category="";
         name = txtName.getText().toString();
         author = txtAuthor.getText().toString();
         date = edDate.getText().toString();
         mode = swCompet.isChecked() ? "competitif" : "loisir";
 
-        Log.i(TAG, "search for categorie=" + categorie + ", name=" + name + ", author=" + author + ", date=" + date + ", mode=" + mode);
-        QueryEventService.startActionFind(getContext(), mReceiver, categorie, name, date, author, mode);
+        Log.i(TAG, "search for category=" + category + ", name=" + name + ", author=" + author + ", date=" + date + ", mode=" + mode);
+        QueryEventService.startActionFind(getContext(), mReceiver, category, name, date, author, mode);
     }
 
     public void onReceiveResult(int resultCode, Bundle resultData) {
