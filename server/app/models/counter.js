@@ -15,4 +15,12 @@ userIncrement.seq = 0;
 userIncrement.save(function(err) {
     if(err) console.log(err.err);
 });
+
+var teamIncrement = new Counter();
+teamIncrement._id ="teamid";
+teamIncrement.seq = 0;
+//Must do this in first use
+teamIncrement.save(function(err) {
+    if(err) console.log(err.err);
+});
 module.exports = Counter;

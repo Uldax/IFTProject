@@ -15,6 +15,8 @@ public abstract class QueryIntentService extends IntentService {
     protected static final String ACTION_GET_MARKERS = "ca.udes.bonc.ift_project.action.getMarkers";
     protected static final String ACTION_FIND_EVENT = "ca.udes.bonc.ift_project.action.findEvent";
     protected static final String ACTION_GET_ONE = "ca.udes.bonc.ift_project.action.getOneEvent";
+    protected static final String ACTION_CREATE_TEAM = "ca.udes.bonc.ift_project.action.createTeam";
+    protected static final String ACTION_SHUFFLE_PARTICIPANTS = "ca.udes.bonc.ift_project.action.shuffleParticipants";
     protected static final String ACTION_ADD_EVENT_PARTICIPANT = "ca.udes.bonc.ift_project.action.addParticipant";
     protected static final String ACTION_REMOVE_EVENT_PARTICIPANT = "ca.udes.bonc.ift_project.action.removeParticipant";
     protected static final String ACTION_ADD_EVENT_ADMIN = "ca.udes.bonc.ift_project.action.addAdmin";
@@ -37,6 +39,7 @@ public abstract class QueryIntentService extends IntentService {
     protected static final String EXTRA_EVENT_TYPE = "ca.udes.bonc.ift_project.extra.event.type";
     protected static final String EXTRA_EVENT_ID = "ca.udes.bonc.ift_project.extra.event.id";
     protected static final String EXTRA_USER_ID = "ca.udes.bonc.ift_project.extra.user.id";
+    protected static final String EXTRA_TEAM_NAME = "ca.udes.bonc.ift_project.extra.team.name";
 
 
     public static final int STATUS_RUNNING = 1;

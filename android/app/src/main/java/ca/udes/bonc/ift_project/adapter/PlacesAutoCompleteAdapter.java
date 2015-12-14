@@ -7,14 +7,15 @@ import android.widget.Filterable;
 
 import java.util.ArrayList;
 
+import ca.udes.bonc.ift_project.dataObject.Place;
 import ca.udes.bonc.ift_project.utils.GooglePlaces;
 
 /**
  * Created by pcontat on 13/12/2015.
  */
-public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
+public class PlacesAutoCompleteAdapter extends ArrayAdapter<Place> implements Filterable {
 
-    ArrayList<String> resultList;
+    ArrayList<Place> resultList;
 
     Context mContext;
     int mResource;
@@ -35,7 +36,7 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements F
     }
 
     @Override
-    public String getItem(int position) {
+    public Place getItem(int position) {
         return resultList.get(position);
     }
 

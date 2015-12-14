@@ -35,7 +35,7 @@ import com.google.android.gms.common.api.Status;
 
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
-import ca.udes.bonc.ift_project.communication.QuickstartPreferences;
+import ca.udes.bonc.ift_project.communication.QuickStartPreferences;
 import ca.udes.bonc.ift_project.communication.RegistrationIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.dataObject.Categories;
@@ -139,7 +139,6 @@ implements NavigationView.OnNavigationItemSelectedListener,
         QueryEventService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", Categories.HOCKEY, 12, Types.LOISIR);
         QueryEventService.startActionCreateEvent(this, mReceiver, "10.2", "23", "Let's talk", Categories.SOCIAL, 12, Types.LOISIR);
         //QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
-
 
         if (checkPlayServices()) {
             Log.i(TAG, "service disponible");
