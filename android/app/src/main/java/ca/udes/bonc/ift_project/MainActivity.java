@@ -129,9 +129,9 @@ implements NavigationView.OnNavigationItemSelectedListener,
 
         //test
         //TODO define category and get date from datepicker
-        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.385734837128865", "Go to play4", Categories.FOOTBALL, 12, Types.LOISIR);
-        QueryEventService.startActionCreateEvent(this, mReceiver, "10.2", "23", "EVERYTHING IS AWSOME", Categories.HOCKEY, 12, Types.LOISIR);
-        QueryEventService.startActionCreateEvent(this, mReceiver, "10.2", "23", "Let's talk", Categories.SOCIAL, 12, Types.LOISIR);
+        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.385734837128865", "Go to play44", Categories.FOOTBALL, 12, Types.LOISIR);
+        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "44.385734837128865", "EVERYTHING IS AWSOMER", Categories.HOCKEY, 12, Types.LOISIR);
+        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "46.385734837128865", "Let's talk dirty", Categories.SOCIAL, 12, Types.LOISIR);
         //QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
 
         if (checkPlayServices()) {
@@ -202,7 +202,9 @@ implements NavigationView.OnNavigationItemSelectedListener,
                 break;
             case QueryIntentService.STATUS_ERROR:
                 String error = resultData.getString(Intent.EXTRA_TEXT);
-                Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+                if( ! error.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }

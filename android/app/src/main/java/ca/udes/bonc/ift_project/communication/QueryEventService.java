@@ -103,11 +103,13 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_EVENT_TYPE, type) ;
         context.startService(intent);
     }
+
     private String handleActionCreateEvent(String dataPOST) {
         Log.d(TAG, "Call createEvent with " + dataPOST);
         String jsonAnswer = this.handlePOSTResponse("/api/events/create", dataPOST);
         return jsonAnswer;
     }
+
 
     public static void startActionDeleteEvent(Context context, ResultReceiver mReceiver, String eventID) {
         //binding to the service with startService()
@@ -220,6 +222,34 @@ public class QueryEventService extends QueryIntentService {
         return jsonAnswer;
     }
 
+    public static void startActionFind(Context context,ResultReceiver mReceiver, String categorie, String name, String date, String author, String mode) {
+        //binding to the service with startService()
+        Intent intent = new Intent(context, QueryEventService.class);
+        intent.setAction(ACTION_FIND);
+        intent.putExtra(EXTRA_RECEIVER, mReceiver);
+        intent.putExtra(EXTRA_EVENT_CATEGORIE, categorie);
+        intent.putExtra(EXTRA_EVENT_NAME, name);
+        intent.putExtra(EXTRA_EVENT_DATE, date);
+        intent.putExtra(EXTRA_EVENT_AUTHOR, author);
+        intent.putExtra(EXTRA_EVENT_MODE, mode);
+        context.startService(intent);
+    }
+    private String handleActionFind(String categorie, String name,String date, String author, String mode)  {
+        String path = "/api/events/find?";
+        if(!categorie.equals(""))
+            path+="categorie=" + categorie + "&";
+        if(!date.equals(""))
+            path+="date=" + date + "&";
+        if(!author.equals(""))
+            path+="author=" + author + "&";
+        if(!mode.equals(""))
+            path+="type=" + mode + "&";
+
+        Log.i(TAG, path);
+        String html = this.handleGETResponse(path);
+        return html;
+    }
+
     /**
      * Handle action Markers in the provided background thread with the provided
      * parameters.
@@ -259,7 +289,6 @@ public class QueryEventService extends QueryIntentService {
             String action = intent.getAction();
             Bundle b = new Bundle();
             String response = null;
-            JSONArray  responseJsonArray;
             JSONObject responseJsonObject;
             try{
                 //receiver.send will call onReceiveResult in the activity
@@ -301,8 +330,14 @@ public class QueryEventService extends QueryIntentService {
                 } else if(action.equals( ACTION_FIND_EVENT_USER)){
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
                     response = handleActionFindForUser(userID);
+                } else if(action.equals( ACTION_FIND)){
+                    final String categorie = intent.getStringExtra(EXTRA_EVENT_CATEGORIE);
+                    final String name = intent.getStringExtra(EXTRA_EVENT_NAME);
+                    final String date = intent.getStringExtra(EXTRA_EVENT_DATE);
+                    final String author = intent.getStringExtra(EXTRA_EVENT_AUTHOR);
+                    final String mode = intent.getStringExtra(EXTRA_EVENT_MODE);
+                    response = handleActionFind(categorie, name, date, author, mode);
                 }
-
                 //Return the response
                 if(response == null){
                     b.putString(Intent.EXTRA_TEXT, "internal error");
@@ -322,15 +357,14 @@ public class QueryEventService extends QueryIntentService {
                     }
                     else if (json instanceof JSONArray){
                         //empty array , if array no error
-                        responseJsonArray = (JSONArray)json;
                         b.putString("results", response.toString());
                         receiver.send(STATUS_FINISHED, b);
                     }
 
                 }
-
             } catch (JSONException e){
-                Log.e(TAG,e.getMessage() + "on handle");
+                Log.e(TAG, e.getMessage() );
+                receiver.send(STATUS_ERROR, b);
             }
 
         }
