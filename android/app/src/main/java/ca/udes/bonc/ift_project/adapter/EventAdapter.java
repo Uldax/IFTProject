@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.List;
 
+import ca.udes.bonc.ift_project.IFTApplication;
 import ca.udes.bonc.ift_project.R;
 import ca.udes.bonc.ift_project.dataObject.Categories;
 import ca.udes.bonc.ift_project.dataObject.Event;
@@ -24,12 +25,14 @@ public class EventAdapter extends ArrayAdapter<Event> {
     Context context;
     int layoutResourceId;
     private List<Event> data;
+    private String idUser;
 
-    public EventAdapter(Context context, int layoutResourceId, List<Event> data) {
+    public EventAdapter(Context context, int layoutResourceId, List<Event> data, String idUser) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
         this.data = data;
+        this.idUser = idUser;
 
         Log.i("EventAdapter", "Created View");
     }
@@ -62,7 +65,10 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         holder.title.setText(event.getTitle());
         holder.date.setText(DateFormat.format("d MMM @ kk:mm", event.getDate()));
-        holder.author.setText("By "+event.getAuthor());
+        if((event.getAuthorName()!=null)&&(event.getAuthorName().isEmpty()))
+            holder.author.setText("By "+event.getAuthorName());
+        else
+            holder.author.setText("By "+event.getAuthorID());
 
         switch (event.getCategory()){
             case Categories.FOOTBALL :
@@ -75,8 +81,10 @@ public class EventAdapter extends ArrayAdapter<Event> {
                 holder.image.setImageResource(R.drawable.social);
                 break;
         }
-        if (true) holder.star.setVisibility(View.VISIBLE);
-        else holder.star.setVisibility(View.GONE);
+        if (idUser.equals(event.getAuthorID()))
+            holder.star.setVisibility(View.VISIBLE);
+        else
+            holder.star.setVisibility(View.GONE);
 
         return row;
     }

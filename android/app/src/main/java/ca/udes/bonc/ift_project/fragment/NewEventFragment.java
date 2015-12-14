@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
@@ -40,6 +41,7 @@ public class NewEventFragment extends Fragment {
     private int currentMonth;
     private int currentDay;
     private EditText edDate;
+    private Spinner spinnerCateg;
 
     /**
      * Use this factory method to create a new instance of
@@ -81,6 +83,8 @@ public class NewEventFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_newevent, container, false);
         this.edDate = (EditText) view.findViewById(R.id.edDate);
+        this.spinnerCateg = (Spinner) view.findViewById(R.id.spinnerCategory);
+        //this.spinnerCateg.set
         edDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

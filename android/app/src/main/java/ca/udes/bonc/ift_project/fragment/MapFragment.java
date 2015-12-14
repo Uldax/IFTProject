@@ -33,9 +33,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import ca.udes.bonc.ift_project.IFTApplication;
 import ca.udes.bonc.ift_project.R;
 import ca.udes.bonc.ift_project.adapter.EventAdapter;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
@@ -121,27 +121,7 @@ public class MapFragment extends Fragment implements
         mReceiver = new RestApiResultReceiver(new Handler());
         mReceiver.setReceiver(this);
 
-       gps = new GPSTracker(getActivity()){
-            @Override
-            public void onLocationChanged(Location location) {
-                Log.i("map", "location change");
-                if(mMap != null) {
-                    mMap.clear();
-                    //TodoRemove
-                    MarkerOptions mp = new MarkerOptions();
-                    mp.position(new LatLng(location.getLatitude(), location.getLongitude()));
-                    mp.title("my position");
-                    mMap.addMarker(mp);
-                    Log.d("map", "Perform scearch");
-                    // calling background Async task to load Google Places
-                    // After getting places from Google all the data is shown in listview
-                    //TODO perform search in asycTask
-                    //new LoadPlaces(location).execute();
-                } else {
-                    Log.e("location change","map is not already defined");
-                }
-            }
-        };
+       gps = new GPSTracker(getActivity());
     }
 
     @Override
@@ -184,7 +164,7 @@ public class MapFragment extends Fragment implements
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Marker m = listMarker.get(i);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 12));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 14));
             }
         });
         return myView;
@@ -201,12 +181,13 @@ public class MapFragment extends Fragment implements
         } else if (mMap != null) {
             mMap.setMyLocationEnabled(true);
         }
-        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude()), 10));
+        gps.start();
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gps.getLatitude(),gps.getLongitude()), 14));
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 Log.i("maps Cam change", "Camera : " + cameraPosition.target.latitude + " - " + cameraPosition.target.longitude);
-                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude),String.valueOf(cameraPosition.target.latitude), 1000000000);
+                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude),String.valueOf(cameraPosition.target.latitude), 100);
             }
         });
         //QueryEventService.startActionGetMarkers(getContext(), mReceiver, "10.2", "23");
@@ -266,7 +247,7 @@ public class MapFragment extends Fragment implements
                 String results = resultData.getString("results");
                 this.progressBar.setVisibility(View.GONE);
                 Log.i(TAG, "result = " + results);
-                updateEventList(ConvertJson.convert_event(results));
+                updateEventList(ConvertJson.convert_list_event(results));
                 break;
             case QueryIntentService.STATUS_ERROR:
                 //todo handl error
@@ -294,7 +275,7 @@ public class MapFragment extends Fragment implements
             listMarker.add(mMap.addMarker(new MarkerOptions().position(new LatLng(e.getLatitude(), e.getLongitude())).title(e.getTitle())));
         }
 
-        adapter = new EventAdapter(getContext(),R.layout.adapter_event, listEvent);
+        adapter = new EventAdapter(getContext(),R.layout.adapter_event, listEvent,((IFTApplication)getActivity().getApplication()).getUserId());
         listMap.setAdapter(adapter);
     }
 }

@@ -19,7 +19,7 @@ import ca.udes.bonc.ift_project.dataObject.Event;
  * Created by cbongiorno on 12/12/2015.
  */
 public class ConvertJson {
-    public static List<Event> convert_event(String input){
+    public static List<Event> convert_list_event(String input){
         List<Event> listEvent = new ArrayList<Event>();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         try {
@@ -31,7 +31,7 @@ public class ConvertJson {
                 event.setId(oneObject.getString("_id"));
                 event.setTitle(oneObject.getString("title"));
                 event.setCategory(oneObject.getJSONObject("detail").getString("category"));
-                event.setAuthor(oneObject.getJSONObject("detail").getString("createBy"));
+                event.setAuthorID(oneObject.getJSONObject("detail").getString("createBy"));
                 event.setType(oneObject.getJSONObject("detail").getString("type"));
                 event.setDate(formatter.parse(oneObject.getJSONObject("detail").getString("start")));
                 event.setLatitude(oneObject.getJSONObject("position").getDouble("lat"));
@@ -40,11 +40,42 @@ public class ConvertJson {
                 listEvent.add(event);
             }
 
-        }catch (JSONException e){
-            Log.e("Json - convert_event",e.getMessage());
+        } catch (JSONException e){
+            Log.e("Json list_event",e.getMessage());
         } catch (ParseException e) {
-            Log.e("Json - convert_event", e.getMessage());
+            Log.e("Json list_event", e.getMessage());
         }
         return listEvent;
+    }
+
+
+    public static Event convert_event(String input){
+        Event event = new Event();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        try {
+            JSONObject oneObject = new JSONObject(input);
+            event.setId(oneObject.getString("_id"));
+            event.setTitle(oneObject.getString("title"));
+            event.setCategory(oneObject.getJSONObject("detail").getString("category"));
+            event.setAuthorID(oneObject.getJSONObject("detail").getJSONObject("createBy").getString("_id"));
+            event.setAuthorName(oneObject.getJSONObject("detail").getJSONObject("createBy").getString("first"));
+            event.setType(oneObject.getJSONObject("detail").getString("type"));
+            event.setDate(formatter.parse(oneObject.getJSONObject("detail").getString("start")));
+            event.setLatitude(oneObject.getJSONObject("position").getDouble("lat"));
+            event.setLongitude(oneObject.getJSONObject("position").getDouble("lng"));
+
+            JSONArray listParti = oneObject.getJSONArray("participants");
+            for (int i=0; i < listParti.length(); i++)
+            {
+                JSONObject particip = (JSONObject)listParti.get(i);
+                event.addParticipant(particip.getString("_id"),particip.getString("first"));
+            }
+
+        } catch (JSONException e){
+            Log.e("Json event",e.getMessage());
+        } catch (ParseException e) {
+            Log.e("Json event", e.getMessage());
+        }
+        return event;
     }
 }

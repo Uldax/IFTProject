@@ -7,4 +7,6 @@ public class Categories {
     public static final String HOCKEY ="hockey";
     public static final String FOOTBALL ="football";
     public static final String SOCIAL ="social";
+    public static final String JEUXVIDEO ="jeuxvideo";
+    public static final String RANDO ="rando";
 }

@@ -1,6 +1,7 @@
 package ca.udes.bonc.ift_project.dataObject;
 
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by cbongiorno on 12/12/2015.
@@ -11,9 +12,11 @@ public class Event {
     private double longitude;
     private String title;
     private Date date;
-    private String author;
+    private String authorID;
+    private String authorName;
     private String category;
     private String type;
+    private HashMap<String,String> listParticipant = new HashMap<String,String>();
 
     public String getId() {
         return id;
@@ -55,12 +58,12 @@ public class Event {
         this.date = date;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getAuthorID() {
+        return authorID;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setAuthorID(String authorID) {
+        this.authorID = authorID;
     }
 
     public String getCategory() {
@@ -77,5 +80,20 @@ public class Event {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public HashMap<String, String> getListParticipant() {
+        return listParticipant;
+    }
+    public void addParticipant (String id, String name){
+        this.listParticipant.put(id,name);
     }
 }
