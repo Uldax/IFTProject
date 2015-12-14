@@ -65,7 +65,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         holder.title.setText(event.getTitle());
         holder.date.setText(DateFormat.format("d MMM @ kk:mm", event.getDate()));
-        if((event.getAuthorName()!=null)&&(event.getAuthorName().isEmpty()))
+        if((event.getAuthorName()!=null)&&(!event.getAuthorName().isEmpty()))
             holder.author.setText("By "+event.getAuthorName());
         else
             holder.author.setText("By "+event.getAuthorID());

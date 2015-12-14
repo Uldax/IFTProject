@@ -31,7 +31,8 @@ public class ConvertJson {
                 event.setId(oneObject.getString("_id"));
                 event.setTitle(oneObject.getString("title"));
                 event.setCategory(oneObject.getJSONObject("detail").getString("category"));
-                event.setAuthorID(oneObject.getJSONObject("detail").getString("createBy"));
+                event.setAuthorID(oneObject.getJSONObject("detail").getJSONObject("createBy").getString("_id"));
+                event.setAuthorName(oneObject.getJSONObject("detail").getJSONObject("createBy").getJSONObject("name").getString("first"));
                 event.setType(oneObject.getJSONObject("detail").getString("type"));
                 event.setDate(formatter.parse(oneObject.getJSONObject("detail").getString("start")));
                 event.setLatitude(oneObject.getJSONObject("position").getDouble("lat"));
@@ -58,7 +59,7 @@ public class ConvertJson {
             event.setTitle(oneObject.getString("title"));
             event.setCategory(oneObject.getJSONObject("detail").getString("category"));
             event.setAuthorID(oneObject.getJSONObject("detail").getJSONObject("createBy").getString("_id"));
-            event.setAuthorName(oneObject.getJSONObject("detail").getJSONObject("createBy").getString("first"));
+            event.setAuthorName(oneObject.getJSONObject("detail").getJSONObject("createBy").getJSONObject("name").getString("first"));
             event.setType(oneObject.getJSONObject("detail").getString("type"));
             event.setDate(formatter.parse(oneObject.getJSONObject("detail").getString("start")));
             event.setLatitude(oneObject.getJSONObject("position").getDouble("lat"));

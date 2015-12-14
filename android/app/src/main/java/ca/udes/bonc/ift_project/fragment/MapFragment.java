@@ -163,8 +163,12 @@ public class MapFragment extends Fragment implements
         listMap.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.i("setOnItemClickListener", "long : " + l);
                 Marker m = listMarker.get(i);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 14));
+                if ((mMap.getCameraPosition().target.longitude == m.getPosition().longitude) && (mMap.getCameraPosition().target.latitude == m.getPosition().latitude))
+                    Log.i("setOnItemClickListener", "open event ?");
+                else
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 14));
             }
         });
         return myView;
@@ -187,10 +191,9 @@ public class MapFragment extends Fragment implements
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 Log.i("maps Cam change", "Camera : " + cameraPosition.target.latitude + " - " + cameraPosition.target.longitude);
-                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude),String.valueOf(cameraPosition.target.latitude), 100);
+                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude),String.valueOf(cameraPosition.target.latitude),2);
             }
         });
-        //QueryEventService.startActionGetMarkers(getContext(), mReceiver, "10.2", "23");
     }
 
     // TODO: Rename method, update argument and hook method into UI event
