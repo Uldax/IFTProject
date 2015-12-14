@@ -38,29 +38,33 @@
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="gcm.play.android.samples.com.gcmquickstart" />
+                <category android:name="ca.udes.bonc.ift_project.communication" />
             </intent-filter>
         </receiver>
         <!-- [END gcm_receiver] -->
 
         <!-- [START gcm_listener] -->
-        <!--<service-->
-            <!--android:name="gcm.play.android.samples.com.gcmquickstart.MyGcmListenerService"-->
-            <!--android:exported="false" >-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.google.android.c2dm.intent.RECEIVE" />-->
-            <!--</intent-filter>-->
-        <!--</service>-->
-        <!--&lt;!&ndash; [END gcm_listener] &ndash;&gt;-->
-        <!--&lt;!&ndash; [START instanceId_listener] &ndash;&gt;-->
-        <!--<service-->
-            <!--android:name="gcm.play.android.samples.com.gcmquickstart.MyInstanceIDListenerService"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.google.android.gms.iid.InstanceID"/>-->
-            <!--</intent-filter>-->
-        <!--</service>-->
+        <service
+            android:name="ca.udes.bonc.ift_project.communication.MyGcmListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+        <!-- [END gcm_listener] -->
+        <!-- [START instanceId_listener] -->
+        <service
+            android:name=".communication.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
         <!-- [END instanceId_listener] -->
+        <service
+            android:name=".communication.RegistrationIntentService"
+            android:exported="false">
+        </service>
 
         <service
             android:name=".communication.QueryEventService"
