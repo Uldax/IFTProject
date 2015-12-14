@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -17,6 +18,7 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 
 import ca.udes.bonc.ift_project.R;
+import ca.udes.bonc.ift_project.dataObject.Categories;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -84,7 +86,8 @@ public class NewEventFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_newevent, container, false);
         this.edDate = (EditText) view.findViewById(R.id.edDate);
         this.spinnerCateg = (Spinner) view.findViewById(R.id.spinnerCategory);
-        //this.spinnerCateg.set
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(),android.R.layout.simple_spinner_item, Categories.getCategories());
+        this.spinnerCateg.setAdapter(adapter);
         edDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -9,14 +9,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.Spinner;
 
 import java.util.Calendar;
 
 import ca.udes.bonc.ift_project.R;
+import ca.udes.bonc.ift_project.dataObject.Categories;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +44,7 @@ public class SearchFragment extends Fragment {
     private int currentDay;
 
     private EditText edDate;
+    private Spinner spinnerCateg;
 
     private OnFragmentInteractionListener mListener;
 
@@ -83,7 +87,9 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-
+        this.spinnerCateg = (Spinner) view.findViewById(R.id.spinnerCategory);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(),android.R.layout.simple_spinner_item, Categories.getCategories());
+        this.spinnerCateg.setAdapter(adapter);
         this.edDate = (EditText) view.findViewById(R.id.edDate);
         edDate.setOnClickListener(new View.OnClickListener() {
             @Override
