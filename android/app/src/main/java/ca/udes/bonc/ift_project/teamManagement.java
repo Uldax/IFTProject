@@ -12,7 +12,15 @@ import android.widget.ListView;
 
 import java.lang.Override;
 
+import ca.udes.bonc.ift_project.R;
+import ca.udes.bonc.ift_project.communication.QueryEventService;
+import ca.udes.bonc.ift_project.communication.QueryIntentService;
+import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
+import ca.udes.bonc.ift_project.utils.ConvertJson;
+
 public class teamManagement extends Activity {
+    private static RestApiResultReceiver mReceiver;
+    private String idEvent;
     private Button addTeamButton = null;
     private Button shuffleParticipantsButton = null;
     private EditText teamNameEditText = null;
@@ -21,6 +29,10 @@ public class teamManagement extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team_management);
+
+        if (getArguments() != null) {
+            idEvent = getArguments().getString(ARG_PARAM1);
+        }
 
         //Gettings Views
         addTeamButton = (Button) findViewById(R.id.addTeamButton);
@@ -59,10 +71,12 @@ public class teamManagement extends Activity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.addTeamButton:
-                signIn();
+                QueryEventService.startActionCreateTeam(v.getContext(), mReceiver, eventID, teamNameEditText.getText());
+                teamNameEditText.getText().clear();
                 break;
             case R.id.shuffleParticipantsButton:
-                callLoginDialog();
+                startActionShuffleParticipants(v.getContext(), mReceiver, eventID,String teamName);
+
                 break;
         }
     }

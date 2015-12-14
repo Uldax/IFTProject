@@ -184,19 +184,18 @@ public class QueryEventService extends QueryIntentService {
         return html;
     }
 
-    public static void startActionShuffleParticipants(Context context, ResultReceiver mReceiver, String eventID,String teamName) {
+    public static void startActionShuffleParticipants(Context context, ResultReceiver mReceiver, String eventID) {
         //binding to the service with startService()
         Log.d(TAG, "Start create team");
         Intent intent = new Intent(context, QueryEventService.class);
         intent.setAction(ACTION_SHUFFLE_PARTICIPANTS);
         intent.putExtra(EXTRA_RECEIVER, mReceiver);
         intent.putExtra(EXTRA_EVENT_ID, eventID);
-        intent.putExtra(EXTRA_USER_ID, teamName);
         context.startService(intent);
     }
 
-    private String handleActionShuffleParticipants(String idEvent,String name) throws MalformedURLException,IOException {
-        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/shuffleParticipants", HttpHelper.encodeParamUTF8("name", name));
+    private String handleActionShuffleParticipants(String idEvent) throws MalformedURLException,IOException {
+        HttpURLConnection conn = createPostURLConnection("/api/events/" + idEvent + "/shuffleParticipants", HttpHelper.encodeParamUTF8("name", ""));
         String html = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
         conn.disconnect();
         return html;
@@ -331,6 +330,13 @@ public class QueryEventService extends QueryIntentService {
                 } else if(action.equals( ACTION_FIND_EVENT_USER)){
                     final String userID = intent.getStringExtra(EXTRA_USER_ID);
                         result = handleActionFindForUser(userID);
+                } else if(action.equals( ACTION_CREATE_TEAM)){
+                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                    final String teamName = intent.getStringExtra(EXTRA_TEAM_NAME);
+                    result = handleActionCreateTeam(eventID, teamName);
+                } else if(action.equals( ACTION_SHUFFLE_PARTICIPANTS)){
+                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                    result = handleActionShuffleParticipants(eventID);
                 } else {
                     result = "action doesn't exists";
                 }
