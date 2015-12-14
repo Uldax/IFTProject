@@ -5,7 +5,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/darker_gray">
+        android:background="#d0d0d0">
 
         <LinearLayout
             android:orientation="vertical"
@@ -16,7 +16,6 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:id="@+id/linearLayout"
-            android:layout_above="@+id/button"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp">
 
@@ -60,19 +59,38 @@
                 android:textOff="Standard"
                 android:textOn="Competition" />
 
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Search"
+                android:id="@+id/button"
+                android:backgroundTint="@color/colorAccent"
+                android:layout_gravity="center_vertical"
+                android:backgroundTintMode="add"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:layout_gravity="center"
+                android:visibility="visible" />
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/listMap"
+                android:layout_weight="0.5"
+                android:visibility="visible"
+                android:divider="@android:color/darker_gray"
+                android:dividerHeight="1dp"
+                android:drawSelectorOnTop="false"
+                android:headerDividersEnabled="true" />
+
         </LinearLayout>
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Search"
-            android:id="@+id/button"
-            android:backgroundTint="@color/colorAccent"
-            android:layout_gravity="center_vertical"
-            android:backgroundTintMode="add"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
 
     </RelativeLayout>
 
