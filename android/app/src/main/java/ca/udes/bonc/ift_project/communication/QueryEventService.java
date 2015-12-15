@@ -354,6 +354,7 @@ public class QueryEventService extends QueryIntentService {
                             b.putString(Intent.EXTRA_TEXT, responseJsonObject.getString("error"));
                             receiver.send(STATUS_ERROR, b);
                         } else {
+                            b.putString("action", action);
                             b.putString("results", response.toString());
                             receiver.send(STATUS_FINISHED, b);
                         }
@@ -361,11 +362,12 @@ public class QueryEventService extends QueryIntentService {
                     else if (json instanceof JSONArray){
                         //empty array , if array no error
                         b.putString("results", response.toString());
+                        b.putString("action", action);
                         receiver.send(STATUS_FINISHED, b);
                     }
 
                 }
-            } catch (JSONException e){
+            } catch (JSONException e) {
                 Log.e(TAG, e.getMessage() );
                 receiver.send(STATUS_ERROR, b);
             }
