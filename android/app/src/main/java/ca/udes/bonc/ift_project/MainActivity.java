@@ -316,6 +316,13 @@ implements NavigationView.OnNavigationItemSelectedListener,
         return true;
     }
 
+    public void switchFragment(Fragment selectedFragment){
+        if(selectedFragment!= null)
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, selectedFragment)
+                    .commit();
+    }
+
     public void onFragmentInteraction(Uri uri) {
         Log.i(this.toString(), uri.toString());
     }
