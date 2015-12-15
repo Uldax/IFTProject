@@ -54,7 +54,12 @@ var evenement = {
                 //.populate('detail.createBy', null, { 'name.last': 'phone' } );
                 .populate('detail.createBy', null, createByMatch);
             for (var i = 0; i < criteria.length; i++) {
-                query.where(criteria[i].fieldName).equals(criteria[i].value);
+                if(criteria[i].fieldName == 'detail.start'){
+                    query.where(criteria[i].fieldName).gte(new Date(criteria[i].value)).lt(new Date(criteria[i].value).addDays(1))
+                }
+                else
+                    query.where(criteria[i].fieldName).equals(criteria[i].value);
+
             }
             query.exec(function(err, evts) {
                 //remove evts that doesn't fit match populate
@@ -490,6 +495,10 @@ function createFindCriteria(parameters) {
     var criteria = [];
     if (parameters.type) criteria.push(createFilterObject('detail.type', parameters.type));
     if (parameters.category) criteria.push(createFilterObject('detail.category', parameters.category));
+    if (parameters.date) {
+        var liste = parameters.date.split("-");
+        criteria.push(createFilterObject('detail.start', liste[2] + "-" + liste[0] + "-" + liste[1]));
+    }
     if (parameters.title) {
         //RegEx can failed if bad string in parameters
         try {
@@ -541,6 +550,11 @@ function checkPermission(req) {
     });
 }
 
-
+Date.prototype.addDays = function(days)
+{
+    var dat = new Date(this.valueOf());
+    dat.setDate(dat.getDate() + days);
+    return dat;
+}
 
 module.exports = evenement;

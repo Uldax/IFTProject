@@ -28,6 +28,7 @@ public class HttpHelper {
     public static final String LOCALHOST = "http://10.0.3.2:8080";
     //public static final String LOCALHOST = "http://10.44.160.21:8080";
     //public static final String LOCALHOST = "http://192.168.1.33:8080";
+
     private static final String TAG = "httpHelper";
 
     /**

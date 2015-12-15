@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -72,7 +73,9 @@ public class SearchFragment extends Fragment implements RestApiResultReceiver.Re
     private EditText txtAuthor;
     private ProgressBar progressBar;
     private ListView listMap;
-    private Switch swCompet;
+    private CheckBox cbLoisir;
+    private CheckBox cbCompetitif;
+
 
     private View view;
 
@@ -129,7 +132,8 @@ public class SearchFragment extends Fragment implements RestApiResultReceiver.Re
         this.txtName = (EditText) view.findViewById(R.id.edName);
         this.txtAuthor = (EditText) view.findViewById(R.id.edAuthor);
         this.edDate = (EditText) view.findViewById(R.id.edDate);
-        this.swCompet = (Switch) view.findViewById(R.id.swCompet);
+        this.cbLoisir = (CheckBox) view.findViewById(R.id.cbLoisir);
+        this.cbCompetitif = (CheckBox) view.findViewById(R.id.cbCompetitif);
         edDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -197,7 +201,13 @@ public class SearchFragment extends Fragment implements RestApiResultReceiver.Re
         name = txtName.getText().toString();
         author = txtAuthor.getText().toString();
         date = edDate.getText().toString();
-        mode = swCompet.isChecked() ? "competitif" : "loisir";
+        mode = "";
+        if(cbLoisir.isChecked())
+            mode = "loisir";
+        if(cbCompetitif.isChecked())
+            mode = "competitif";
+        if(cbLoisir.isChecked() && cbCompetitif.isChecked())
+            mode = "";
 
         Log.i(TAG, "search for category=" + category + ", name=" + name + ", author=" + author + ", date=" + date + ", mode=" + mode);
         QueryEventService.startActionFind(getContext(), mReceiver, category, name, date, author, mode);
