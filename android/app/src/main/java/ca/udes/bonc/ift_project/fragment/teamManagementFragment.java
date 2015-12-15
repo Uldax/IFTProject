@@ -1,9 +1,11 @@
 package ca.udes.bonc.ift_project.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.ProgressBar;
 
 import ca.udes.bonc.ift_project.R;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
+import ca.udes.bonc.ift_project.communication.QueryIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 
 /**
@@ -44,7 +47,24 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
 
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
-
+        switch (resultCode) {
+            case QueryIntentService.STATUS_RUNNING:
+                Log.i(TAG, "Runing status");
+                this.progressBar.setVisibility(View.VISIBLE);
+                break;
+            case QueryIntentService.STATUS_FINISHED:
+                String results = resultData.getString("results");
+                this.progressBar.setVisibility(View.GONE);
+                Log.i(TAG, "result = " + results);
+                //updateEventList(ConvertJson.convert_event(results));
+                break;
+            case QueryIntentService.STATUS_ERROR:
+                //todo handl error
+                this.progressBar.setVisibility(View.GONE);
+                String error = resultData.getString(Intent.EXTRA_TEXT);
+                Log.d(TAG, "error = " + error);
+                break;
+        }
     }
 
     private OnFragmentInteractionListener mListener;
@@ -92,6 +112,11 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
         shuffleParticipantsButton = (Button) view.findViewById(R.id.shuffleParticipantsButton);
         teamNameEditText= (EditText) view.findViewById(R.id.teamNameEditText);
         teamListView = (ListView) view.findViewById(R.id.teamListView);
+
+        //If we already have at least 2 teams we can shuffle
+        if(nbTeam > 1){
+            shuffleParticipantsButton.setEnabled(true);
+        }
 
         //Settings Button listeners
         addTeamButton.setOnClickListener(new View.OnClickListener() {
