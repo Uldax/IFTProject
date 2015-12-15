@@ -11,7 +11,7 @@ public class Categories {
     public static final String HOCKEY ="hockey";
     public static final String FOOTBALL ="football";
     public static final String SOCIAL ="social";
-    public static final String JEUXVIDEO ="jeuxvideo";
+    public static final String VIDEOGAME ="videogame";
     public static final String RANDO ="rando";
 
     public static final List<String> getCategories(){
@@ -20,7 +20,7 @@ public class Categories {
         listCategories.add(HOCKEY);
         listCategories.add(FOOTBALL);
         listCategories.add(SOCIAL);
-        listCategories.add(JEUXVIDEO);
+        listCategories.add(VIDEOGAME);
         listCategories.add(RANDO);
         return listCategories;
     }

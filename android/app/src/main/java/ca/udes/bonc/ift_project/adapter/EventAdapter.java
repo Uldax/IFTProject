@@ -80,6 +80,12 @@ public class EventAdapter extends ArrayAdapter<Event> {
             case Categories.SOCIAL :
                 holder.image.setImageResource(R.drawable.social);
                 break;
+            case Categories.RANDO :
+                holder.image.setImageResource(R.drawable.run);
+                break;
+            case Categories.VIDEOGAME :
+                holder.image.setImageResource(R.drawable.videogame);
+                break;
         }
         if (idUser.equals(event.getAuthorID()))
             holder.star.setVisibility(View.VISIBLE);
