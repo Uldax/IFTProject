@@ -90,18 +90,10 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
                         toast.show();
                         break;
                     case QueryIntentService.ACTION_GET_ONE:
-                        List<Team> listTeam = new ArrayList<>();
+                        List<Team> listTeam;
                         HashMap<String,String> haspMapTeam =  ConvertJson.convert_event(results).getListTeam();
 
-                        Iterator it = haspMapTeam.entrySet().iterator();
-                        while (it.hasNext()) {
-                            HashMap.Entry pair = (HashMap.Entry)it.next();
-
-                            Team newTeam = new Team(pair.getKey().toString(),pair.getValue().toString());
-
-                            listTeam.add(newTeam);
-                            it.remove(); // avoids a ConcurrentModificationException
-                        }
+                        listTeam = convertHashMapToListTeam(haspMapTeam);
                         updateTeamList(listTeam);
                         break;
                 }
@@ -245,6 +237,20 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
     public void updateTeamList(List<Team> listTeam){
         teamListArrayAdapter = new TeamAdapter(getContext(),R.layout.adapter_team, listTeam);
         teamListView.setAdapter(teamListArrayAdapter);
+    }
+
+    public List<Team> convertHashMapToListTeam(HashMap<String,String> hashMapTeam){
+        Iterator it = hashMapTeam.entrySet().iterator();
+        List<Team> listTeam = new ArrayList<>();
+        while (it.hasNext()) {
+            HashMap.Entry pair = (HashMap.Entry)it.next();
+
+            Team newTeam = new Team(pair.getKey().toString(),pair.getValue().toString());
+
+            listTeam.add(newTeam);
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+        return listTeam;
     }
 
 }
