@@ -1,20 +1,32 @@
 package ca.udes.bonc.ift_project.fragment;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
+import android.widget.Toast;
+
+import java.util.List;
+
+import ca.udes.bonc.ift_project.IFTApplication;
 import ca.udes.bonc.ift_project.R;
+import ca.udes.bonc.ift_project.adapter.EventAdapter;
+import ca.udes.bonc.ift_project.adapter.TeamAdapter;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
+import ca.udes.bonc.ift_project.communication.QueryIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
+import ca.udes.bonc.ift_project.dataObject.Team;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,10 +53,54 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
     private Button shuffleParticipantsButton = null;
     private EditText teamNameEditText = null;
     private ListView teamListView = null;
+    private TeamAdapter teamListArrayAdapter = null;
+    private View view;
 
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
+        String results = resultData.getString("results");
+        String action = resultData.getString("action");
+        String error = resultData.getString(Intent.EXTRA_TEXT);
+        Toast toast = null;
+        Context context = getContext();
+        CharSequence toastText = "";
+        int duration = Toast.LENGTH_SHORT;
+        switch (resultCode) {
+            case QueryIntentService.STATUS_RUNNING:
+                break;
+            case QueryIntentService.STATUS_FINISHED:
+                switch(action){
+                    case QueryIntentService.ACTION_CREATE_TEAM:
+                        nbTeam++;
+                        validateShuffleParticipantsButton();
+                        toastText = "The team has been successfully created! :)";
+                        toast = Toast.makeText(context, toastText, duration);
+                        toast.show();
+                        updateTeamList(listTeam);
+                        break;
+                    case QueryIntentService.ACTION_SHUFFLE_PARTICIPANTS:
+                        toastText = "Participants have been successfully shuffled! :)";
+                        toast = Toast.makeText(context, toastText, duration);
+                        toast.show();
+                        break;
+                }
+                break;
+            case QueryIntentService.STATUS_ERROR:
+                switch(action){
+                    case QueryIntentService.ACTION_CREATE_TEAM:
+                        toastText = "Error! The team was not created. :(";
+                        toast = Toast.makeText(context, toastText, duration);
+                        toast.show();
+                        break;
+                    case QueryIntentService.ACTION_SHUFFLE_PARTICIPANTS:
+                        toastText = "Error! The participants were not shuffled. :(";
+                        toast = Toast.makeText(context, toastText, duration);
+                        toast.show();
+                        break;
+                }
 
+                break;
+        }
     }
 
     private OnFragmentInteractionListener mListener;
@@ -85,13 +141,18 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view = inflater.inflate(R.layout.fragment_team_management, container, false);
+        view = inflater.inflate(R.layout.fragment_team_management, container, false);
 
         //Gettings Views
         addTeamButton = (Button) view.findViewById(R.id.addTeamButton);
         shuffleParticipantsButton = (Button) view.findViewById(R.id.shuffleParticipantsButton);
         teamNameEditText= (EditText) view.findViewById(R.id.teamNameEditText);
         teamListView = (ListView) view.findViewById(R.id.teamListView);
+        updateTeamList(listTeam);
+
+
+        //If we already have at least 2 teams we can shuffle
+        validateShuffleParticipantsButton();
 
         //Settings Button listeners
         addTeamButton.setOnClickListener(new View.OnClickListener() {
@@ -147,6 +208,18 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    public void validateShuffleParticipantsButton(){
+        //If we already have at least 2 teams we can shuffle
+        if(nbTeam > 1){
+            shuffleParticipantsButton.setEnabled(true);
+        }
+    }
+
+    public void updateTeamList(List<Team> listTeam){
+        teamListArrayAdapter = new TeamAdapter(getContext(),R.layout.adapter_team, listTeam);
+        teamListView.setAdapter(teamListArrayAdapter);
     }
 
 }

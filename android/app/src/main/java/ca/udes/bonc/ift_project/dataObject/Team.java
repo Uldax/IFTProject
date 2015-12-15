@@ -13,12 +13,12 @@ public class Team {
     private ArrayList<String> participantsList = new ArrayList<String>();
     private String image;
 
-    public Team(String id, int name,String participantsList, String image ){
+    public Team(String id, String name,ArrayList<String> participantsList, String image ){
 
         this.id = id;
         this.name= name;
         this.participantsList = participantsList;
-        this.image = startNameOfImage;
+        this.image = image;
 
 
     }

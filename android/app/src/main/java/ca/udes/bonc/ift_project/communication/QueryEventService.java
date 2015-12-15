@@ -1,23 +1,22 @@
 package ca.udes.bonc.ift_project.communication;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.ResultReceiver;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URLEncoder;
+        import android.content.Context;
+        import android.content.Intent;
+        import android.os.Bundle;
+        import android.os.ResultReceiver;
+        import android.util.Log;
 
-import ca.udes.bonc.ift_project.IFTApplication;
+        import java.io.UnsupportedEncodingException;
+
+        import java.net.URLEncoder;
+
+        import ca.udes.bonc.ift_project.IFTApplication;
 
 /**
  * Created by pcontat on 09/12/2015.
@@ -29,8 +28,8 @@ public class QueryEventService extends QueryIntentService {
         super("QueryEventService");
     }
     /**
-    * Start Action
-    */
+     * Start Action
+     */
     public static void startActionGetMarkers(Context context,ResultReceiver mReceiver, String longitude, String latitude) {
         //binding to the service with startService()
         Intent intent = new Intent(context, QueryEventService.class);
@@ -169,11 +168,11 @@ public class QueryEventService extends QueryIntentService {
     }
 
 
+
     private String handleActionShuffleParticipants(String idEvent) {
         String jsonAnswer = this.handlePOSTResponse("/api/events/" + idEvent + "/shuffleParticipants","");
         return jsonAnswer;
     }
-
 
 
     public static void startActionAddAdmin(Context context, ResultReceiver mReceiver, String eventID,String userID) {
@@ -342,41 +341,43 @@ public class QueryEventService extends QueryIntentService {
                     final String author = intent.getStringExtra(EXTRA_EVENT_AUTHOR);
                     final String mode = intent.getStringExtra(EXTRA_EVENT_MODE);
                     response = handleActionFind(categorie, name, date, author, mode);
-                } else if(action.equals( ACTION_CREATE_TEAM)){
+                }
+                 else if(action.equals( ACTION_CREATE_TEAM)){
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
                     final String teamName = intent.getStringExtra(EXTRA_TEAM_NAME);
                     response = handleActionCreateTeam(eventID, teamName);
-                } else if(action.equals( ACTION_SHUFFLE_PARTICIPANTS)){
+                } else if(action.equals( ACTION_SHUFFLE_PARTICIPANTS)) {
                     final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
                     response = handleActionShuffleParticipants(eventID);
-                }
-                //Return the response
-                if(response == null){
+                    //Return the response
+                }if(response == null){
                     b.putString(Intent.EXTRA_TEXT, "internal error");
                     receiver.send(STATUS_ERROR, b);
-                } else {
-                    //convert to json to check error
-                    Object json = new JSONTokener(response).nextValue();
-                    if (json instanceof JSONObject){
-                        responseJsonObject = (JSONObject)json;
-                        if( responseJsonObject.has("error")){
-                            b.putString(Intent.EXTRA_TEXT, responseJsonObject.getString("error"));
-                            receiver.send(STATUS_ERROR, b);
-                        } else {
-                            b.putString("action", action);
-                            b.putString("results", response.toString());
-                            receiver.send(STATUS_FINISHED, b);
-                        }
-                    }
-                    else if (json instanceof JSONArray){
-                        //empty array , if array no error
-                        b.putString("results", response.toString());
+                  } else {
+                //convert to json to check error
+                Object json = new JSONTokener(response).nextValue();
+                if (json instanceof JSONObject){
+                    responseJsonObject = (JSONObject)json;
+                    if( responseJsonObject.has("error")){
+                        b.putString(Intent.EXTRA_TEXT, responseJsonObject.getString("error"));
+                        receiver.send(STATUS_ERROR, b);
+                    } else {
                         b.putString("action", action);
+                        b.putString("jsonType", "object");
+                        b.putString("results", response.toString());
                         receiver.send(STATUS_FINISHED, b);
                     }
-
                 }
-            } catch (JSONException e) {
+                else if (json instanceof JSONArray){
+                    //empty array , if array no error
+                    b.putString("results", response.toString());
+                    b.putString("jsonType", "array");
+                    b.putString("action", action);
+                    receiver.send(STATUS_FINISHED, b);
+                }
+
+            }
+            } catch (JSONException e){
                 Log.e(TAG, e.getMessage() );
                 receiver.send(STATUS_ERROR, b);
             }
@@ -384,3 +385,4 @@ public class QueryEventService extends QueryIntentService {
         }
     }
 }
+
