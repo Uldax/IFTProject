@@ -4,11 +4,19 @@ var Const = require('../config/const');
 var defaultRadius = 100;
 var jwt = require('jwt-simple');
 
+function maxUserException(message) {
+    this.err = message;
+    this.name = "maxUser";
+}
 
+function notFindException(message) {
+    this.err = message;
+    this.name = "notFind";
+}
 
 //Marker is the point we put in google map
 var evenement = {
-    //Todo : test
+    //Todo : only return status != closed
     getByRadius: function(req, res) {
         if (req.query.lng && req.query.lat) {
             var radius = parseFloat(req.query.radius) || defaultRadius,
@@ -28,6 +36,9 @@ var evenement = {
                     'position.lng': {
                         $gt: minLng,
                         $lt: maxLng
+                    },
+                    'detail.status' : {
+                        $ne: "closed"
                     }
                 })
                 .populate('detail.createBy')
@@ -54,10 +65,9 @@ var evenement = {
                 //.populate('detail.createBy', null, { 'name.last': 'phone' } );
                 .populate('detail.createBy', null, createByMatch);
             for (var i = 0; i < criteria.length; i++) {
-                if(criteria[i].fieldName == 'detail.start'){
-                    query.where(criteria[i].fieldName).gte(new Date(criteria[i].value)).lt(new Date(criteria[i].value).addDays(1))
-                }
-                else
+                if (criteria[i].fieldName == 'detail.start') {
+                    query.where(criteria[i].fieldName).gte(new Date(criteria[i].value)).lt(new Date(criteria[i].value).addDays(1));
+                } else
                     query.where(criteria[i].fieldName).equals(criteria[i].value);
 
             }
@@ -92,7 +102,7 @@ var evenement = {
         if (req.params.id) {
             Events.findById(req.params.id)
                 .populate('detail.participants', 'name') // only return the Persons name
-				.populate('detail.teams') 
+                .populate('detail.teams')
                 .populate('detail.createBy', 'name')
                 .exec(function(err, evt) {
                     returnResult(res, err, evt);
@@ -253,12 +263,49 @@ var evenement = {
         if (req.params.id && req.body.idParticipant) {
             Promise.resolve(Events.findById(req.params.id).exec())
                 .then(function(evt) {
-                    evt.detail.participants.push(req.body.idParticipant);
-                    return evt.save(); // returns a promise
+                    //if there is place and user not already in
+                    if(evt === null){
+                        return Promise.reject( new notFindException("There is no such event"));
+                    } else if (evt.detail.participants.length < evt.detail.maxParticipants ) {
+                        if(evt.detail.participants.indexOf(req.body.idParticipant) > -1){
+                            return Promise.reject( new maxUserException("User already in event"));
+                        }
+                        evt.detail.participants.push(req.body.idParticipant);
+                        return evt.save(); // returns a promise
+                    } else return Promise.reject( new maxUserException("No more place in this event"));
                 })
                 .then(function(newEvt) {
                     res.json({
                         message: 'User added to event!'
+                    });
+                })
+                .catch(function(err) {
+                    console.log(err);
+                    res.json({
+                        error: err.err
+                    });
+                });
+        } else {
+            res.json({
+                message: 'Wrong number of parameters!'
+            });
+        }
+    },
+
+    closeEvent: function(req, res) {
+        if (req.params.id) {
+            Promise.resolve(Events.findById(req.params.id).exec())
+                .then(function(evt) {
+                    if(evt === null){
+                        return Promise.reject( new notFindException("There is no such event"));
+                    }
+                    //Todo const here
+                    evt.detail.status = "closed";
+                    return evt.save(); // returns a promise
+                })
+                .then(function(newEvt) {
+                    res.json({
+                        message: 'Event closed with success'
                     });
                 })
                 .catch(function(err) {
@@ -469,11 +516,11 @@ function createEvenementObject(parameters, addCreator) {
 }
 
 function createMarkerObject(parameters, evt) {
-    if (parameters.lat && parameters.lng && parameters.title &&parameters.placeName) {
+    if (parameters.lat && parameters.lng && parameters.title && parameters.placeName) {
         var position = {
             lat: parameters.lat,
             lng: parameters.lng,
-            name : parameters.placeName
+            name: parameters.placeName
         };
         var marker = new Events();
         marker.position = position;
@@ -551,11 +598,10 @@ function checkPermission(req) {
     });
 }
 
-Date.prototype.addDays = function(days)
-{
+Date.prototype.addDays = function(days) {
     var dat = new Date(this.valueOf());
     dat.setDate(dat.getDate() + days);
     return dat;
-}
+};
 
 module.exports = evenement;
