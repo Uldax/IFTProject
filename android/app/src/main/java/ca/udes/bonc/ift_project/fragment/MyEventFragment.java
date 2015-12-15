@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -99,6 +100,7 @@ public class MyEventFragment extends Fragment implements RestApiResultReceiver.R
 
     private void updateEventList(List<Event> listEvent) {
         if((listEvent==null)||(listEvent.size()==0)){
+            Toast.makeText(getContext(), "Sorry we don't find your event", Toast.LENGTH_LONG).show();
             return;
         }
         this.data = listEvent;

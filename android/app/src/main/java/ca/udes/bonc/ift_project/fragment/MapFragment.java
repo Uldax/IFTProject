@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -274,9 +275,11 @@ public class MapFragment extends Fragment implements
 
         if((listEvent==null)||(listEvent.size()==0)){
             listMap.setAdapter(null);
-            for (Marker m :listMarker) {
+            listMap.setVisibility(View.GONE);
+            fabList.setImageResource(android.R.drawable.ic_menu_more);
+            Toast.makeText(getContext(), "Sorry we don't have event here :'(", Toast.LENGTH_LONG).show();
+            for (Marker m :listMarker)
                 m.remove();
-            }
             return;
         }
 
