@@ -1,22 +1,17 @@
 package ca.udes.bonc.ift_project.communication;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.ResultReceiver;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
-import java.io.IOException;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
+import android.util.Log;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URLEncoder;
-
 import ca.udes.bonc.ift_project.IFTApplication;
 
 /**
@@ -29,8 +24,8 @@ public class QueryEventService extends QueryIntentService {
         super("QueryEventService");
     }
     /**
-    * Start Action
-    */
+     * Start Action
+     */
     public static void startActionGetMarkers(Context context,ResultReceiver mReceiver, String longitude, String latitude) {
         //binding to the service with startService()
         Intent intent = new Intent(context, QueryEventService.class);
@@ -89,7 +84,7 @@ public class QueryEventService extends QueryIntentService {
         return jsonAnswer;
     }
 
-    public static void startActionCreateEvent(Context context, ResultReceiver mReceiver, String longitude, String latitude, String title, String category, int maxPart,String type) {
+    public static void startActionCreateEvent(Context context, ResultReceiver mReceiver, String longitude, String latitude, String title, String category, int maxPart,String type,String placeName) {
         //binding to the service with startService()
         Log.d(TAG, "Start createMarkers");
         Intent intent = new Intent(context, QueryEventService.class);
@@ -101,6 +96,7 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_EVENT_TITLE, title);
         intent.putExtra(EXTRA_MAX_PARTICIPANTS, maxPart);
         intent.putExtra(EXTRA_EVENT_TYPE, type) ;
+        intent.putExtra(EXTRA_PLACE_NAME, placeName) ;
         context.startService(intent);
     }
 
@@ -157,22 +153,22 @@ public class QueryEventService extends QueryIntentService {
         return jsonAnswer;
     }
 
-    public static void startActionShuffleParticipants(Context context, ResultReceiver mReceiver, String eventID,String teamName) {
+    public static void startActionShuffleParticipants(Context context, ResultReceiver mReceiver, String eventID) {
         //binding to the service with startService()
         Log.d(TAG, "Start create team");
         Intent intent = new Intent(context, QueryEventService.class);
         intent.setAction(ACTION_SHUFFLE_PARTICIPANTS);
         intent.putExtra(EXTRA_RECEIVER, mReceiver);
         intent.putExtra(EXTRA_EVENT_ID, eventID);
-        intent.putExtra(EXTRA_USER_ID, teamName);
         context.startService(intent);
     }
 
-    private String handleActionShuffleParticipants(String idEvent,String name) {
-        String jsonAnswer = this.handlePOSTResponse("/api/events/" + idEvent + "/shuffleParticipants", HttpHelper.encodeParamUTF8("name", name));
+
+
+    private String handleActionShuffleParticipants(String idEvent) {
+        String jsonAnswer = this.handlePOSTResponse("/api/events/" + idEvent + "/shuffleParticipants","");
         return jsonAnswer;
     }
-
 
 
     public static void startActionAddAdmin(Context context, ResultReceiver mReceiver, String eventID,String userID) {
@@ -274,6 +270,7 @@ public class QueryEventService extends QueryIntentService {
                     "&lng=" + URLEncoder.encode(intent.getStringExtra(EXTRA_LNG), "UTF-8") +
                     "&title=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TITLE), "UTF-8") +
                     "&maxParticipants=" + URLEncoder.encode(String.valueOf(intent.getIntExtra(EXTRA_MAX_PARTICIPANTS, 1)), "UTF-8") +
+                    HttpHelper.encodeParamUTF8("&placeName",intent.getStringExtra(EXTRA_PLACE_NAME)) +
                     "&type=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TYPE), "UTF-8");
         } catch (UnsupportedEncodingException e){
             Log.e(TAG,e.getMessage());
@@ -341,33 +338,42 @@ public class QueryEventService extends QueryIntentService {
                     final String mode = intent.getStringExtra(EXTRA_EVENT_MODE);
                     response = handleActionFind(categorie, name, date, author, mode);
                 }
-                //Return the response
-                if(response == null){
+                 else if(action.equals( ACTION_CREATE_TEAM)){
+                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                    final String teamName = intent.getStringExtra(EXTRA_TEAM_NAME);
+                    response = handleActionCreateTeam(eventID, teamName);
+                } else if(action.equals( ACTION_SHUFFLE_PARTICIPANTS)) {
+                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                    response = handleActionShuffleParticipants(eventID);
+                    //Return the response
+                }if(response == null){
                     b.putString(Intent.EXTRA_TEXT, "internal error");
                     receiver.send(STATUS_ERROR, b);
-                } else {
-                    //convert to json to check error
-                    Object json = new JSONTokener(response).nextValue();
-                    if (json instanceof JSONObject){
-                        responseJsonObject = (JSONObject)json;
-                        if( responseJsonObject.has("error")){
-                            b.putString(Intent.EXTRA_TEXT, responseJsonObject.getString("error"));
-                            receiver.send(STATUS_ERROR, b);
-                        } else {
-                            b.putString("action", action);
-                            b.putString("results", response.toString());
-                            receiver.send(STATUS_FINISHED, b);
-                        }
-                    }
-                    else if (json instanceof JSONArray){
-                        //empty array , if array no error
-                        b.putString("results", response.toString());
+                  } else {
+                //convert to json to check error
+                Object json = new JSONTokener(response).nextValue();
+                if (json instanceof JSONObject){
+                    responseJsonObject = (JSONObject)json;
+                    if( responseJsonObject.has("error")){
+                        b.putString(Intent.EXTRA_TEXT, responseJsonObject.getString("error"));
+                        receiver.send(STATUS_ERROR, b);
+                    } else {
                         b.putString("action", action);
+                        b.putString("jsonType", "object");
+                        b.putString("results", response.toString());
                         receiver.send(STATUS_FINISHED, b);
                     }
-
                 }
-            } catch (JSONException e) {
+                else if (json instanceof JSONArray){
+                    //empty array , if array no error
+                    b.putString("results", response.toString());
+                    b.putString("jsonType", "array");
+                    b.putString("action", action);
+                    receiver.send(STATUS_FINISHED, b);
+                }
+
+            }
+            } catch (JSONException e){
                 Log.e(TAG, e.getMessage() );
                 receiver.send(STATUS_ERROR, b);
             }
@@ -375,3 +381,4 @@ public class QueryEventService extends QueryIntentService {
         }
     }
 }
+

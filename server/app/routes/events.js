@@ -92,6 +92,7 @@ var evenement = {
         if (req.params.id) {
             Events.findById(req.params.id)
                 .populate('detail.participants', 'name') // only return the Persons name
+				.populate('detail.teams') 
                 .populate('detail.createBy', 'name')
                 .exec(function(err, evt) {
                     returnResult(res, err, evt);
@@ -460,7 +461,6 @@ function createEvenementObject(parameters, addCreator) {
         if (addCreator) {
             newEvent.participants = [parameters.createBy];
         }
-        console.log("Unable to create event object");
         return newEvent;
     } else {
         console.log("createEvenementObject: wrong number of parameters");
@@ -469,10 +469,11 @@ function createEvenementObject(parameters, addCreator) {
 }
 
 function createMarkerObject(parameters, evt) {
-    if (parameters.lat && parameters.lng && parameters.title) {
+    if (parameters.lat && parameters.lng && parameters.title &&parameters.placeName) {
         var position = {
             lat: parameters.lat,
-            lng: parameters.lng
+            lng: parameters.lng,
+            name : parameters.placeName
         };
         var marker = new Events();
         marker.position = position;

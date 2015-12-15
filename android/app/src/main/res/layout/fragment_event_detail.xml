@@ -72,7 +72,11 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_above="@+id/btParticip"
-            android:layout_below="@+id/modeCompet" />
+            android:layout_below="@+id/modeCompet"
+            android:dividerHeight="1dp"
+            android:divider="@android:color/darker_gray"
+            android:headerDividersEnabled="true"
+            android:visibility="visible" />
 
         <TextView
             android:layout_width="match_parent"

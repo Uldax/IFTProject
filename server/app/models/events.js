@@ -10,7 +10,8 @@ var EventsSchema = new Schema({
         lng: {
             type: Number,
             required: true
-        }
+        },
+        name : String
     },
     title: {
         unique: true,
