@@ -13,8 +13,11 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <permission android:name="ca.udes.bonc.ift_project.permission.C2D_MESSAGE"
+
+    <permission
+        android:name="ca.udes.bonc.ift_project.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
+
     <uses-permission android:name="ca.udes.bonc.ift_project.permission.C2D_MESSAGE" />
 
     <application
@@ -38,14 +41,16 @@
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
                 <category android:name="ca.udes.bonc.ift_project.communication" />
             </intent-filter>
         </receiver>
         <!-- [END gcm_receiver] -->
 
+
         <!-- [START gcm_listener] -->
         <service
-            android:name="ca.udes.bonc.ift_project.communication.MyGcmListenerService"
+            android:name=".communication.MyGcmListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -55,17 +60,16 @@
         <!-- [START instanceId_listener] -->
         <service
             android:name=".communication.MyInstanceIDListenerService"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID"/>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <!-- [END instanceId_listener] -->
         <service
             android:name=".communication.RegistrationIntentService"
-            android:exported="false">
+            android:exported="false" >
         </service>
-
         <service
             android:name=".communication.QueryEventService"
             android:exported="false" >
@@ -87,8 +91,8 @@
         </activity>
         <activity
             android:name=".LoginPopUp"
-            android:theme="@style/AppTheme.PopUpTheme"
-            android:label="@string/title_activity_login_pop_up" >
+            android:label="@string/title_activity_login_pop_up"
+            android:theme="@style/AppTheme.PopUpTheme" >
         </activity>
     </application>
 
