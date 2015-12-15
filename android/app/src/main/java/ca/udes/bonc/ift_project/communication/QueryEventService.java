@@ -293,83 +293,108 @@ public class QueryEventService extends QueryIntentService {
             try{
                 //receiver.send will call onReceiveResult in the activity
                 //switch on string only in java 1.7
+                if(receiver!=null){
                 receiver.send(STATUS_RUNNING, Bundle.EMPTY);
-                if(action.equals(ACTION_GET_MARKERS)) {
-                    final String longitude = intent.getStringExtra(EXTRA_LNG);
-                    final String lat = intent.getStringExtra(EXTRA_LAT);
-                    response = handleActionGetMarkers(lat,longitude);
-                } else if(action.equals(ACTION_GET_MARKERS_RADIUS)) {
-                    final String longitude = intent.getStringExtra(EXTRA_LNG);
-                    final String lat = intent.getStringExtra(EXTRA_LAT);
-                    final int radius = intent.getIntExtra(EXTRA_RADIUS,100);
-                    response = handleActionGetMarkersByRadius(lat, longitude,radius);
-                } else if(action.equals(ACTION_CREATE_EVENT)) {
-                    final String dataPOST = formatCreateEventParameters(intent);
-                    response = handleActionCreateEvent(dataPOST);
-                } else if(action.equals(ACTION_FIND_EVENT)){
-                    final String searchString = intent.getStringExtra(EXTRA_SEARCH);
-                    response = handleActionFindEvent(searchString);
-                } else if(action.equals(ACTION_GET_ONE)){
-                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                    response = handleActionGetOneEvent(eventID);
-                } else if(action.equals( ACTION_DELETE_EVENT)){
-                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                    response = handleActionDeleteEvent(eventID);
-                } else if(action.equals( ACTION_ADD_EVENT_PARTICIPANT)){
-                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                    final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                    response = handleActionAddParticipant(eventID,userID);
-                }else if(action.equals( ACTION_ADD_EVENT_ADMIN)){
-                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                    final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                    response = handleActionAddAdmin(eventID, userID);
-                } else if(action.equals( ACTION_REMOVE_EVENT_PARTICIPANT)){
-                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                    final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                    response = handleActionRemoveParticipant(eventID,userID);
-                } else if(action.equals( ACTION_FIND_EVENT_USER)){
-                    final String userID = intent.getStringExtra(EXTRA_USER_ID);
-                    response = handleActionFindForUser(userID);
-                } else if(action.equals( ACTION_FIND)){
-                    final String categorie = intent.getStringExtra(EXTRA_EVENT_CATEGORIE);
-                    final String name = intent.getStringExtra(EXTRA_EVENT_NAME);
-                    final String date = intent.getStringExtra(EXTRA_EVENT_DATE);
-                    final String author = intent.getStringExtra(EXTRA_EVENT_AUTHOR);
-                    final String mode = intent.getStringExtra(EXTRA_EVENT_MODE);
-                    response = handleActionFind(categorie, name, date, author, mode);
+                switch (action) {
+                    case ACTION_GET_MARKERS: {
+                        final String longitude = intent.getStringExtra(EXTRA_LNG);
+                        final String lat = intent.getStringExtra(EXTRA_LAT);
+                        response = handleActionGetMarkers(lat, longitude);
+                        break;
+                    }
+                    case ACTION_GET_MARKERS_RADIUS: {
+                        final String longitude = intent.getStringExtra(EXTRA_LNG);
+                        final String lat = intent.getStringExtra(EXTRA_LAT);
+                        final int radius = intent.getIntExtra(EXTRA_RADIUS, 100);
+                        response = handleActionGetMarkersByRadius(lat, longitude, radius);
+                        break;
+                    }
+                    case ACTION_CREATE_EVENT:
+                        final String dataPOST = formatCreateEventParameters(intent);
+                        response = handleActionCreateEvent(dataPOST);
+                        break;
+                    case ACTION_FIND_EVENT:
+                        final String searchString = intent.getStringExtra(EXTRA_SEARCH);
+                        response = handleActionFindEvent(searchString);
+                        break;
+                    case ACTION_GET_ONE: {
+                        final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                        response = handleActionGetOneEvent(eventID);
+                        break;
+                    }
+                    case ACTION_DELETE_EVENT: {
+                        final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                        response = handleActionDeleteEvent(eventID);
+                        break;
+                    }
+                    case ACTION_ADD_EVENT_PARTICIPANT: {
+                        final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                        final String userID = intent.getStringExtra(EXTRA_USER_ID);
+                        response = handleActionAddParticipant(eventID, userID);
+                        break;
+                    }
+                    case ACTION_ADD_EVENT_ADMIN: {
+                        final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                        final String userID = intent.getStringExtra(EXTRA_USER_ID);
+                        response = handleActionAddAdmin(eventID, userID);
+                        break;
+                    }
+                    case ACTION_REMOVE_EVENT_PARTICIPANT: {
+                        final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                        final String userID = intent.getStringExtra(EXTRA_USER_ID);
+                        response = handleActionRemoveParticipant(eventID, userID);
+                        break;
+                    }
+                    case ACTION_FIND_EVENT_USER: {
+                        final String userID = intent.getStringExtra(EXTRA_USER_ID);
+                        response = handleActionFindForUser(userID);
+                        break;
+                    }
+                    case ACTION_FIND:
+                        final String categorie = intent.getStringExtra(EXTRA_EVENT_CATEGORIE);
+                        final String name = intent.getStringExtra(EXTRA_EVENT_NAME);
+                        final String date = intent.getStringExtra(EXTRA_EVENT_DATE);
+                        final String author = intent.getStringExtra(EXTRA_EVENT_AUTHOR);
+                        final String mode = intent.getStringExtra(EXTRA_EVENT_MODE);
+                        response = handleActionFind(categorie, name, date, author, mode);
+                        break;
+                    case ACTION_CREATE_TEAM: {
+                        final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                        final String teamName = intent.getStringExtra(EXTRA_TEAM_NAME);
+                        response = handleActionCreateTeam(eventID, teamName);
+                        break;
+                    }
+                    case ACTION_SHUFFLE_PARTICIPANTS: {
+                        final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                        response = handleActionShuffleParticipants(eventID);
+                        //Return the response
+                        break;
+                    }
                 }
-                 else if(action.equals( ACTION_CREATE_TEAM)){
-                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                    final String teamName = intent.getStringExtra(EXTRA_TEAM_NAME);
-                    response = handleActionCreateTeam(eventID, teamName);
-                } else if(action.equals( ACTION_SHUFFLE_PARTICIPANTS)) {
-                    final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
-                    response = handleActionShuffleParticipants(eventID);
-                    //Return the response
-                }if(response == null){
+                if(response == null){
                     b.putString(Intent.EXTRA_TEXT, "internal error");
                     receiver.send(STATUS_ERROR, b);
                   } else {
-                //convert to json to check error
-                Object json = new JSONTokener(response).nextValue();
-                if (json instanceof JSONObject){
-                    responseJsonObject = (JSONObject)json;
-                    if( responseJsonObject.has("error")){
-                        b.putString(Intent.EXTRA_TEXT, responseJsonObject.getString("error"));
-                        receiver.send(STATUS_ERROR, b);
-                    } else {
+                    //convert to json to check error
+                    Object json = new JSONTokener(response).nextValue();
+                    if (json instanceof JSONObject) {
+                        responseJsonObject = (JSONObject) json;
+                        if (responseJsonObject.has("error")) {
+                            b.putString(Intent.EXTRA_TEXT, responseJsonObject.getString("error"));
+                            receiver.send(STATUS_ERROR, b);
+                        } else {
+                            b.putString("action", action);
+                            b.putString("jsonType", "object");
+                            b.putString("results", response);
+                            receiver.send(STATUS_FINISHED, b);
+                        }
+                    } else if (json instanceof JSONArray) {
+                        //empty array , if array no error
+                        b.putString("results", response);
+                        b.putString("jsonType", "array");
                         b.putString("action", action);
-                        b.putString("jsonType", "object");
-                        b.putString("results", response.toString());
                         receiver.send(STATUS_FINISHED, b);
                     }
-                }
-                else if (json instanceof JSONArray){
-                    //empty array , if array no error
-                    b.putString("results", response.toString());
-                    b.putString("jsonType", "array");
-                    b.putString("action", action);
-                    receiver.send(STATUS_FINISHED, b);
                 }
 
             }

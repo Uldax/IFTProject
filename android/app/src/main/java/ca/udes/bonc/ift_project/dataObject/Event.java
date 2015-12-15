@@ -1,12 +1,13 @@
 package ca.udes.bonc.ift_project.dataObject;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 
 /**
  * Created by cbongiorno on 12/12/2015.
  */
-public class Event {
+public class Event implements Serializable {
     private String id;
     private double latitude;
     private double longitude;

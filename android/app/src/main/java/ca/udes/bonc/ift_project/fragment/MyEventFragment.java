@@ -45,6 +45,7 @@ public class MyEventFragment extends Fragment implements RestApiResultReceiver.R
 
     public static MyEventFragment newInstance(String param1, String param2) {
         MyEventFragment fragment = new MyEventFragment();
+        fragment.setRetainInstance(true);
         return fragment;
     }
 
