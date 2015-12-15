@@ -89,7 +89,7 @@ public class QueryEventService extends QueryIntentService {
         return jsonAnswer;
     }
 
-    public static void startActionCreateEvent(Context context, ResultReceiver mReceiver, String longitude, String latitude, String title, String category, int maxPart,String type) {
+    public static void startActionCreateEvent(Context context, ResultReceiver mReceiver, String longitude, String latitude, String title, String category, int maxPart,String type,String placeName) {
         //binding to the service with startService()
         Log.d(TAG, "Start createMarkers");
         Intent intent = new Intent(context, QueryEventService.class);
@@ -101,6 +101,7 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_EVENT_TITLE, title);
         intent.putExtra(EXTRA_MAX_PARTICIPANTS, maxPart);
         intent.putExtra(EXTRA_EVENT_TYPE, type) ;
+        intent.putExtra(EXTRA_PLACE_NAME, placeName) ;
         context.startService(intent);
     }
 
@@ -274,6 +275,7 @@ public class QueryEventService extends QueryIntentService {
                     "&lng=" + URLEncoder.encode(intent.getStringExtra(EXTRA_LNG), "UTF-8") +
                     "&title=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TITLE), "UTF-8") +
                     "&maxParticipants=" + URLEncoder.encode(String.valueOf(intent.getIntExtra(EXTRA_MAX_PARTICIPANTS, 1)), "UTF-8") +
+                    HttpHelper.encodeParamUTF8("&placeName",intent.getStringExtra(EXTRA_PLACE_NAME)) +
                     "&type=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TYPE), "UTF-8");
         } catch (UnsupportedEncodingException e){
             Log.e(TAG,e.getMessage());

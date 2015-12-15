@@ -82,6 +82,7 @@ public class NewEventFragment extends Fragment implements RestApiResultReceiver.
     private String categValue ;
     private String typeValue = Types.LOISIR;
     private int maxParticipantValue;
+    private String placeName;
 
 
     /**
@@ -180,7 +181,7 @@ public class NewEventFragment extends Fragment implements RestApiResultReceiver.
                 //get and check input
                 if(setArgs() && location != null) {
                     Log.d(TAG,"All args ok");
-                    QueryEventService.startActionCreateEvent(v.getContext(),mReceiver, location.getLng(),location.getLat(),titleValue,categValue,maxParticipantValue,typeValue );
+                    QueryEventService.startActionCreateEvent(v.getContext(),mReceiver, location.getLng(),location.getLat(),titleValue,categValue,maxParticipantValue,typeValue,placeName );
                 }
             }
         });
@@ -195,6 +196,11 @@ public class NewEventFragment extends Fragment implements RestApiResultReceiver.
         } else titleValue = titleEditText.getText().toString();
 
         categValue = spinnerCateg.getSelectedItem().toString();
+        //TODO const here
+        if (categValue.equals("Choisir")){
+            //TODO add error
+            missingField = true;
+        }
 
         //TODO : maxparticipant must be int
         if (maxParticipantEditext.getText().toString().trim().equals("")){
@@ -205,7 +211,7 @@ public class NewEventFragment extends Fragment implements RestApiResultReceiver.
         if (autocompleteView.getText().toString().trim().equals("")){
             missingField = true;
             autocompleteView.setError("required field");
-        }
+        } else placeName = autocompleteView.getText().toString();
         return ! missingField;
     }
 
