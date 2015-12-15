@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -203,7 +204,11 @@ public class LoginActivity extends AppCompatActivity implements
                 Log.e("thread", ex.toString());
             } catch(SocketTimeoutException ex){
                 Log.e("thread", ex.toString());
-            } catch (IOException e) {
+            } catch(ConnectException ex){
+                //failed to connect
+                Log.e("thread", ex.toString());
+            }
+            catch (IOException e) {
                 Log.e(TAG, "Error sending ID token to backend.", e);
             }
             return false;
