@@ -167,7 +167,10 @@ public class MapFragment extends Fragment implements
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String idEvent = data.get(i).getId();
-                Fragment fragment = new NewEventFragment();
+                Fragment fragment = new DetailFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString(DetailFragment.ARG_PARAM1, idEvent);
+                fragment.setArguments(bundle);
                 ((MainActivity) getActivity()).switchFragment(fragment);
             }
         });

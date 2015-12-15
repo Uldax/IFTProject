@@ -1,44 +1,70 @@
 package ca.udes.bonc.ift_project.fragment;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
+
+
+
+import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 import ca.udes.bonc.ift_project.IFTApplication;
 import ca.udes.bonc.ift_project.R;
+import ca.udes.bonc.ift_project.adapter.ParticipantAdapter;
+import ca.udes.bonc.ift_project.adapter.PlacesAutoCompleteAdapter;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.dataObject.Categories;
 import ca.udes.bonc.ift_project.dataObject.Event;
+import ca.udes.bonc.ift_project.dataObject.Location;
+import ca.udes.bonc.ift_project.dataObject.Place;
 import ca.udes.bonc.ift_project.dataObject.Types;
 import ca.udes.bonc.ift_project.utils.ConvertJson;
+import ca.udes.bonc.ift_project.utils.GooglePlaces;
 
 
-public class EventDetailFragment extends Fragment implements RestApiResultReceiver.Receiver {
-    private String TAG = "MyEventFragment";
+public class DetailFragment extends Fragment implements RestApiResultReceiver.Receiver{
+    public static final String ARG_PARAM1 = "idEvent";
+    public static final String ARG_PARAM2 = "param2";
+    private String TAG = "DetailFragment";
     private OnFragmentInteractionListener mListener;
     private static RestApiResultReceiver mReceiver;
 
-    private static final String ARG_PARAM1 = "idEvent";
-    private static final String ARG_PARAM2 = "param2";
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
     private String idEvent;
+
+    private View view;
 
     private TextView title;
     private TextView date;
@@ -50,11 +76,20 @@ public class EventDetailFragment extends Fragment implements RestApiResultReceiv
     private ListView listParticip;
     private ProgressBar progressBar;
     private Button btParticip;
+    private ParticipantAdapter adapter;
 
 
-
-    public static EventDetailFragment newInstance(String param1, String param2) {
-        EventDetailFragment fragment = new EventDetailFragment();
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment SearchFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static DetailFragment newInstance(String param1, String param2) {
+        DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -62,7 +97,7 @@ public class EventDetailFragment extends Fragment implements RestApiResultReceiv
         return fragment;
     }
 
-    public EventDetailFragment() {
+    public DetailFragment() {
         // Required empty public constructor
     }
 
@@ -71,6 +106,7 @@ public class EventDetailFragment extends Fragment implements RestApiResultReceiv
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             idEvent = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
         mReceiver = new RestApiResultReceiver(new Handler());
@@ -78,9 +114,8 @@ public class EventDetailFragment extends Fragment implements RestApiResultReceiv
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_event_detail, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.view = inflater.inflate(R.layout.fragment_event_detail, container, false);
         this.listParticip = (ListView) view.findViewById(R.id.listParticip);
         this.progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         this.title = (TextView) view.findViewById(R.id.title);
@@ -91,7 +126,7 @@ public class EventDetailFragment extends Fragment implements RestApiResultReceiv
         this.star = (TextView) view.findViewById(R.id.star);
         this.img_cat = (ImageView) view.findViewById(R.id.img_cat);
         this.btParticip = (Button) view.findViewById(R.id.btParticip);
-        QueryEventService.startActionFindEvent(container.getContext(), mReceiver, idEvent);
+        QueryEventService.startActionGetOneEvent(container.getContext(), mReceiver, idEvent);
         return view;
     }
 
@@ -117,6 +152,7 @@ public class EventDetailFragment extends Fragment implements RestApiResultReceiv
     }
 
     private void updateInterface(Event event) {
+        this.listParticip = (ListView) view.findViewById(R.id.listParticip);
         this.title.setText(event.getTitle());
         this.date.setText(DateFormat.format("d MMM @ kk:mm", event.getDate()));
         this.place.setText(event.getLatitude() + " - " + event.getLongitude());
@@ -141,10 +177,14 @@ public class EventDetailFragment extends Fragment implements RestApiResultReceiv
                 break;
         }
         HashMap<String,String> participants = event.getListParticipant();
+        adapter = new ParticipantAdapter(getContext(),R.layout.adapter_participant, participants,((IFTApplication)getActivity().getApplication()).getUserId());
+        listParticip.setAdapter(adapter);
         if(!participants.containsKey((((IFTApplication)getActivity().getApplication()).getUserId())))
             this.btParticip.setVisibility(View.GONE);
     }
 
+
+    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -167,5 +207,4 @@ public class EventDetailFragment extends Fragment implements RestApiResultReceiv
         super.onDetach();
         mListener = null;
     }
-
 }

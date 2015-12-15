@@ -65,11 +65,11 @@ public class ConvertJson {
             event.setLatitude(oneObject.getJSONObject("position").getDouble("lat"));
             event.setLongitude(oneObject.getJSONObject("position").getDouble("lng"));
 
-            JSONArray listParti = oneObject.getJSONArray("participants");
+            JSONArray listParti = oneObject.getJSONObject("detail").getJSONArray("participants");
             for (int i=0; i < listParti.length(); i++)
             {
                 JSONObject particip = (JSONObject)listParti.get(i);
-                event.addParticipant(particip.getString("_id"),particip.getString("first"));
+                event.addParticipant(particip.getString("_id"), particip.getJSONObject("name").getString("first"));
             }
 
         } catch (JSONException e){
