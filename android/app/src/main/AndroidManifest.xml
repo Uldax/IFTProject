@@ -94,10 +94,6 @@
             android:label="@string/title_activity_login_pop_up"
             android:theme="@style/AppTheme.PopUpTheme" >
         </activity>
-        <activity
-            android:name=".teamManagement"
-            android:label="@string/title_activity_team_management" >
-        </activity>
     </application>
 
 </manifest>
