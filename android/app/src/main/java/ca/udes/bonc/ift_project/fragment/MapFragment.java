@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.udes.bonc.ift_project.IFTApplication;
+import ca.udes.bonc.ift_project.MainActivity;
 import ca.udes.bonc.ift_project.R;
 import ca.udes.bonc.ift_project.adapter.EventAdapter;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
@@ -83,6 +84,7 @@ public class MapFragment extends Fragment implements
     private EventAdapter adapter;
     private ProgressBar progressBar;
     private List<Marker> listMarker = new ArrayList<Marker>();
+    private List<Event> data;
 
     private SupportMapFragment mSupportMapFragment;
 
@@ -163,12 +165,17 @@ public class MapFragment extends Fragment implements
         listMap.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("setOnItemClickListener", "long : " + l);
+                String idEvent = data.get(i).getId();
+                Fragment fragment = new NewEventFragment();
+                ((MainActivity) getActivity()).switchFragment(fragment);
+            }
+        });
+        listMap.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Marker m = listMarker.get(i);
-                if ((mMap.getCameraPosition().target.longitude == m.getPosition().longitude) && (mMap.getCameraPosition().target.latitude == m.getPosition().latitude))
-                    Log.i("setOnItemClickListener", "open event ?");
-                else
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 14));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 14));
+                return true;
             }
         });
         return myView;
@@ -277,7 +284,7 @@ public class MapFragment extends Fragment implements
             Log.i("maps", "add Marker :" + e.getTitle());
             listMarker.add(mMap.addMarker(new MarkerOptions().position(new LatLng(e.getLatitude(), e.getLongitude())).title(e.getTitle())));
         }
-
+        this.data = listEvent;
         adapter = new EventAdapter(getContext(),R.layout.adapter_event, listEvent,((IFTApplication)getActivity().getApplication()).getUserId());
         listMap.setAdapter(adapter);
     }

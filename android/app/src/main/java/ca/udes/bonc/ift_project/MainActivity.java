@@ -129,10 +129,10 @@ implements NavigationView.OnNavigationItemSelectedListener,
 
         //test
         //TODO define category and get date from datepicker
-        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.385734837128865", "Go to play44", Categories.FOOTBALL, 12, Types.LOISIR);
-        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "44.385734837128865", "EVERYTHING IS AWSOMER", Categories.HOCKEY, 12, Types.LOISIR);
-        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "46.385734837128865", "Let's talk dirty", Categories.SOCIAL, 12, Types.LOISIR);
-        QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.395734837128865", "Let's talk dirtier", Categories.RANDO, 12, Types.COMPETITIF);
+        //QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.385734837128865", "Go to play44", Categories.FOOTBALL, 12, Types.LOISIR);
+        //QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "44.385734837128865", "EVERYTHING IS AWSOMER", Categories.HOCKEY, 12, Types.LOISIR);
+        //QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "46.385734837128865", "Let's talk dirty", Categories.SOCIAL, 12, Types.LOISIR);
+        //QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.395734837128865", "Let's talk dirtier", Categories.RANDO, 12, Types.COMPETITIF);
         //QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
 
         if (checkPlayServices()) {
@@ -308,6 +308,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
 
         if((selectedFragment!= null) && (selectedFragment != currentFragment))
             fragmentManager.beginTransaction()
+                    .addToBackStack(null)
                     .replace(R.id.content_frame, selectedFragment)
                     .commit();
 
@@ -319,6 +320,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
     public void switchFragment(Fragment selectedFragment){
         if(selectedFragment!= null)
             fragmentManager.beginTransaction()
+                    .addToBackStack("tag")
                     .replace(R.id.content_frame, selectedFragment)
                     .commit();
     }
