@@ -36,6 +36,7 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
 
     private static RestApiResultReceiver mReceiver;
     private String eventID;
+    private int nbTeam;
     private Button addTeamButton = null;
     private Button shuffleParticipantsButton = null;
     private EditText teamNameEditText = null;
@@ -75,6 +76,7 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             eventID = getArguments().getString(ARG_PARAM1);
+            nbTeam = getArguments().getInt(ARG_PARAM2);
         }
     }
 
