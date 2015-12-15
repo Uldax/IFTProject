@@ -48,7 +48,10 @@ var EventsSchema = new Schema({
             type: Date,
             default: Date.now
         },
-        status: String,
+        status: {
+            type: String,
+            default: "created"
+        },
         createBy: {
             type: String,
             ref: 'users'
