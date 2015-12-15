@@ -82,7 +82,7 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
                         toastText = "The team has been successfully created! :)";
                         toast = Toast.makeText(context, toastText, duration);
                         toast.show();
-                        //updateTeamList(listTeam);
+                        QueryEventService.startActionGetOneEvent(view.getContext(), mReceiver, eventID);
                         break;
                     case QueryIntentService.ACTION_SHUFFLE_PARTICIPANTS:
                         toastText = "Participants have been successfully shuffled! :)";
@@ -174,7 +174,6 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
         shuffleParticipantsButton = (Button) view.findViewById(R.id.shuffleParticipantsButton);
         teamNameEditText= (EditText) view.findViewById(R.id.teamNameEditText);
         teamListView = (ListView) view.findViewById(R.id.teamListView);
-       // updateTeamList(listTeam);
         QueryEventService.startActionGetOneEvent(view.getContext(), mReceiver, eventID );
 
         //If we already have at least 2 teams we can shuffle
