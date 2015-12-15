@@ -4,8 +4,6 @@ package ca.udes.bonc.ift_project.dataObject;
  * Created by pcontat on 29/10/2015.
  */
 
-import com.google.api.client.util.Key;
-
 import java.io.Serializable;
 
 /** Implement this class from "Serializable"

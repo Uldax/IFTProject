@@ -1,8 +1,6 @@
 package ca.udes.bonc.ift_project.fragment;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,42 +11,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
-
-
-
-import java.util.Calendar;
 import java.util.HashMap;
 
 import ca.udes.bonc.ift_project.IFTApplication;
 import ca.udes.bonc.ift_project.R;
 import ca.udes.bonc.ift_project.adapter.ParticipantAdapter;
-import ca.udes.bonc.ift_project.adapter.PlacesAutoCompleteAdapter;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
 import ca.udes.bonc.ift_project.dataObject.Categories;
 import ca.udes.bonc.ift_project.dataObject.Event;
-import ca.udes.bonc.ift_project.dataObject.Location;
-import ca.udes.bonc.ift_project.dataObject.Place;
 import ca.udes.bonc.ift_project.dataObject.Types;
 import ca.udes.bonc.ift_project.utils.ConvertJson;
-import ca.udes.bonc.ift_project.utils.GooglePlaces;
 
 
 public class DetailFragment extends Fragment implements RestApiResultReceiver.Receiver{

@@ -23,9 +23,6 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TimePicker;
 
-
-
-
 import java.util.Calendar;
 
 import ca.udes.bonc.ift_project.R;

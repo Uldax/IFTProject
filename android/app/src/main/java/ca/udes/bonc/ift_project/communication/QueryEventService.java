@@ -11,10 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URLEncoder;
 
 import ca.udes.bonc.ift_project.IFTApplication;

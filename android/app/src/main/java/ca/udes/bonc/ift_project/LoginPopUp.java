@@ -3,12 +3,9 @@ package ca.udes.bonc.ift_project;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -18,11 +15,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 
 import ca.udes.bonc.ift_project.communication.HttpHelper;
 

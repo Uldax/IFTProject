@@ -9,8 +9,6 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import ca.udes.bonc.ift_project.dataObject.Event;

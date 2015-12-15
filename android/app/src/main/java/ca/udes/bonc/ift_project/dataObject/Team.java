@@ -1,7 +1,6 @@
 package ca.udes.bonc.ift_project.dataObject;
 
 
-import java.util.HashMap;
 import java.util.ArrayList;
 /**
  * Created by juasp on 14/12/2015.

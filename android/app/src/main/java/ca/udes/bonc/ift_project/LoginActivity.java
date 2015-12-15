@@ -28,15 +28,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.URLEncoder;
 
 import ca.udes.bonc.ift_project.communication.HttpHelper;
-import ca.udes.bonc.ift_project.utils.AlertDialogManager;
 import ca.udes.bonc.ift_project.utils.ConnectionDetector;
 
 

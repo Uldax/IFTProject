@@ -2,13 +2,11 @@ package ca.udes.bonc.ift_project.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import ca.udes.bonc.ift_project.R;
-import ca.udes.bonc.ift_project.dataObject.Categories;
 import ca.udes.bonc.ift_project.dataObject.Event;
 
 /**

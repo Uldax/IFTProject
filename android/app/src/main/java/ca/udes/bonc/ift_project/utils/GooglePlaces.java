@@ -1,6 +1,5 @@
 package ca.udes.bonc.ift_project.utils;
 
-import android.nfc.Tag;
 import android.util.Log;
 
 import com.google.api.client.http.GenericUrl;
