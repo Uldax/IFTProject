@@ -352,26 +352,30 @@ public class QueryEventService extends QueryIntentService {
                 }if(response == null){
                     b.putString(Intent.EXTRA_TEXT, "internal error");
                     receiver.send(STATUS_ERROR, b);
-                } else {
-                    //convert to json to check error
-                    Object json = new JSONTokener(response).nextValue();
-                    if (json instanceof JSONObject){
-                        responseJsonObject = (JSONObject)json;
-                        if( responseJsonObject.has("error")){
-                            b.putString(Intent.EXTRA_TEXT, responseJsonObject.getString("error"));
-                            receiver.send(STATUS_ERROR, b);
-                        } else {
-                            b.putString("results", response.toString());
-                            receiver.send(STATUS_FINISHED, b);
-                        }
-                    }
-                    else if (json instanceof JSONArray){
-                        //empty array , if array no error
+                  } else {
+                //convert to json to check error
+                Object json = new JSONTokener(response).nextValue();
+                if (json instanceof JSONObject){
+                    responseJsonObject = (JSONObject)json;
+                    if( responseJsonObject.has("error")){
+                        b.putString(Intent.EXTRA_TEXT, responseJsonObject.getString("error"));
+                        receiver.send(STATUS_ERROR, b);
+                    } else {
+                        b.putString("action", action);
+                        b.putString("jsonType", "object");
                         b.putString("results", response.toString());
                         receiver.send(STATUS_FINISHED, b);
                     }
-
                 }
+                else if (json instanceof JSONArray){
+                    //empty array , if array no error
+                    b.putString("results", response.toString());
+                    b.putString("jsonType", "array");
+                    b.putString("action", action);
+                    receiver.send(STATUS_FINISHED, b);
+                }
+
+            }
             } catch (JSONException e){
                 Log.e(TAG, e.getMessage() );
                 receiver.send(STATUS_ERROR, b);
