@@ -92,6 +92,7 @@ var evenement = {
         if (req.params.id) {
             Events.findById(req.params.id)
                 .populate('detail.participants', 'name') // only return the Persons name
+				.populate('detail.teams') 
                 .populate('detail.createBy', 'name')
                 .exec(function(err, evt) {
                     returnResult(res, err, evt);
