@@ -70,6 +70,13 @@ public class ConvertJson {
                 event.addParticipant(particip.getString("_id"), particip.getJSONObject("name").getString("first"));
             }
 
+            JSONArray listTeams = oneObject.getJSONObject("detail").getJSONArray("teams");
+            for (int i=0; i < listTeams.length(); i++)
+            {
+                JSONObject team = (JSONObject)listTeams.get(i);
+                event.addTeam(team.getString("_id"), team.getString("name"));
+            }
+
         } catch (JSONException e){
             Log.e("Json event",e.getMessage());
         } catch (ParseException e) {
