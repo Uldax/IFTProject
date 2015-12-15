@@ -12,6 +12,13 @@ public class Team {
     private ArrayList<String> participantsList = new ArrayList<String>();
     private String image;
 
+    public Team(String id, String name ){
+
+        this.id = id;
+        this.name= name;
+
+    }
+
     public Team(String id, String name,ArrayList<String> participantsList, String image ){
 
         this.id = id;

@@ -17,7 +17,11 @@ import android.widget.ListView;
 
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import ca.udes.bonc.ift_project.IFTApplication;
 import ca.udes.bonc.ift_project.R;
@@ -26,7 +30,9 @@ import ca.udes.bonc.ift_project.adapter.TeamAdapter;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
+import ca.udes.bonc.ift_project.dataObject.Event;
 import ca.udes.bonc.ift_project.dataObject.Team;
+import ca.udes.bonc.ift_project.utils.ConvertJson;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -83,6 +89,21 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
                         toast = Toast.makeText(context, toastText, duration);
                         toast.show();
                         break;
+                    case QueryIntentService.ACTION_GET_ONE:
+                        List<Team> listTeam = new ArrayList<>();
+                        HashMap<String,String> haspMapTeam =  ConvertJson.convert_event(results).getListTeam();
+
+                        Iterator it = haspMapTeam.entrySet().iterator();
+                        while (it.hasNext()) {
+                            HashMap.Entry pair = (HashMap.Entry)it.next();
+
+                            Team newTeam = new Team(pair.getKey().toString(),pair.getValue().toString());
+
+                            listTeam.add(newTeam);
+                            it.remove(); // avoids a ConcurrentModificationException
+                        }
+                        updateTeamList(listTeam);
+                        break;
                 }
                 break;
             case QueryIntentService.STATUS_ERROR:
@@ -94,6 +115,11 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
                         break;
                     case QueryIntentService.ACTION_SHUFFLE_PARTICIPANTS:
                         toastText = "Error! The participants were not shuffled. :(";
+                        toast = Toast.makeText(context, toastText, duration);
+                        toast.show();
+                        break;
+                    case QueryIntentService.ACTION_GET_ONE:
+                        toastText = "Error! something went horribly wrong call tech911. :(";
                         toast = Toast.makeText(context, toastText, duration);
                         toast.show();
                         break;
@@ -148,8 +174,8 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
         shuffleParticipantsButton = (Button) view.findViewById(R.id.shuffleParticipantsButton);
         teamNameEditText= (EditText) view.findViewById(R.id.teamNameEditText);
         teamListView = (ListView) view.findViewById(R.id.teamListView);
-        //updateTeamList(listTeam);
-
+       // updateTeamList(listTeam);
+        QueryEventService.startActionGetOneEvent(view.getContext(), mReceiver, eventID );
 
         //If we already have at least 2 teams we can shuffle
         validateShuffleParticipantsButton();
