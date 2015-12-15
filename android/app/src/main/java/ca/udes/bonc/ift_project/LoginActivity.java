@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -200,10 +201,11 @@ public class LoginActivity extends AppCompatActivity implements
                     myApp.setUserId(userId);
                     return true;
                 }
-
             } catch(MalformedURLException ex){
                 Log.e("thread", ex.toString());
             } catch(JSONException ex){
+                Log.e("thread", ex.toString());
+            } catch(SocketTimeoutException ex){
                 Log.e("thread", ex.toString());
             } catch (IOException e) {
                 Log.e(TAG, "Error sending ID token to backend.", e);
