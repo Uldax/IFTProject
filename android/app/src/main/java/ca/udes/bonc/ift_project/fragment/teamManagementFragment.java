@@ -1,16 +1,16 @@
 package ca.udes.bonc.ift_project.fragment;
 
 import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -76,7 +76,7 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
                         toastText = "The team has been successfully created! :)";
                         toast = Toast.makeText(context, toastText, duration);
                         toast.show();
-                        updateTeamList(listTeam);
+                        //updateTeamList(listTeam);
                         break;
                     case QueryIntentService.ACTION_SHUFFLE_PARTICIPANTS:
                         toastText = "Participants have been successfully shuffled! :)";
@@ -148,7 +148,7 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
         shuffleParticipantsButton = (Button) view.findViewById(R.id.shuffleParticipantsButton);
         teamNameEditText= (EditText) view.findViewById(R.id.teamNameEditText);
         teamListView = (ListView) view.findViewById(R.id.teamListView);
-        updateTeamList(listTeam);
+        //updateTeamList(listTeam);
 
 
         //If we already have at least 2 teams we can shuffle

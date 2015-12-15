@@ -5,18 +5,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
-        import android.content.Context;
-        import android.content.Intent;
-        import android.os.Bundle;
-        import android.os.ResultReceiver;
-        import android.util.Log;
-
-        import java.io.UnsupportedEncodingException;
-
-        import java.net.URLEncoder;
-
-        import ca.udes.bonc.ift_project.IFTApplication;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
+import android.util.Log;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import ca.udes.bonc.ift_project.IFTApplication;
 
 /**
  * Created by pcontat on 09/12/2015.

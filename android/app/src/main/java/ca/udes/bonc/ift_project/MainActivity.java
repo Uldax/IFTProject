@@ -3,20 +3,15 @@ package ca.udes.bonc.ift_project;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,7 +21,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,18 +32,14 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-import ca.udes.bonc.ift_project.communication.QueryEventService;
 import ca.udes.bonc.ift_project.communication.QueryIntentService;
-import ca.udes.bonc.ift_project.communication.QuickStartPreferences;
 import ca.udes.bonc.ift_project.communication.RegistrationIntentService;
 import ca.udes.bonc.ift_project.communication.RestApiResultReceiver;
-import ca.udes.bonc.ift_project.dataObject.Categories;
-import ca.udes.bonc.ift_project.dataObject.Types;
-import ca.udes.bonc.ift_project.fragment.SearchFragment;
 import ca.udes.bonc.ift_project.fragment.MapFragment;
 import ca.udes.bonc.ift_project.fragment.MyEventFragment;
 import ca.udes.bonc.ift_project.fragment.NewEventFragment;
 import ca.udes.bonc.ift_project.fragment.OnFragmentInteractionListener;
+import ca.udes.bonc.ift_project.fragment.SearchFragment;
 import ca.udes.bonc.ift_project.utils.AlertDialogManager;
 import ca.udes.bonc.ift_project.utils.ConnectionDetector;
 
