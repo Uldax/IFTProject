@@ -176,7 +176,7 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
         this.place.setText(event.getPositionName());
         this.author.setText("by " + event.getAuthorName());
         if(event.getType().equals(Types.LOISIR)) this.modeCompet.setVisibility(View.GONE);
-        if((((IFTApplication)getActivity().getApplication()).getUserId()).equals(event.getAuthorID())) this.star.setVisibility(View.GONE);
+        if(idUser.equals(event.getAuthorID())) this.star.setVisibility(View.GONE);
         switch (event.getCategory()){
             case Categories.FOOTBALL :
                 this.img_cat.setImageResource(R.drawable.football);
@@ -195,7 +195,7 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
                 break;
         }
         HashMap<String,String> participants = event.getListParticipant();
-        adapter = new ParticipantAdapter(getContext(),R.layout.adapter_participant, participants,((IFTApplication)getActivity().getApplication()).getUserId());
+        adapter = new ParticipantAdapter(getContext(),R.layout.adapter_participant, participants,idUser);
         listParticip.setAdapter(adapter);
 
         if( participants.containsKey(idUser) ){
