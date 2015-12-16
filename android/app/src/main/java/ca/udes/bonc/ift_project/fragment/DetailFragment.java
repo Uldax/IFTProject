@@ -20,6 +20,7 @@ import android.widget.TextView;
 import java.util.HashMap;
 
 import ca.udes.bonc.ift_project.IFTApplication;
+import ca.udes.bonc.ift_project.MainActivity;
 import ca.udes.bonc.ift_project.R;
 import ca.udes.bonc.ift_project.adapter.ParticipantAdapter;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
@@ -43,6 +44,7 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
     private String mParam2;
 
     private String idEvent;
+    private String idUser;
 
     private View view;
 
@@ -97,6 +99,8 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.fragment_event_detail, container, false);
+        this.idUser = ((IFTApplication)getActivity().getApplication()).getUserId();
+
         this.listParticip = (ListView) view.findViewById(R.id.listParticip);
         this.progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         this.title = (TextView) view.findViewById(R.id.title);
@@ -118,10 +122,18 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
                 this.progressBar.setVisibility(View.VISIBLE);
                 break;
             case QueryIntentService.STATUS_FINISHED:
-                String results = resultData.getString("results");
                 this.progressBar.setVisibility(View.GONE);
+                String results = resultData.getString("results");
                 Log.i(TAG, "result = " + results);
-                updateInterface(ConvertJson.convert_event(results));
+                switch (resultData.getString("action")){
+                    case QueryIntentService.ACTION_GET_ONE:
+                        updateInterface(ConvertJson.convert_event(results));
+                        break;
+                    case QueryIntentService.ACTION_ADD_EVENT_PARTICIPANT:
+                        btParticip.setText("Your participation was successfully register !");
+                        btParticip.setEnabled(false);
+                        break;
+                }
                 break;
             case QueryIntentService.STATUS_ERROR:
                 //todo handl error
@@ -132,7 +144,7 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
         }
     }
 
-    private void updateInterface(Event event) {
+    private void updateInterface(final Event event) {
         this.listParticip = (ListView) view.findViewById(R.id.listParticip);
         this.title.setText(event.getTitle());
         this.date.setText(DateFormat.format("d MMM @ kk:mm", event.getDate()));
@@ -160,8 +172,36 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
         HashMap<String,String> participants = event.getListParticipant();
         adapter = new ParticipantAdapter(getContext(),R.layout.adapter_participant, participants,((IFTApplication)getActivity().getApplication()).getUserId());
         listParticip.setAdapter(adapter);
-        if(!participants.containsKey((((IFTApplication)getActivity().getApplication()).getUserId())))
-            this.btParticip.setVisibility(View.GONE);
+
+        if( participants.containsKey(idUser) ){
+            btParticip.setText("Your participation was already register !");
+            btParticip.setEnabled(false);
+        }else {
+            this.btParticip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    QueryEventService.startActionAddParticipant(getContext(), mReceiver, idEvent, idUser);
+                }
+            });
+        }
+
+        if( event.getAuthorID().equals(idUser) ){
+            this.btParticip.setText("Managment Interface");
+            this.btParticip.setVisibility(View.VISIBLE);
+            btParticip.setEnabled(true);
+            this.btParticip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Fragment fragment = new teamManagementFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(DetailFragment.ARG_PARAM1, idEvent);
+                    bundle.putInt(DetailFragment.ARG_PARAM2, event.getListTeam().size());
+                    fragment.setArguments(bundle);
+                    ((MainActivity) getActivity()).switchFragment(fragment);
+                }
+            });
+        }
+
     }
 
 
