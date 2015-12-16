@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -20,10 +21,12 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import ca.udes.bonc.ift_project.IFTApplication;
+import ca.udes.bonc.ift_project.MainActivity;
 import ca.udes.bonc.ift_project.R;
 import ca.udes.bonc.ift_project.adapter.EventAdapter;
 import ca.udes.bonc.ift_project.communication.QueryEventService;
@@ -67,6 +70,7 @@ public class SearchFragment extends Fragment implements RestApiResultReceiver.Re
     private ListView listMap;
     private CheckBox cbLoisir;
     private CheckBox cbCompetitif;
+    private ArrayList<Event> data;
 
 
     private View view;
@@ -138,6 +142,18 @@ public class SearchFragment extends Fragment implements RestApiResultReceiver.Re
             @Override
             public void onClick(View v) {
                 search();
+            }
+        });
+
+        listMap.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String idEvent = data.get(i).getId();
+                Fragment fragment = new DetailFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString(DetailFragment.ARG_PARAM1, idEvent);
+                fragment.setArguments(bundle);
+                ((MainActivity) getActivity()).switchFragment(fragment);
             }
         });
 
@@ -228,8 +244,10 @@ public class SearchFragment extends Fragment implements RestApiResultReceiver.Re
         }
     }
 
-    public void updateEventList(List<Event> listEvent){
+    public void updateEventList(ArrayList<Event> listEvent){
         listMap = (ListView) view.findViewById(R.id.listMap);
+
+        this.data = listEvent;
 
         EventAdapter adapter = new EventAdapter(getContext(), R.layout.adapter_event, listEvent, ((IFTApplication) getActivity().getApplication()).getUserId());
         listMap.setAdapter(adapter);
