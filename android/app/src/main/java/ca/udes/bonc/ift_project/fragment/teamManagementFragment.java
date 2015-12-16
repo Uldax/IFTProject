@@ -74,7 +74,7 @@ public class teamManagementFragment extends Fragment implements RestApiResultRec
                         toastText = "The team has been successfully created! :)";
                         toast = Toast.makeText(context, toastText, duration);
                         toast.show();
-                        QueryEventService.startActionGetOneEvent(view.getContext(), mReceiver, eventID);
+                        QueryEventService.startActionGetOneEvent(context, mReceiver, eventID);
                         break;
                     case QueryIntentService.ACTION_SHUFFLE_PARTICIPANTS:
                         toastText = "Participants have been successfully shuffled! :)";
