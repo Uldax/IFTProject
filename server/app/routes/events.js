@@ -495,13 +495,25 @@ function returnResult(res, err, evt) {
 
 function createEvenementObject(parameters, addCreator) {
     if (parameters.category && parameters.createBy && parameters.start && parameters.maxParticipants) {
+
+        console.log(parameters.start);
+        var dateValue = parameters.start.split(':');
+        console.log("dateValue");
+        console.log(dateValue);
+        if(dateValue.length > 4){
+            var mdate = new Date(dateValue[0],dateValue[1],dateValue[2],dateValue[3],dateValue[4]);
+            console.log(mdate);
+        } else {
+            console.log("Error with date");
+            return null;
+        }
         //Create event object
         var newEvent = {
             category: parameters.category,
             admin: parameters.createBy,
-            start: parameters.start,
+            start: parameters.date,
             createBy: parameters.createBy,
-            status: Const.eventStatus.created,
+            status: "created",
             type: parameters.type || Const.eventType.fun,
             maxParticipants: parameters.maxParticipants
         };

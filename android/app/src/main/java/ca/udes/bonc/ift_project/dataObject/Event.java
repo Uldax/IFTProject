@@ -11,6 +11,16 @@ public class Event implements Serializable {
     private String id;
     private double latitude;
     private double longitude;
+
+    public String getPositionName() {
+        return positionName;
+    }
+
+    public void setPositionName(String positionName) {
+        this.positionName = positionName;
+    }
+
+    private String positionName;
     private String title;
     private Date date;
     private String authorID;
@@ -19,6 +29,7 @@ public class Event implements Serializable {
     private String type;
     private HashMap<String,String> listParticipant = new HashMap<String,String>();
     private HashMap<String,String> listEquipe = new HashMap<String,String>();
+    private String status;
 
     public String getId() {
         return id;
@@ -103,5 +114,13 @@ public class Event implements Serializable {
     }
     public void addTeam (String id, String name){
         this.listEquipe.put(id,name);
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

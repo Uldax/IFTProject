@@ -97,7 +97,7 @@ public class QueryEventService extends QueryIntentService {
         return jsonAnswer;
     }
 
-    public static void startActionCreateEvent(Context context, ResultReceiver mReceiver, String longitude, String latitude, String title, String category, int maxPart,String type,String placeName) {
+    public static void startActionCreateEvent(Context context, ResultReceiver mReceiver, String longitude, String latitude, String title, String category, int maxPart,String type,String placeName,String dateString) {
         //binding to the service with startService()
         Log.d(TAG, "Start createMarkers");
         Intent intent = new Intent(context, QueryEventService.class);
@@ -110,6 +110,7 @@ public class QueryEventService extends QueryIntentService {
         intent.putExtra(EXTRA_MAX_PARTICIPANTS, maxPart);
         intent.putExtra(EXTRA_EVENT_TYPE, type) ;
         intent.putExtra(EXTRA_PLACE_NAME, placeName) ;
+        intent.putExtra(EXTRA_EVENT_DATE_STRING, dateString) ;
         context.startService(intent);
     }
 
@@ -272,17 +273,15 @@ public class QueryEventService extends QueryIntentService {
     private String formatCreateEventParameters(Intent intent)  {
         final String userId = myApplication.getUserId();
         String postData = null;
-        //todo add date
         try {
-            final String eventDate = intent.getStringExtra(EXTRA_EVENT_DATE);
             postData = "category=" + URLEncoder.encode(intent.getStringExtra(EXTRA_CATEGORY), "UTF-8") +
                     "&createBy=" + URLEncoder.encode(userId, "UTF-8") +
                     "&admin=" + URLEncoder.encode(userId, "UTF-8") +
-                    "&start=" + URLEncoder.encode("01/01/2016", "UTF-8") +
                     "&lat=" + URLEncoder.encode(intent.getStringExtra(EXTRA_LAT), "UTF-8") +
                     "&lng=" + URLEncoder.encode(intent.getStringExtra(EXTRA_LNG), "UTF-8") +
                     "&title=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TITLE), "UTF-8") +
                     "&maxParticipants=" + URLEncoder.encode(String.valueOf(intent.getIntExtra(EXTRA_MAX_PARTICIPANTS, 1)), "UTF-8") +
+                    HttpHelper.encodeParamUTF8("&start", intent.getStringExtra(EXTRA_EVENT_DATE_STRING)) +
                     HttpHelper.encodeParamUTF8("&placeName",intent.getStringExtra(EXTRA_PLACE_NAME)) +
                     "&type=" + URLEncoder.encode(intent.getStringExtra(EXTRA_EVENT_TYPE), "UTF-8");
         } catch (UnsupportedEncodingException e){
@@ -303,6 +302,7 @@ public class QueryEventService extends QueryIntentService {
             Bundle b = new Bundle();
             String response = null;
             JSONObject responseJsonObject;
+
             try{
                 //receiver.send will call onReceiveResult in the activity
                 //switch on string only in java 1.7

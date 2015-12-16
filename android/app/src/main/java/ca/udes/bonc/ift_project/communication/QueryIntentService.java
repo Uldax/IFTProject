@@ -53,6 +53,7 @@ public abstract class QueryIntentService extends IntentService {
     protected static final String EXTRA_USER_ID = "ca.udes.bonc.ift_project.extra.user.id";
     protected static final String EXTRA_TEAM_NAME = "ca.udes.bonc.ift_project.extra.team.name";
     public static final String EXTRA_PLACE_NAME = "ca.udes.bonc.ift_project.extra.place.name";
+    public static final String EXTRA_EVENT_DATE_STRING = "ca.udes.bonc.ift_project.extra.date.string";
 
 
     public static final int STATUS_RUNNING = 1;

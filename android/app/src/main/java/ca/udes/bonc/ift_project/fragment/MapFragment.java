@@ -198,12 +198,15 @@ public class MapFragment extends Fragment implements
             mMap.setMyLocationEnabled(true);
         }
         gps.start();
+        if( !gps.canGetLocation()){
+            gps.showSettingsAlert();
+        }
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gps.getLatitude(), gps.getLongitude()), 14));
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 Log.i("maps Cam change", "Camera : " + cameraPosition.target.latitude + " - " + cameraPosition.target.longitude);
-                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude), String.valueOf(cameraPosition.target.latitude), 20);
+                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude), String.valueOf(cameraPosition.target.latitude), 200);
             }
         });
     }
@@ -301,10 +304,10 @@ public class MapFragment extends Fragment implements
                 updateEventList(ConvertJson.convert_list_event(results));
                 break;
             case QueryIntentService.STATUS_ERROR:
-                //todo handl error
                 this.progressBar.setVisibility(View.GONE);
                 String error = resultData.getString(Intent.EXTRA_TEXT);
                 Log.d(TAG, "error = " + error);
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
                 break;
         }
     }
@@ -317,7 +320,7 @@ public class MapFragment extends Fragment implements
             listMap.setAdapter(null);
             listMap.setVisibility(View.GONE);
             fabList.setImageResource(android.R.drawable.ic_menu_more);
-            Toast.makeText(getContext(), "Sorry we don't have event here :'(", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Sorry we don't have event here ", Toast.LENGTH_LONG).show();
             for (Marker m :listMarker)
                 m.remove();
             return;
