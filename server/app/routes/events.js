@@ -385,6 +385,7 @@ var evenement = {
                             error: err.err
                         });
                     } else {
+                        console.log("event remove");
                         res.json({
                             message: 'Event removed with success!'
                         });

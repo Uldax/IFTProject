@@ -167,6 +167,7 @@ public abstract class QueryIntentService extends IntentService {
         String response= null;
         try {
             HttpURLConnection conn = createGetURLConnection(url);
+            conn.setRequestMethod("DELETE");
             response = HttpHelper.readAll(conn.getInputStream(), HttpHelper.getEncoding(conn));
             conn.disconnect();
         } catch(MalformedURLException e){

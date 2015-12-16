@@ -129,6 +129,12 @@ public class MapFragment extends Fragment implements
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.myView = inflater.inflate(R.layout.fragment_map, container, false);
@@ -289,6 +295,8 @@ public class MapFragment extends Fragment implements
     protected void localisateMe(){
         Snackbar.make(this.myView, "Localisation TODO", Snackbar.LENGTH_LONG).setAction("Action", null).show();
     }
+
+
 
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch (resultCode) {
