@@ -62,6 +62,7 @@ public class ConvertJson {
             event.setDate(formatter.parse(oneObject.getJSONObject("detail").getString("start")));
             event.setLatitude(oneObject.getJSONObject("position").getDouble("lat"));
             event.setLongitude(oneObject.getJSONObject("position").getDouble("lng"));
+            event.setStatus(oneObject.getJSONObject("detail").getString("status"));
 
             JSONArray listParti = oneObject.getJSONObject("detail").getJSONArray("participants");
             for (int i=0; i < listParti.length(); i++)

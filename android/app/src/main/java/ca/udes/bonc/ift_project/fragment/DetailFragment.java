@@ -1,10 +1,14 @@
 package ca.udes.bonc.ift_project.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -58,6 +62,8 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
     private ListView listParticip;
     private ProgressBar progressBar;
     private Button btParticip;
+    private Button btClose;
+    private Button btDelete;
     private ParticipantAdapter adapter;
 
 
@@ -111,6 +117,8 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
         this.star = (TextView) view.findViewById(R.id.star);
         this.img_cat = (ImageView) view.findViewById(R.id.img_cat);
         this.btParticip = (Button) view.findViewById(R.id.btParticip);
+        this.btClose = (Button) view.findViewById(R.id.btClose);
+        this.btDelete = (Button) view.findViewById(R.id.btDelete);
         QueryEventService.startActionGetOneEvent(container.getContext(), mReceiver, idEvent);
         return view;
     }
@@ -132,6 +140,22 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
                     case QueryIntentService.ACTION_ADD_EVENT_PARTICIPANT:
                         btParticip.setText("Your participation was successfully register !");
                         btParticip.setEnabled(false);
+                        break;
+                    case QueryIntentService.ACTION_CLOSE_EVENT:
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Close Event")
+                                .setMessage("This event have been close")
+                                .setCancelable(false)
+                                .setPositiveButton("hum oky ?", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        btClose.setEnabled(false);
+                                    }
+                                })
+                                .show();
+                        break;
+                    case QueryIntentService.ACTION_DELETE_EVENT:
+                        getActivity().onBackPressed();
                         break;
                 }
                 break;
@@ -187,7 +211,6 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
 
         if( event.getAuthorID().equals(idUser) ){
             this.btParticip.setText("Managment Interface");
-            this.btParticip.setVisibility(View.VISIBLE);
             btParticip.setEnabled(true);
             this.btParticip.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -200,6 +223,58 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
                     ((MainActivity) getActivity()).switchFragment(fragment);
                 }
             });
+            if(event.getStatus().equals("created")){
+                this.btClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Close Event")
+                                .setMessage("Are you to close this event")
+                                .setCancelable(true)
+                                .setPositiveButton("Yeah sure !", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        QueryEventService.startActionCloseEvent(getContext(),mReceiver,event.getId());
+                                    }
+                                })
+                                .setNegativeButton("AH nannnn", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.cancel();
+                                    }
+                                })
+                                .show();
+                    }
+                });
+            }else{
+                btClose.setVisibility(View.GONE);
+                title.setTextColor(getResources().getColor(R.color.eventClose));
+            }
+            this.btDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Delete Event")
+                            .setMessage("Are you to delete this event")
+                            .setCancelable(true)
+                            .setPositiveButton("Yeah sure !", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    QueryEventService.startActionDeleteEvent(getContext(), mReceiver, event.getId());
+                                }
+                            })
+                            .setNegativeButton("AH nannnn", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            })
+                            .show();
+                }
+            });
+        }else{
+            btClose.setVisibility(View.GONE);
+            btDelete.setVisibility(View.GONE);
         }
 
     }
