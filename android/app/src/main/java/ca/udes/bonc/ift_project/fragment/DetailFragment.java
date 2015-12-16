@@ -96,6 +96,7 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
         if (getArguments() != null) {
             idEvent = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            Log.d(TAG,"event id :" + idEvent);
         }
 
         mReceiver = new RestApiResultReceiver(new Handler());
@@ -218,8 +219,8 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
                 public void onClick(View view) {
                     Fragment fragment = new teamManagementFragment();
                     Bundle bundle = new Bundle();
-                    bundle.putString(DetailFragment.ARG_PARAM1, idEvent);
-                    bundle.putInt(DetailFragment.ARG_PARAM2, event.getListTeam().size());
+                    bundle.putString(teamManagementFragment.ARG_PARAM1, idEvent);
+                    bundle.putInt(teamManagementFragment.ARG_PARAM2, event.getListTeam().size());
                     fragment.setArguments(bundle);
                     ((MainActivity) getActivity()).switchFragment(fragment);
                 }
