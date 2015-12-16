@@ -30,6 +30,7 @@ public abstract class QueryIntentService extends IntentService {
     public static final String ACTION_DELETE_EVENT = "ca.udes.bonc.ift_project.action.deleteEvent";
     public static final String ACTION_FIND_EVENT_USER = "ca.udes.bonc.ift_project.action.findEventForUser";
     public static final String ACTION_GET_MARKERS_RADIUS = "ca.udes.bonc.ift_project.action.getMarkersWithRadius";
+    public static final String ACTION_CLOSE_EVENT = "ca.udes.bonc.ift_project.action.close.event";
 
 
 
