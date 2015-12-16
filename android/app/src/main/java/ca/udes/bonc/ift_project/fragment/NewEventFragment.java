@@ -179,7 +179,7 @@ public class NewEventFragment extends Fragment implements RestApiResultReceiver.
                 //get and check input
                 if(setArgs() && location != null) {
                     Log.d(TAG,"All args ok");
-                    QueryEventService.startActionCreateEvent(v.getContext(),mReceiver, location.getLng(),location.getLat(),titleValue,categValue,maxParticipantValue,typeValue,placeName );
+                    QueryEventService.startActionCreateEvent(v.getContext(),mReceiver, location.getLng(),location.getLat(),titleValue,categValue,maxParticipantValue,typeValue,placeName,edDatValue );
                 }
             }
         });
@@ -226,6 +226,7 @@ public class NewEventFragment extends Fragment implements RestApiResultReceiver.
         @Override
         public void onDateSet(DatePicker datePicker, int year, int month, int day) {
             edDate.setText((month + 1) + "-" + day + "-" + year);
+            edDatValue = String.valueOf(year)+":"+ String.valueOf(month)+":"+String.valueOf(day) +":";
             openTimePicker();
         }
     };
@@ -234,6 +235,8 @@ public class NewEventFragment extends Fragment implements RestApiResultReceiver.
         public void onTimeSet(TimePicker timePicker, int hour, int minute) {
             String sMinute = String.valueOf(minute);
             if(minute < 10) sMinute = "0"+minute;
+            edDatValue += String.valueOf(hour)+":"+ String.valueOf(minute);
+            Log.d(TAG, edDatValue);
             edDate.setText(edDate.getText().toString() + " @ " + hour + "h" + sMinute);
         }
 

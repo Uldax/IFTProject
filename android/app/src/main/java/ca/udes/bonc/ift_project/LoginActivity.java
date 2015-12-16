@@ -171,7 +171,9 @@ public class LoginActivity extends AppCompatActivity implements
     public class TokenVerifier extends AsyncTask<Void, JSONObject, Boolean>
     {
         private String idToken;
-        Activity mActivity;
+        private Activity mActivity;
+        private String errorMessage;
+
         public TokenVerifier(String idToken, Activity myActivity) {
             this.idToken = idToken;
             mActivity = myActivity;
@@ -203,9 +205,11 @@ public class LoginActivity extends AppCompatActivity implements
             } catch(JSONException ex){
                 Log.e("thread", ex.toString());
             } catch(SocketTimeoutException ex){
+                errorMessage=ex.toString();
                 Log.e("thread", ex.toString());
             } catch(ConnectException ex){
                 //failed to connect
+                errorMessage=ex.toString();
                 Log.e("thread", ex.toString());
             }
             catch (IOException e) {
@@ -217,7 +221,10 @@ public class LoginActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(Boolean result) {
             if( ! result) {
-                Toast.makeText(getApplicationContext(), "Something append with our server", Toast.LENGTH_LONG).show();
+                if( errorMessage.isEmpty()){
+                    errorMessage = "Something append with our server";
+                }
+                Toast.makeText(getApplicationContext(),errorMessage , Toast.LENGTH_LONG).show();
             } else {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);

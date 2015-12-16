@@ -298,13 +298,16 @@ public class MapFragment extends Fragment implements
                 String results = resultData.getString("results");
                 this.progressBar.setVisibility(View.GONE);
                 Log.i(TAG, "result = " + results);
+                if(!results.trim().equals("[]")){
+                    Toast.makeText(getContext(), results, Toast.LENGTH_LONG).show();
+                }
                 updateEventList(ConvertJson.convert_list_event(results));
                 break;
             case QueryIntentService.STATUS_ERROR:
-                //todo handl error
                 this.progressBar.setVisibility(View.GONE);
                 String error = resultData.getString(Intent.EXTRA_TEXT);
                 Log.d(TAG, "error = " + error);
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
                 break;
         }
     }
@@ -317,7 +320,7 @@ public class MapFragment extends Fragment implements
             listMap.setAdapter(null);
             listMap.setVisibility(View.GONE);
             fabList.setImageResource(android.R.drawable.ic_menu_more);
-            Toast.makeText(getContext(), "Sorry we don't have event here :'(", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Sorry we don't have event here ", Toast.LENGTH_LONG).show();
             for (Marker m :listMarker)
                 m.remove();
             return;

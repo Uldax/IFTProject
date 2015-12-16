@@ -195,7 +195,8 @@ implements NavigationView.OnNavigationItemSelectedListener,
                 break;
             case QueryIntentService.STATUS_ERROR:
                 String error = resultData.getString(Intent.EXTRA_TEXT);
-                if( ! error.isEmpty()) {
+                Log.d(TAG , error.trim());
+                if( ! error.isEmpty() && !error.trim().equals("[]")) {
                     Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                 }
                 break;
