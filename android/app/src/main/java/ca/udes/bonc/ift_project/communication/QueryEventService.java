@@ -40,6 +40,19 @@ public class QueryEventService extends QueryIntentService {
         return jsonAnswer;
     }
 
+    public static void startActionCloseEvent(Context context,ResultReceiver mReceiver,String idEvent) {
+        //binding to the service with startService()
+        Intent intent = new Intent(context, QueryEventService.class);
+        intent.setAction(ACTION_CLOSE_EVENT);
+        intent.putExtra(EXTRA_RECEIVER, mReceiver);
+        intent.putExtra(EXTRA_EVENT_ID, idEvent);
+        context.startService(intent);
+    }
+    private String handleActionCloseEvent(String idEvent) {
+        String jsonAnswer = this.handlePOSTResponse("/api/events/"+idEvent+"/closeEvent","");
+        return jsonAnswer;
+    }
+
     public static void startActionGetMarkersByRadius(Context context,ResultReceiver mReceiver, String longitude, String latitude,int radius) {
         //binding to the service with startService()
         Intent intent = new Intent(context, QueryEventService.class);
@@ -320,6 +333,10 @@ public class QueryEventService extends QueryIntentService {
                     case ACTION_GET_ONE: {
                         final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
                         response = handleActionGetOneEvent(eventID);
+                        break;
+                    } case ACTION_CLOSE_EVENT: {
+                        final String eventID = intent.getStringExtra(EXTRA_EVENT_ID);
+                        response = handleActionCloseEvent(eventID);
                         break;
                     }
                     case ACTION_DELETE_EVENT: {
