@@ -66,7 +66,7 @@ public class MapFragment extends Fragment implements
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static RestApiResultReceiver mReceiver;
-    private String TAG = "MapFragment";
+    private static String TAG = "MapFragment";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -84,7 +84,7 @@ public class MapFragment extends Fragment implements
     private EventAdapter adapter;
     private ProgressBar progressBar;
     private List<Marker> listMarker = new ArrayList<Marker>();
-    private List<Event> data;
+    private ArrayList<Event> data;
 
     private SupportMapFragment mSupportMapFragment;
 
@@ -102,6 +102,7 @@ public class MapFragment extends Fragment implements
     // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance(String param1, String param2) {
         MapFragment fragment = new MapFragment();
+        //fragment.setRetainInstance(true);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -111,6 +112,7 @@ public class MapFragment extends Fragment implements
 
     public MapFragment() {
         // Required empty public constructor
+        setRetainInstance(true);
     }
 
     @Override
@@ -196,12 +198,12 @@ public class MapFragment extends Fragment implements
             mMap.setMyLocationEnabled(true);
         }
         gps.start();
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gps.getLatitude(),gps.getLongitude()), 14));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gps.getLatitude(), gps.getLongitude()), 14));
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 Log.i("maps Cam change", "Camera : " + cameraPosition.target.latitude + " - " + cameraPosition.target.longitude);
-                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude),String.valueOf(cameraPosition.target.latitude),2);
+                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude), String.valueOf(cameraPosition.target.latitude), 2);
             }
         });
     }
@@ -211,6 +213,39 @@ public class MapFragment extends Fragment implements
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // Make sure to call the super method so that the states of our views are saved
+        super.onSaveInstanceState(outState);
+        // Save our own state now
+        outState.putSerializable("data", data);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            // Restore some state that needs to happen after the Activity was created
+            //
+            // Note #1: Our views haven't had their states restored yet
+            // This could be a good place to restore a ListView's contents (and it's your last
+            // opportunity if you want your scroll position to be restored properly)
+            //
+            // Note #2:
+            // The following line will cause an unchecked type cast compiler warning
+            // It's impossible to actually check the type because of Java's type erasure:
+            //      At runtime all generic types become Object
+            // So the best you can do is add the @SuppressWarnings("unchecked") annotation
+            // and understand that you must make sure to not use a different type anywhere
+            data = (ArrayList<Event>) savedInstanceState.getSerializable("data");
+        } else {
+            data = new ArrayList<>();
+        }
+
+        //updateEventList(data);
     }
 
     @Override
@@ -228,6 +263,9 @@ public class MapFragment extends Fragment implements
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        //Memory leak,
+        //mReceiver.setReceiver(null);
+        mReceiver = null;
     }
 
     @Override
@@ -271,7 +309,7 @@ public class MapFragment extends Fragment implements
         }
     }
 
-    public void updateEventList(List<Event> listEvent){
+    public void updateEventList(ArrayList<Event> listEvent){
         listMap = (ListView) myView.findViewById(R.id.listMap);
 
 
@@ -290,7 +328,7 @@ public class MapFragment extends Fragment implements
             listMarker.add(mMap.addMarker(new MarkerOptions().position(new LatLng(e.getLatitude(), e.getLongitude())).title(e.getTitle())));
         }
         this.data = listEvent;
-        adapter = new EventAdapter(getContext(),R.layout.adapter_event, listEvent,((IFTApplication)getActivity().getApplication()).getUserId());
+        adapter = new EventAdapter(getContext(),R.layout.adapter_event, data,((IFTApplication)getActivity().getApplication()).getUserId());
         listMap.setAdapter(adapter);
     }
 }

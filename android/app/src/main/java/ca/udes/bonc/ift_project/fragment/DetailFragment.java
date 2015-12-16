@@ -70,6 +70,7 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
     // TODO: Rename and change types and number of parameters
     public static DetailFragment newInstance(String param1, String param2) {
         DetailFragment fragment = new DetailFragment();
+        fragment.setRetainInstance(true);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);

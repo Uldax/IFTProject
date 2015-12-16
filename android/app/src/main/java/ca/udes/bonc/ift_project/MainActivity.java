@@ -104,6 +104,7 @@ implements NavigationView.OnNavigationItemSelectedListener,
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
         Fragment fragment = new MapFragment();
         fragmentManager.beginTransaction()
                 .replace(R.id.content_frame, fragment)
@@ -124,13 +125,14 @@ implements NavigationView.OnNavigationItemSelectedListener,
         //QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "46.385734837128865", "Let's talk dirty", Categories.SOCIAL, 12, Types.LOISIR);
         //QueryEventService.startActionCreateEvent(this, mReceiver, "-71.92839615046978", "45.395734837128865", "Let's talk dirtier", Categories.RANDO, 12, Types.COMPETITIF);
         //QueryEventService.startActionGetMarkers(this, mReceiver, "10.2", "23");
+        if(savedInstanceState == null) {
+            if (checkPlayServices()) {
+                Log.i(TAG, "service disponible");
 
-        if (checkPlayServices()) {
-            Log.i(TAG, "service disponible");
-
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
+                // Start IntentService to register this application with GCM.
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
+            }
         }
 
 

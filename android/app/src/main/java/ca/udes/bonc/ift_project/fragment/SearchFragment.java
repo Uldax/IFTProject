@@ -84,6 +84,7 @@ public class SearchFragment extends Fragment implements RestApiResultReceiver.Re
     // TODO: Rename and change types and number of parameters
     public static SearchFragment newInstance(String param1, String param2) {
         SearchFragment fragment = new SearchFragment();
+        fragment.setRetainInstance(true);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);

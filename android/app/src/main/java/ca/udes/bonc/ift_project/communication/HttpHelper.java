@@ -25,8 +25,8 @@ import java.nio.charset.Charset;
  */
 public class HttpHelper {
     //for emulator we must use 10.0.3.2 instead of 127.0.0.1 for genymotion
-    public static final String LOCALHOST = "http://10.0.3.2:8080";
-    //public static final String LOCALHOST = "http://10.44.160.21:8080";
+    //public static final String LOCALHOST = "http://10.0.3.2:8080";
+    public static final String LOCALHOST = "http://10.44.160.21:8080";
     //public static final String LOCALHOST = "http://192.168.1.33:8080";
 
     private static final String TAG = "httpHelper";

@@ -17,8 +17,8 @@ import ca.udes.bonc.ift_project.dataObject.Event;
  * Created by cbongiorno on 12/12/2015.
  */
 public class ConvertJson {
-    public static List<Event> convert_list_event(String input){
-        List<Event> listEvent = new ArrayList<Event>();
+    public static ArrayList<Event> convert_list_event(String input){
+        ArrayList<Event> listEvent = new ArrayList<Event>();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         try {
             JSONArray arrayListJson = new JSONArray(input);

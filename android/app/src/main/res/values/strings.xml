@@ -57,7 +57,7 @@
     <string name="desc_auth_code_activity">Demonstrate retrieving an auth code for authorizing your server.</string>
     <string name="name_auth_code_activity">ServerAuthCodeActivity</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_login_pop_up">LoginPopUp</string>
 
@@ -69,4 +69,5 @@
         sending the fetched token to the server or subscribing to the PubSub topic. Please try
         running the sample again.</string>
     <string name="title_activity_team_management">teamManagement</string>
+    <string name="title_activity_search">SearchActivity</string>
 </resources>

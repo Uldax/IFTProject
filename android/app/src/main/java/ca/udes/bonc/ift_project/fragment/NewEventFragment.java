@@ -93,6 +93,7 @@ public class NewEventFragment extends Fragment implements RestApiResultReceiver.
     // TODO: Rename and change types and number of parameters
     public static NewEventFragment newInstance(String param1, String param2) {
         NewEventFragment fragment = new NewEventFragment();
+        fragment.setRetainInstance(true);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
