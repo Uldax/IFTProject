@@ -35,6 +35,9 @@ public class ConvertJson {
                 event.setDate(formatter.parse(oneObject.getJSONObject("detail").getString("start")));
                 event.setLatitude(oneObject.getJSONObject("position").getDouble("lat"));
                 event.setLongitude(oneObject.getJSONObject("position").getDouble("lng"));
+                if(oneObject.getJSONObject("position").has("name")) {
+                    event.setPositionName(oneObject.getJSONObject("position").getString("name"));
+                } else event.setPositionName("Old event without place");
 
                 listEvent.add(event);
             }
@@ -63,6 +66,9 @@ public class ConvertJson {
             event.setLatitude(oneObject.getJSONObject("position").getDouble("lat"));
             event.setLongitude(oneObject.getJSONObject("position").getDouble("lng"));
             event.setStatus(oneObject.getJSONObject("detail").getString("status"));
+            if(oneObject.getJSONObject("position").has("name")) {
+                event.setPositionName(oneObject.getJSONObject("position").getString("name"));
+            } else event.setPositionName("Old event without place");
 
             JSONArray listParti = oneObject.getJSONObject("detail").getJSONArray("participants");
             for (int i=0; i < listParti.length(); i++)

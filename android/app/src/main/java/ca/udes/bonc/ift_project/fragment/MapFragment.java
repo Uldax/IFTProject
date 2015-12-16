@@ -198,12 +198,15 @@ public class MapFragment extends Fragment implements
             mMap.setMyLocationEnabled(true);
         }
         gps.start();
+        if( !gps.canGetLocation()){
+            gps.showSettingsAlert();
+        }
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gps.getLatitude(), gps.getLongitude()), 14));
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 Log.i("maps Cam change", "Camera : " + cameraPosition.target.latitude + " - " + cameraPosition.target.longitude);
-                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude), String.valueOf(cameraPosition.target.latitude), 20);
+                QueryEventService.startActionGetMarkersByRadius(getContext(), mReceiver, String.valueOf(cameraPosition.target.longitude), String.valueOf(cameraPosition.target.latitude), 200);
             }
         });
     }
@@ -298,9 +301,6 @@ public class MapFragment extends Fragment implements
                 String results = resultData.getString("results");
                 this.progressBar.setVisibility(View.GONE);
                 Log.i(TAG, "result = " + results);
-                if(!results.trim().equals("[]")){
-                    Toast.makeText(getContext(), results, Toast.LENGTH_LONG).show();
-                }
                 updateEventList(ConvertJson.convert_list_event(results));
                 break;
             case QueryIntentService.STATUS_ERROR:

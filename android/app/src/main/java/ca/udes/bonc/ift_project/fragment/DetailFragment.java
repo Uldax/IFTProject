@@ -172,7 +172,8 @@ public class DetailFragment extends Fragment implements RestApiResultReceiver.Re
         this.listParticip = (ListView) view.findViewById(R.id.listParticip);
         this.title.setText(event.getTitle());
         this.date.setText(DateFormat.format("d MMM @ kk:mm", event.getDate()));
-        this.place.setText(event.getLatitude() + " - " + event.getLongitude());
+        Log.d(TAG, "positionName :" +event.getPositionName());
+        this.place.setText(event.getPositionName());
         this.author.setText("by " + event.getAuthorName());
         if(event.getType().equals(Types.LOISIR)) this.modeCompet.setVisibility(View.GONE);
         if((((IFTApplication)getActivity().getApplication()).getUserId()).equals(event.getAuthorID())) this.star.setVisibility(View.GONE);

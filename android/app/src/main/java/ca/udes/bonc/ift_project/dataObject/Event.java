@@ -11,6 +11,16 @@ public class Event implements Serializable {
     private String id;
     private double latitude;
     private double longitude;
+
+    public String getPositionName() {
+        return positionName;
+    }
+
+    public void setPositionName(String positionName) {
+        this.positionName = positionName;
+    }
+
+    private String positionName;
     private String title;
     private Date date;
     private String authorID;
