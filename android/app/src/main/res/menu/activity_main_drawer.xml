@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_maps" android:icon="@android:drawable/ic_menu_mapmode"
+            android:title="Maps"/>
+        <item android:id="@+id/nav_list" android:icon="@android:drawable/ic_menu_agenda"
+            android:title="Search"/>
+        <item android:id="@+id/nav_newevent" android:icon="@android:drawable/ic_menu_add"
+            android:title="New Event"/>
+    </group>
+
+    <item android:title="Profil">
+        <menu>
+            <item android:id="@+id/nav_me" android:icon="@android:drawable/ic_menu_my_calendar"
+                android:title="My Profil"/>
+            <item android:id="@+id/nav_my_event" android:icon="@android:drawable/ic_menu_myplaces"
+                android:title="My Events" />
+            <item android:id="@+id/nav_logout" android:icon="@android:drawable/ic_menu_close_clear_cancel"
+                android:title="Logout" />
+        </menu>
+    </item>
+
+</menu>

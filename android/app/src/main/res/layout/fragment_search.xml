@@ -1,0 +1,118 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="ca.udes.bonc.ift_project.fragment.SearchFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#d0d0d0">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/linearLayout"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:id="@+id/textView5"
+                android:layout_marginRight="280dp"
+                android:layout_marginEnd="280dp" />
+
+            <android.widget.Spinner
+                android:layout_width="278dp"
+                android:layout_height="60dp"
+                android:id="@+id/spinnerCategory"
+                android:prompt="@string/categories_prompt"
+                android:entries="@array/categories_array"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/edName"
+                android:hint="Event name" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:ems="10"
+                android:id="@+id/edDate"
+                android:hint="Date"
+                android:inputType="date"
+                android:editable="false"
+                android:focusable="false" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/edAuthor"
+                android:hint="Creator's last name" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="75dp"
+                    android:layout_marginEnd="75dp"
+                    android:text="Plaisure"
+                    android:id="@+id/cbLoisir" />
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Competitive"
+                    android:id="@+id/cbCompetitif"
+                    android:layout_gravity="end" />
+            </LinearLayout>
+
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Search"
+                android:id="@+id/button"
+                android:backgroundTint="@color/colorAccent"
+                android:layout_gravity="center_vertical"
+                android:backgroundTintMode="add"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:layout_gravity="center"
+                android:visibility="visible" />
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/listMap"
+                android:layout_weight="0.5"
+                android:visibility="visible"
+                android:divider="@android:color/darker_gray"
+                android:dividerHeight="1dp"
+                android:drawSelectorOnTop="false"
+                android:headerDividersEnabled="true" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</FrameLayout>
